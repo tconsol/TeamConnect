@@ -9,5 +9,6 @@ router.use('/jobs', require('./jobs'));
 router.use('/applications', require('./applications'));
 router.use('/leads', require('./leads'));
 router.use('/dashboard', require('./dashboard'));
+router.use('/users', require('./users'));
 
 module.exports = router;

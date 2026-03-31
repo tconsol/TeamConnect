@@ -1,18 +1,18 @@
 const Service = require('../models/Service');
 const Portfolio = require('../models/Portfolio');
 const Job = require('../models/Job');
-const Application = require('../models/Application');
+const User = require('../models/User');
 const Lead = require('../models/Lead');
 const AuditLog = require('../models/AuditLog');
 
 exports.getStats = async (_req, res, next) => {
   try {
-    const [services, portfolios, activeJobs, applications, leads, recentLogs] =
+    const [services, portfolios, activeJobs, users, leads, recentLogs] =
       await Promise.all([
         Service.countDocuments(),
         Portfolio.countDocuments(),
         Job.countDocuments({ isActive: true }),
-        Application.countDocuments(),
+        User.countDocuments(),
         Lead.countDocuments(),
         AuditLog.find()
           .populate('user', 'name email')
@@ -24,16 +24,11 @@ exports.getStats = async (_req, res, next) => {
       { $group: { _id: '$status', count: { $sum: 1 } } },
     ]);
 
-    const appsByStatus = await Application.aggregate([
-      { $group: { _id: '$status', count: { $sum: 1 } } },
-    ]);
-
     res.json({
       success: true,
       data: {
-        counts: { services, portfolios, activeJobs, applications, leads },
+        counts: { services, portfolios, activeJobs, users, leads },
         leadsByStatus,
-        appsByStatus,
         recentActivity: recentLogs,
       },
     });

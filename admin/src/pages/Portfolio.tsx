@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getPortfolios, createPortfolio, updatePortfolio, deletePortfolio } from '@/services/api';
 import { useToast } from '@/components/ui/Toast';
+import { DeleteDrawer } from '@/components/ui/DeleteDrawer';
 import { HiOutlinePlus, HiOutlinePencil, HiOutlineTrash, HiOutlineXMark } from 'react-icons/hi2';
 
 interface PortfolioForm {
@@ -28,6 +29,10 @@ export default function Portfolio() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<PortfolioForm>(emptyForm);
   const [thumbnail, setThumbnail] = useState<File | null>(null);
+  const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null);
+  const [existingThumbnail, setExistingThumbnail] = useState<string | null>(null);
+  const [deleteDrawerOpen, setDeleteDrawerOpen] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState<{ id: string; title: string } | null>(null);
 
   const { data, isLoading } = useQuery({ queryKey: ['admin-portfolios'], queryFn: getPortfolios });
 
@@ -47,6 +52,8 @@ export default function Portfolio() {
     onSuccess: () => {
       toast.success('Project deleted');
       queryClient.invalidateQueries({ queryKey: ['admin-portfolios'] });
+      setDeleteDrawerOpen(false);
+      setItemToDelete(null);
     },
     onError: () => toast.error('Failed to delete'),
   });
@@ -56,6 +63,8 @@ export default function Portfolio() {
     setEditingId(null);
     setForm(emptyForm);
     setThumbnail(null);
+    setThumbnailPreview(null);
+    setExistingThumbnail(null);
   };
 
   const openEdit = (item: any) => {
@@ -73,7 +82,20 @@ export default function Portfolio() {
       liveUrl: item.liveUrl || '',
       isFeatured: item.isFeatured || false,
     });
+    setExistingThumbnail(item.thumbnail || null);
     setShowModal(true);
+  };
+
+  const handleThumbnailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setThumbnail(file);
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setThumbnailPreview(event.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -109,18 +131,20 @@ export default function Portfolio() {
       <div className="bg-bg-card border border-white/[0.06] rounded-xl overflow-hidden overflow-x-auto">
         <table className="w-full text-sm min-w-[480px]">
           <thead>
-            <tr className="border-b border-white/[0.06]">
-              <th className="text-left px-4 py-3 text-gray-400 font-medium">Title</th>
-              <th className="text-left px-4 py-3 text-gray-400 font-medium hidden md:table-cell">Category</th>
-              <th className="text-left px-4 py-3 text-gray-400 font-medium hidden lg:table-cell">Client</th>
-              <th className="text-center px-4 py-3 text-gray-400 font-medium hidden md:table-cell">Featured</th>
-              <th className="text-right px-4 py-3 text-gray-400 font-medium">Actions</th>
+            <tr style={{ background: 'rgba(99,102,241,0.08)', borderBottom: '1px solid rgba(99,102,241,0.2)' }}>
+              <th className="text-left px-4 py-3 text-gray-300 font-semibold">Thumbnail</th>
+              <th className="text-left px-4 py-3 text-gray-300 font-semibold">Title</th>
+              <th className="text-left px-4 py-3 text-gray-300 font-semibold hidden md:table-cell">Category</th>
+              <th className="text-left px-4 py-3 text-gray-300 font-semibold hidden lg:table-cell">Client</th>
+              <th className="text-center px-4 py-3 text-gray-300 font-semibold hidden md:table-cell">Featured</th>
+              <th className="text-right px-4 py-3 text-gray-300 font-semibold">Actions</th>
             </tr>
           </thead>
           <tbody>
             {isLoading ? (
               Array.from({ length: 3 }).map((_, i) => (
                 <tr key={i} className="border-b border-white/[0.04]">
+                  <td className="px-4 py-3"><div className="h-12 w-12 bg-white/[0.06] rounded animate-pulse" /></td>
                   <td className="px-4 py-3"><div className="h-4 bg-white/[0.06] rounded w-32 animate-pulse" /></td>
                   <td className="px-4 py-3 hidden md:table-cell"><div className="h-4 bg-white/[0.06] rounded w-20 animate-pulse" /></td>
                   <td className="px-4 py-3 hidden lg:table-cell"><div className="h-4 bg-white/[0.06] rounded w-24 animate-pulse" /></td>
@@ -130,7 +154,14 @@ export default function Portfolio() {
               ))
             ) : (data || []).map((item: any) => (
               <tr key={item._id} className="border-b border-white/[0.04] hover:bg-white/[0.02]">
-                <td className="px-4 py-3 font-medium">{item.title}</td>
+                <td className="px-4 py-3">
+                  {item.thumbnail ? (
+                    <img src={item.thumbnail} alt={item.title} className="h-12 w-12 object-cover rounded" />
+                  ) : (
+                    <div className="h-12 w-12 bg-white/[0.06] rounded flex items-center justify-center text-xs text-gray-500">No image</div>
+                  )}
+                </td>
+                <td className="px-4 py-3 font-medium text-white">{item.title}</td>
                 <td className="px-4 py-3 text-gray-400 hidden md:table-cell">{item.category}</td>
                 <td className="px-4 py-3 text-gray-400 hidden lg:table-cell">{item.client}</td>
                 <td className="px-4 py-3 text-center hidden md:table-cell">
@@ -141,7 +172,13 @@ export default function Portfolio() {
                     <button onClick={() => openEdit(item)} className="p-1.5 text-gray-400 hover:text-white transition-colors">
                       <HiOutlinePencil className="w-4 h-4" />
                     </button>
-                    <button onClick={() => { if (window.confirm('Are you sure you want to delete this project?')) deleteMutation.mutate(item._id); }} className="p-1.5 text-gray-400 hover:text-red-400 transition-colors">
+                    <button 
+                      onClick={() => {
+                        setItemToDelete({ id: item._id, title: item.title });
+                        setDeleteDrawerOpen(true);
+                      }} 
+                      className="p-1.5 text-gray-400 hover:text-red-400 transition-colors"
+                    >
                       <HiOutlineTrash className="w-4 h-4" />
                     </button>
                   </div>
@@ -217,8 +254,29 @@ export default function Portfolio() {
                   <input value={form.liveUrl} onChange={(e) => setForm({ ...form, liveUrl: e.target.value })} className="w-full px-3 py-2 bg-white/[0.04] border border-white/[0.08] rounded-lg text-white focus:outline-none focus:border-accent-indigo" />
                 </div>
                 <div>
-                  <label className="block text-sm text-gray-400 mb-1">Thumbnail</label>
-                  <input type="file" accept="image/*" onChange={(e) => setThumbnail(e.target.files?.[0] || null)} className="w-full text-sm text-gray-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-accent-indigo/10 file:text-accent-indigo file:cursor-pointer" />
+                  <label className="block text-sm text-gray-400 mb-2">Thumbnail</label>
+                  <div className="space-y-3">
+                    {(thumbnailPreview || existingThumbnail) && (
+                      <div className="relative w-full">
+                        <img 
+                          src={thumbnailPreview || existingThumbnail} 
+                          alt="Thumbnail preview" 
+                          className="w-full h-40 object-cover rounded-lg border border-white/[0.08]" 
+                        />
+                        {saveMutation.isPending && (
+                          <div className="absolute inset-0 bg-black/50 rounded-lg flex items-center justify-center">
+                            <div className="text-white text-sm">Uploading...</div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    <input 
+                      type="file" 
+                      accept="image/*" 
+                      onChange={handleThumbnailChange} 
+                      className="w-full text-sm text-gray-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-accent-indigo/10 file:text-accent-indigo file:cursor-pointer" 
+                    />
+                  </div>
                 </div>
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input type="checkbox" checked={form.isFeatured} onChange={(e) => setForm({ ...form, isFeatured: e.target.checked })} className="rounded border-white/20 bg-white/[0.04] text-accent-indigo focus:ring-accent-indigo" />
@@ -239,6 +297,22 @@ export default function Portfolio() {
         </div>,
         document.body
       )}
+
+      {/* Delete Drawer */}
+      <DeleteDrawer
+        isOpen={deleteDrawerOpen}
+        title="Delete Project"
+        description="This action cannot be undone. The project and its thumbnail will be permanently removed from the portfolio."
+        itemName={itemToDelete?.title}
+        onConfirm={() => {
+          if (itemToDelete) deleteMutation.mutate(itemToDelete.id);
+        }}
+        onCancel={() => {
+          setDeleteDrawerOpen(false);
+          setItemToDelete(null);
+        }}
+        isDeleting={deleteMutation.isPending}
+      />
     </div>
   );
 }

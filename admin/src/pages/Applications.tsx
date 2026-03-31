@@ -59,13 +59,13 @@ export default function Applications() {
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-white/[0.06]">
-                <th className="text-left px-4 py-3 text-gray-400 font-medium">Applicant</th>
-                <th className="text-left px-4 py-3 text-gray-400 font-medium hidden md:table-cell">Email</th>
-                <th className="text-left px-4 py-3 text-gray-400 font-medium hidden lg:table-cell">Job</th>
-                <th className="text-left px-4 py-3 text-gray-400 font-medium">Status</th>
-                <th className="text-left px-4 py-3 text-gray-400 font-medium hidden md:table-cell">Resume</th>
-                <th className="text-left px-4 py-3 text-gray-400 font-medium hidden lg:table-cell">Date</th>
+              <tr style={{ background: 'rgba(99,102,241,0.08)', borderBottom: '1px solid rgba(99,102,241,0.2)' }}>
+                <th className="text-left px-4 py-3 text-gray-300 font-semibold">Applicant</th>
+                <th className="text-left px-4 py-3 text-gray-300 font-semibold hidden md:table-cell">Email</th>
+                <th className="text-left px-4 py-3 text-gray-300 font-semibold hidden lg:table-cell">Job</th>
+                <th className="text-left px-4 py-3 text-gray-300 font-semibold">Status</th>
+                <th className="text-left px-4 py-3 text-gray-300 font-semibold hidden md:table-cell">Resume</th>
+                <th className="text-left px-4 py-3 text-gray-300 font-semibold hidden lg:table-cell">Date</th>
               </tr>
             </thead>
             <tbody>
@@ -82,7 +82,7 @@ export default function Applications() {
                 ))
               ) : applications.map((app: any) => (
                 <tr key={app._id} className="border-b border-white/[0.04] hover:bg-white/[0.02]">
-                  <td className="px-4 py-3 font-medium">{app.name}</td>
+                  <td className="px-4 py-3 font-medium text-white">{app.name}</td>
                   <td className="px-4 py-3 text-gray-400 hidden md:table-cell">{app.email}</td>
                   <td className="px-4 py-3 text-gray-400 hidden lg:table-cell">{app.job?.title || '—'}</td>
                   <td className="px-4 py-3">

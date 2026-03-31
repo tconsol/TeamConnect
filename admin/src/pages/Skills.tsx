@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { HiOutlinePencil, HiOutlinePlus, HiOutlineTrash, HiOutlineXMark } from 'react-icons/hi2';
+import { DeleteDrawer } from '@/components/ui/DeleteDrawer';
 import {
   SiAngular,
   SiDocker,
@@ -89,6 +90,8 @@ export default function Skills() {
   const [form, setForm] = useState<SkillForm>(defaultForm);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [existingImage, setExistingImage] = useState<string>('');
+  const [deleteDrawerOpen, setDeleteDrawerOpen] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState<{ id: string; name: string } | null>(null);
 
   const { data: skills, isLoading } = useQuery({
     queryKey: ['admin-skills'],
@@ -114,6 +117,8 @@ export default function Skills() {
     onSuccess: () => {
       toast.success('Skill deleted');
       queryClient.invalidateQueries({ queryKey: ['admin-skills'] });
+      setDeleteDrawerOpen(false);
+      setItemToDelete(null);
     },
     onError: () => {
       toast.error('Failed to delete skill');
@@ -187,13 +192,13 @@ export default function Skills() {
       <div className="bg-bg-card border border-white/[0.06] rounded-xl overflow-hidden overflow-x-auto">
         <table className="w-full text-sm min-w-[480px]">
           <thead>
-            <tr className="border-b border-white/[0.06]">
-              <th className="text-left px-4 py-3 text-gray-400 font-medium">Skill</th>
-              <th className="text-left px-4 py-3 text-gray-400 font-medium hidden md:table-cell">Icon</th>
-              <th className="text-left px-4 py-3 text-gray-400 font-medium hidden md:table-cell">Proficiency</th>
-              <th className="text-left px-4 py-3 text-gray-400 font-medium hidden lg:table-cell">Order</th>
-              <th className="text-left px-4 py-3 text-gray-400 font-medium hidden lg:table-cell">Status</th>
-              <th className="text-right px-4 py-3 text-gray-400 font-medium">Actions</th>
+              <tr style={{ background: 'rgba(99,102,241,0.08)', borderBottom: '1px solid rgba(99,102,241,0.2)' }}>
+              <th className="text-left px-4 py-3 text-gray-300 font-semibold">Skill</th>
+              <th className="text-left px-4 py-3 text-gray-300 font-semibold hidden md:table-cell">Icon</th>
+              <th className="text-left px-4 py-3 text-gray-300 font-semibold hidden md:table-cell">Proficiency</th>
+              <th className="text-left px-4 py-3 text-gray-300 font-semibold hidden lg:table-cell">Order</th>
+              <th className="text-left px-4 py-3 text-gray-300 font-semibold hidden lg:table-cell">Status</th>
+              <th className="text-right px-4 py-3 text-gray-300 font-semibold">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -213,7 +218,7 @@ export default function Skills() {
                 const Icon = ICON_MAP[item.iconKey] || SiReact;
                 return (
                   <tr key={item._id} className="border-b border-white/[0.04] hover:bg-white/[0.02]">
-                    <td className="px-4 py-3 font-medium">{item.name}</td>
+                  <td className="px-4 py-3 font-medium text-white">{item.name}</td>
                     <td className="px-4 py-3 hidden md:table-cell">
                       <div className="flex items-center gap-2 text-gray-300">
                         <Icon className="w-4 h-4" style={{ color: item.color || '#8B5CF6' }} />
@@ -237,9 +242,8 @@ export default function Skills() {
                         </button>
                         <button
                           onClick={() => {
-                            if (window.confirm('Delete this skill?')) {
-                              deleteMutation.mutate(item._id);
-                            }
+                            setItemToDelete({ id: item._id, name: item.name });
+                            setDeleteDrawerOpen(true);
                           }}
                           className="p-1.5 text-gray-400 hover:text-red-400 transition-colors"
                         >

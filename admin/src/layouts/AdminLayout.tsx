@@ -26,7 +26,8 @@ const navItems = [
   { path: '/skills', label: 'Skills', icon: HiOutlineCpuChip },
   { path: '/portfolio', label: 'Portfolio', icon: HiOutlineSquares2X2 },
   { path: '/careers', label: 'Careers', icon: HiOutlineBriefcase },
-  { path: '/applications', label: 'Applications', icon: HiOutlineUsers },
+  { path: '/applications', label: 'Applications', icon: HiOutlineBriefcase },
+  { path: '/users', label: 'Users', icon: HiOutlineUsers },
   { path: '/leads', label: 'Leads', icon: HiOutlineEnvelope },
 ];
 

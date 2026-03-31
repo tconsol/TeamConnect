@@ -46,10 +46,10 @@ function DockItemElement({
   return (
     <div className="relative flex flex-col items-center group">
       <span
-        className={`absolute -top-8 text-xs px-2.5 py-1 rounded-lg whitespace-nowrap transition-all duration-200 pointer-events-none border ${
+        className={`absolute text-xs px-2.5 py-1 rounded-lg whitespace-nowrap transition-all duration-200 pointer-events-none border ${
           isActive
-            ? 'opacity-100 translate-y-0 bg-accent-violet/25 text-white border-accent-violet/50'
-            : 'opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 bg-black/90 text-white border-white/10'
+            ? 'opacity-100 translate-y-0 -top-[42px] bg-accent-violet/25 text-white border-accent-violet/50'
+            : 'opacity-0 translate-y-1 -top-8 group-hover:opacity-100 group-hover:translate-y-0 bg-black/90 text-white border-white/10'
         }`}
       >
         {label}

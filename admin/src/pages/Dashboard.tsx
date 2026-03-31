@@ -54,11 +54,11 @@ export default function Dashboard() {
   }
 
   const stats = [
-    { label: 'Services', value: data?.counts?.services || 0, icon: HiOutlineCog6Tooth, color: 'text-blue-400', bg: 'rgba(59,130,246,0.1)', trend: '+2' },
-    { label: 'Portfolio', value: data?.counts?.portfolios || 0, icon: HiOutlineSquares2X2, color: 'text-purple-400', bg: 'rgba(139,92,246,0.1)', trend: '+5' },
-    { label: 'Active Jobs', value: data?.counts?.activeJobs || 0, icon: HiOutlineBriefcase, color: 'text-green-400', bg: 'rgba(16,185,129,0.1)', trend: '+1' },
-    { label: 'Applications', value: data?.counts?.applications || 0, icon: HiOutlineUsers, color: 'text-amber-400', bg: 'rgba(245,158,11,0.1)', trend: '+12' },
-    { label: 'Leads', value: data?.counts?.leads || 0, icon: HiOutlineEnvelope, color: 'text-rose-400', bg: 'rgba(239,68,68,0.1)', trend: '+8' },
+    { label: 'Services', value: data?.counts?.services || 0, icon: HiOutlineCog6Tooth, color: 'text-blue-400', bg: 'rgba(59,130,246,0.1)', trend: '+2 this month' },
+    { label: 'Portfolio', value: data?.counts?.portfolios || 0, icon: HiOutlineSquares2X2, color: 'text-purple-400', bg: 'rgba(139,92,246,0.1)', trend: '+5 this month' },
+    { label: 'Active Jobs', value: data?.counts?.activeJobs || 0, icon: HiOutlineBriefcase, color: 'text-green-400', bg: 'rgba(16,185,129,0.1)', trend: '+1 this month' },
+    { label: 'users', value: data?.counts?.users || 0, icon: HiOutlineUsers, color: 'text-amber-400', bg: 'rgba(245,158,11,0.1)', trend: '+2 this month' },
+    { label: 'Leads', value: data?.counts?.leads || 0, icon: HiOutlineEnvelope, color: 'text-rose-400', bg: 'rgba(239,68,68,0.1)', trend: '+8 this month' },
   ];
 
   // Prepare chart data from API
@@ -66,27 +66,27 @@ export default function Dashboard() {
     { name: 'Services', value: data?.counts?.services || 0 },
     { name: 'Portfolio', value: data?.counts?.portfolios || 0 },
     { name: 'Jobs', value: data?.counts?.activeJobs || 0 },
-    { name: 'Apps', value: data?.counts?.applications || 0 },
+    { name: 'Users', value: data?.counts?.users || 0 },
     { name: 'Leads', value: data?.counts?.leads || 0 },
   ];
 
   const leadsPieData = data?.leadsByStatus?.length
-    ? data.leadsByStatus.map((item: any) => ({ name: item._id, value: item.count }))
+    ? data.leadsByStatus.map((item: any) => ({ name: item._id.charAt(0).toUpperCase() + item._id.slice(1), value: item.count }))
     : [
-        { name: 'new', value: 4 },
-        { name: 'contacted', value: 3 },
-        { name: 'qualified', value: 2 },
-        { name: 'converted', value: 1 },
+        { name: 'New', value: 0 },
+        { name: 'Contacted', value: 0 },
+        { name: 'Qualified', value: 0 },
+        { name: 'Proposal', value: 0 },
       ];
 
   // Mock trend data for area chart  
   const trendData = [
-    { month: 'Oct', leads: 3, apps: 5 },
-    { month: 'Nov', leads: 5, apps: 8 },
-    { month: 'Dec', leads: 4, apps: 6 },
-    { month: 'Jan', leads: 7, apps: 11 },
-    { month: 'Feb', leads: 9, apps: 14 },
-    { month: 'Mar', leads: data?.counts?.leads || 8, apps: data?.counts?.applications || 12 },
+    { month: 'Oct', leads: 3, users: 2 },
+    { month: 'Nov', leads: 5, users: 3 },
+    { month: 'Dec', leads: 4, users: 3 },
+    { month: 'Jan', leads: 7, users: 4 },
+    { month: 'Feb', leads: 9, users: 5 },
+    { month: 'Mar', leads: data?.counts?.leads || 8, users: data?.counts?.users || 6 },
   ];
 
   return (
@@ -177,7 +177,7 @@ export default function Dashboard() {
       {/* Charts row 2 — Area Chart trend */}
       <div className="analytics-card p-6">
         <h2 className="text-base font-semibold text-white mb-1">Growth Trend</h2>
-        <p className="text-xs mb-5" style={{ color: 'rgba(148,163,184,0.5)' }}>Leads & Applications over last 6 months</p>
+        <p className="text-xs mb-5" style={{ color: 'rgba(148,163,184,0.5)' }}>Leads & Users over last 6 months</p>
         <ResponsiveContainer width="100%" height={200}>
           <AreaChart data={trendData}>
             <defs>
@@ -195,7 +195,7 @@ export default function Dashboard() {
             <YAxis tick={{ fill: 'rgba(148,163,184,0.5)', fontSize: 11 }} axisLine={false} tickLine={false} />
             <Tooltip content={<CustomTooltip />} />
             <Area type="monotone" dataKey="leads" stroke="#6366F1" strokeWidth={2} fill="url(#leads)" name="Leads" />
-            <Area type="monotone" dataKey="apps" stroke="#10B981" strokeWidth={2} fill="url(#apps)" name="Applications" />
+            <Area type="monotone" dataKey="users" stroke="#10B981" strokeWidth={2} fill="url(#apps)" name="Users" />
           </AreaChart>
         </ResponsiveContainer>
       </div>

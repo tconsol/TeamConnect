@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getServices, createService, updateService, deleteService } from '@/services/api';
 import { useToast } from '@/components/ui/Toast';
+import { DeleteDrawer } from '@/components/ui/DeleteDrawer';
 import { HiOutlinePlus, HiOutlinePencil, HiOutlineTrash, HiOutlineXMark } from 'react-icons/hi2';
 
 interface ServiceForm {
@@ -31,6 +32,8 @@ export default function Services() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<ServiceForm>(emptyForm);
   const [image, setImage] = useState<File | null>(null);
+  const [deleteDrawerOpen, setDeleteDrawerOpen] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState<{ id: string; name: string } | null>(null);
 
   const { data, isLoading } = useQuery({ queryKey: ['admin-services'], queryFn: getServices });
 
@@ -50,6 +53,8 @@ export default function Services() {
     onSuccess: () => {
       toast.success('Service deleted');
       queryClient.invalidateQueries({ queryKey: ['admin-services'] });
+      setDeleteDrawerOpen(false);
+      setItemToDelete(null);
     },
     onError: () => toast.error('Failed to delete'),
   });
@@ -104,10 +109,10 @@ export default function Services() {
       <div className="bg-bg-card border border-white/[0.06] rounded-xl overflow-hidden overflow-x-auto">
         <table className="w-full text-sm min-w-[480px]">
           <thead>
-            <tr className="border-b border-white/[0.06]">
-              <th className="text-left px-4 py-3 text-gray-400 font-medium">Title</th>
-              <th className="text-left px-4 py-3 text-gray-400 font-medium hidden md:table-cell">Technologies</th>
-              <th className="text-left px-4 py-3 text-gray-400 font-medium hidden lg:table-cell">Slug</th>
+              <tr style={{ background: 'rgba(99,102,241,0.08)', borderBottom: '1px solid rgba(99,102,241,0.2)' }}>
+              <th className="text-left px-4 py-3 text-gray-300 font-semibold">Title</th>
+              <th className="text-left px-4 py-3 text-gray-300 font-semibold hidden md:table-cell">Technologies</th>
+              <th className="text-left px-4 py-3 text-gray-300 font-semibold hidden lg:table-cell">Slug</th>
               <th className="text-right px-4 py-3 text-gray-400 font-medium">Actions</th>
             </tr>
           </thead>
@@ -123,7 +128,7 @@ export default function Services() {
               ))
             ) : (data || []).map((service: any) => (
               <tr key={service._id} className="border-b border-white/[0.04] hover:bg-white/[0.02]">
-                <td className="px-4 py-3 font-medium">{service.title}</td>
+                <td className="px-4 py-3 font-medium text-white">{service.title}</td>
                 <td className="px-4 py-3 text-gray-400 hidden md:table-cell">{(service.technologies || []).join(', ')}</td>
                 <td className="px-4 py-3 text-gray-500 hidden lg:table-cell">{service.slug || toSlug(service.title || '')}</td>
                 <td className="px-4 py-3">
@@ -131,7 +136,10 @@ export default function Services() {
                     <button onClick={() => openEdit(service)} className="p-1.5 text-gray-400 hover:text-white transition-colors">
                       <HiOutlinePencil className="w-4 h-4" />
                     </button>
-                    <button onClick={() => { if (window.confirm('Are you sure you want to delete this service?')) deleteMutation.mutate(service._id); }} className="p-1.5 text-gray-400 hover:text-red-400 transition-colors">
+                    <button onClick={() => {
+                      setItemToDelete({ id: service._id, name: service.title });
+                      setDeleteDrawerOpen(true);
+                    }} className="p-1.5 text-gray-400 hover:text-red-400 transition-colors">
                       <HiOutlineTrash className="w-4 h-4" />
                     </button>
                   </div>
@@ -211,6 +219,22 @@ export default function Services() {
         </div>,
         document.body
       )}
+
+      {/* Delete Drawer */}
+      <DeleteDrawer
+        isOpen={deleteDrawerOpen}
+        title="Delete Service"
+        description="This action cannot be undone. The service and all associated information will be permanently removed."
+        itemName={itemToDelete?.name}
+        onConfirm={() => {
+          if (itemToDelete) deleteMutation.mutate(itemToDelete.id);
+        }}
+        onCancel={() => {
+          setDeleteDrawerOpen(false);
+          setItemToDelete(null);
+        }}
+        isDeleting={deleteMutation.isPending}
+      />
     </div>
   );
 }

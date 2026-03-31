@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getJobs, createJob, updateJob, deleteJob } from '@/services/api';
 import { useToast } from '@/components/ui/Toast';
 import { Dropdown } from '@/components/ui/Dropdown';
+import { DeleteDrawer } from '@/components/ui/DeleteDrawer';
 import { HiOutlinePlus, HiOutlinePencil, HiOutlineTrash, HiOutlineXMark } from 'react-icons/hi2';
 
 interface JobForm {
@@ -50,6 +51,8 @@ export default function Careers() {
   const [showModal, setShowModal] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<JobForm>(emptyForm);
+  const [deleteDrawerOpen, setDeleteDrawerOpen] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState<{ id: string; name: string } | null>(null);
 
   const { data, isLoading } = useQuery({ queryKey: ['admin-jobs'], queryFn: getJobs });
 
@@ -68,6 +71,8 @@ export default function Careers() {
     onSuccess: () => {
       toast.success('Job deleted');
       queryClient.invalidateQueries({ queryKey: ['admin-jobs'] });
+      setDeleteDrawerOpen(false);
+      setItemToDelete(null);
     },
     onError: () => toast.error('Failed to delete'),
   });
@@ -151,12 +156,12 @@ export default function Careers() {
       <div className="bg-bg-card border border-white/[0.06] rounded-xl overflow-hidden overflow-x-auto">
         <table className="w-full text-sm min-w-[480px]">
           <thead>
-            <tr className="border-b border-white/[0.06]">
-              <th className="text-left px-4 py-3 text-gray-400 font-medium">Title</th>
-              <th className="text-left px-4 py-3 text-gray-400 font-medium hidden md:table-cell">Department</th>
-              <th className="text-left px-4 py-3 text-gray-400 font-medium hidden lg:table-cell">Type</th>
-              <th className="text-center px-4 py-3 text-gray-400 font-medium hidden md:table-cell">Status</th>
-              <th className="text-right px-4 py-3 text-gray-400 font-medium">Actions</th>
+              <tr style={{ background: 'rgba(99,102,241,0.08)', borderBottom: '1px solid rgba(99,102,241,0.2)' }}>
+              <th className="text-left px-4 py-3 text-gray-300 font-semibold">Title</th>
+              <th className="text-left px-4 py-3 text-gray-300 font-semibold hidden md:table-cell">Department</th>
+              <th className="text-left px-4 py-3 text-gray-300 font-semibold hidden lg:table-cell">Type</th>
+              <th className="text-center px-4 py-3 text-gray-300 font-semibold hidden md:table-cell">Status</th>
+              <th className="text-right px-4 py-3 text-gray-300 font-semibold">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -172,7 +177,7 @@ export default function Careers() {
               ))
             ) : (data || []).map((job: any) => (
               <tr key={job._id} className="border-b border-white/[0.04] hover:bg-white/[0.02]">
-                <td className="px-4 py-3 font-medium">{job.title}</td>
+                <td className="px-4 py-3 font-medium text-white">{job.title}</td>
                 <td className="px-4 py-3 text-gray-400 hidden md:table-cell">{job.department}</td>
                 <td className="px-4 py-3 text-gray-400 capitalize hidden lg:table-cell">{job.type}</td>
                 <td className="px-4 py-3 text-center hidden md:table-cell">
@@ -185,7 +190,10 @@ export default function Careers() {
                     <button onClick={() => openEdit(job)} className="p-1.5 text-gray-400 hover:text-white transition-colors">
                       <HiOutlinePencil className="w-4 h-4" />
                     </button>
-                    <button onClick={() => deleteMutation.mutate(job._id)} className="p-1.5 text-gray-400 hover:text-red-400 transition-colors">
+                    <button onClick={() => {
+                      setItemToDelete({ id: job._id, name: job.title });
+                      setDeleteDrawerOpen(true);
+                    }} className="p-1.5 text-gray-400 hover:text-red-400 transition-colors">
                       <HiOutlineTrash className="w-4 h-4" />
                     </button>
                   </div>
@@ -198,6 +206,22 @@ export default function Careers() {
           <div className="p-8 text-center text-gray-500">No jobs found</div>
         )}
       </div>
+
+      {/* Delete Drawer */}
+      <DeleteDrawer
+        isOpen={deleteDrawerOpen}
+        title="Delete Job"
+        description="This action cannot be undone. The job posting and all associated information will be permanently removed."
+        itemName={itemToDelete?.name}
+        onConfirm={() => {
+          if (itemToDelete) deleteMutation.mutate(itemToDelete.id);
+        }}
+        onCancel={() => {
+          setDeleteDrawerOpen(false);
+          setItemToDelete(null);
+        }}
+        isDeleting={deleteMutation.isPending}
+      />
 
       {/* Modal */}
       {showModal && createPortal(

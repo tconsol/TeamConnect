@@ -167,7 +167,7 @@ export default function ImageReveal({
                   viewBox="0 0 24 24"
                   stroke="currentColor"
                   strokeWidth={2}
-                  style={{ transform: 'rotate(-30deg)' }}
+                  style={{ transform: 'rotate(0deg)' }}
                 >
                   <path strokeLinecap="round" strokeLinejoin="round" d="M4 20L20 4m0 0h-12m12 0v12" />
                 </svg>

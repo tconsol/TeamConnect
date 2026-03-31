@@ -63,10 +63,21 @@ exports.refresh = async (req, res, next) => {
       throw new AppError('Invalid refresh token', 401);
     }
 
+    // Remove old refresh token atomically
     user.refreshTokens = user.refreshTokens.filter((t) => t.tokenHash !== tokenHash);
+    
+    // Generate new tokens
     const newAccessToken = generateAccessToken(user._id);
     const newRefreshToken = generateRefreshToken(user._id);
+    
+    // Add new refresh token
     user.refreshTokens.push({ tokenHash: hashToken(newRefreshToken), createdAt: new Date() });
+    
+    // Keep only last 5 refresh tokens
+    if (user.refreshTokens.length > 5) {
+      user.refreshTokens = user.refreshTokens.slice(-5);
+    }
+    
     await user.save();
 
     res.json({

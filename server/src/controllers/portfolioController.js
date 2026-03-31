@@ -1,7 +1,22 @@
 const Portfolio = require('../models/Portfolio');
 const { AppError } = require('../middleware/errorHandler');
-const { uploadFile, deleteFile } = require('../services/gcpStorage');
+const { uploadFile, deleteFile, getSignedUrl } = require('../services/gcpStorage');
 const { logAction } = require('../utils/auditLogger');
+
+async function resolveThumbnailUrl(url) {
+  if (!url || !url.startsWith('gs://')) return url;
+  try {
+    return await getSignedUrl(url);
+  } catch {
+    return url;
+  }
+}
+
+async function resolvePortfolioUrls(portfolio) {
+  const obj = portfolio.toObject ? portfolio.toObject() : { ...portfolio };
+  obj.thumbnail = await resolveThumbnailUrl(obj.thumbnail);
+  return obj;
+}
 
 exports.getAll = async (req, res, next) => {
   try {
@@ -12,7 +27,8 @@ exports.getAll = async (req, res, next) => {
     if (category) filter.category = category;
 
     const portfolios = await Portfolio.find(filter).sort({ order: 1, createdAt: -1 });
-    res.json({ success: true, data: portfolios });
+    const resolved = await Promise.all(portfolios.map(resolvePortfolioUrls));
+    res.json({ success: true, data: resolved });
   } catch (error) {
     next(error);
   }
@@ -22,7 +38,8 @@ exports.getBySlug = async (req, res, next) => {
   try {
     const portfolio = await Portfolio.findOne({ slug: req.params.slug });
     if (!portfolio) throw new AppError('Portfolio not found', 404);
-    res.json({ success: true, data: portfolio });
+    const resolved = await resolvePortfolioUrls(portfolio);
+    res.json({ success: true, data: resolved });
   } catch (error) {
     next(error);
   }
@@ -31,7 +48,7 @@ exports.getBySlug = async (req, res, next) => {
 exports.create = async (req, res, next) => {
   try {
     if (req.file) {
-      req.body.thumbnail = await uploadFile(req.file, 'projects');
+      req.body.thumbnail = await uploadFile(req.file, 'portfolio-images');
     }
     if (typeof req.body.technologies === 'string') {
       req.body.technologies = JSON.parse(req.body.technologies);
@@ -50,7 +67,8 @@ exports.create = async (req, res, next) => {
       ip: req.ip,
     });
 
-    res.status(201).json({ success: true, data: portfolio });
+    const resolved = await resolvePortfolioUrls(portfolio);
+    res.status(201).json({ success: true, data: resolved });
   } catch (error) {
     next(error);
   }
@@ -63,7 +81,7 @@ exports.update = async (req, res, next) => {
 
     if (req.file) {
       if (portfolio.thumbnail) await deleteFile(portfolio.thumbnail);
-      req.body.thumbnail = await uploadFile(req.file, 'projects');
+      req.body.thumbnail = await uploadFile(req.file, 'portfolio-images');
     }
     if (typeof req.body.technologies === 'string') {
       req.body.technologies = JSON.parse(req.body.technologies);
@@ -83,7 +101,8 @@ exports.update = async (req, res, next) => {
       ip: req.ip,
     });
 
-    res.json({ success: true, data: portfolio });
+    const resolved = await resolvePortfolioUrls(portfolio);
+    res.json({ success: true, data: resolved });
   } catch (error) {
     next(error);
   }

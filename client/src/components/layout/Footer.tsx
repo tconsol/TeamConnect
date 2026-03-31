@@ -65,7 +65,7 @@ const footerOrbits: OrbitConfig[] = [
     id: 4,
     radiusFactor: 0.76,
     speed: 29,
-    href: 'https://instagram.com/tconsolutions',
+    href: 'https://www.instagram.com/tcon.solutions',
     orbitColor: 'rgba(244,114,182,0.34)',
     orbitThickness: 1,
     icon: (

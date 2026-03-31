@@ -211,4 +211,20 @@ export const deleteLead = async (id: string) => {
   await api.delete(`/leads/${id}`);
 };
 
+// Users/Admins
+export const getUsers = async () => {
+  const { data } = await api.get('/users');
+  return data.data;
+};
+
+export const createUser = async (payload: { name: string; email: string; password: string; role: string }) => {
+  const { data } = await api.post('/users', payload);
+  return data.data;
+};
+
+export const deleteUser = async (id: string) => {
+  const { data } = await api.delete(`/users/${id}`);
+  return data.data;
+};
+
 export default api;

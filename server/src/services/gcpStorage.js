@@ -34,7 +34,7 @@ try {
 
 const bucket = storage ? storage.bucket(config.gcp.bucketName) : null;
 
-const SENSITIVE_FOLDERS = ['resumes'];
+const SENSITIVE_FOLDERS = ['resumes', 'portfolio-images'];
 
 const uploadFile = async (file, folder) => {
   if (!bucket) throw new Error(`GCP Storage not configured: ${gcpError || 'unknown error'}`);

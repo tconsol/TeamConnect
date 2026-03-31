@@ -4,6 +4,7 @@ import { useMutation } from '@tanstack/react-query';
 import { submitContact } from '@/utils/api';
 import { useGsapFadeIn } from '@/hooks/useAnimations';
 import Button from '@/components/ui/Button';
+import { Dropdown } from '@/components/ui/Dropdown';
 import { AuroraTextEffect } from '@/components/ui/AuroraTextEffect';
 import {
   HiOutlineEnvelope,
@@ -82,7 +83,7 @@ export default function Contact() {
 
               <div className="glass rounded-2xl p-6">
                 <h3 className="text-sm font-semibold text-text-heading mb-3">Business Hours</h3>
-                <p className="text-text-body text-sm">Monday - Friday: 9:00 AM - 6:00 PM EST</p>
+                <p className="text-text-body text-sm">Monday - Friday: 8:00 AM - 5:00 PM IST</p>
                 <p className="text-text-body text-sm">Weekend: By appointment</p>
               </div>
             </div>
@@ -153,32 +154,38 @@ export default function Contact() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div>
                         <label className="block text-sm text-text-sub mb-2">Service Interested In</label>
-                        <select
-                          name="service" value={formData.service} onChange={handleChange}
-                          className="w-full px-4 py-3 rounded-xl bg-white/[0.05] border border-white/[0.08] text-white focus:outline-none focus:border-accent-indigo/50 transition-colors"
-                        >
-                          <option value="" className="bg-bg-secondary">Select a service</option>
-                          <option value="web" className="bg-bg-secondary">Web Development</option>
-                          <option value="mobile" className="bg-bg-secondary">Mobile Development</option>
-                          <option value="cloud" className="bg-bg-secondary">Cloud & DevOps</option>
-                          <option value="design" className="bg-bg-secondary">UI/UX Design</option>
-                          <option value="ai" className="bg-bg-secondary">AI & ML</option>
-                          <option value="other" className="bg-bg-secondary">Other</option>
-                        </select>
+                        <Dropdown
+                          value={formData.service}
+                          onChange={(value) => setFormData((prev) => ({ ...prev, service: value }))}
+                          options={[
+                            { value: '', label: 'Select a service' },
+                            { value: 'web', label: 'Web Development' },
+                            { value: 'mobile', label: 'Mobile Development' },
+                            { value: 'cloud', label: 'Cloud & DevOps' },
+                            { value: 'design', label: 'UI/UX Design' },
+                            { value: 'ai', label: 'AI & ML' },
+                            { value: 'other', label: 'Other' },
+                          ]}
+                          placeholder="Select a service"
+                          name="service"
+                        />
                       </div>
                       <div>
                         <label className="block text-sm text-text-sub mb-2">Budget Range</label>
-                        <select
-                          name="budget" value={formData.budget} onChange={handleChange}
-                          className="w-full px-4 py-3 rounded-xl bg-white/[0.05] border border-white/[0.08] text-white focus:outline-none focus:border-accent-indigo/50 transition-colors"
-                        >
-                          <option value="" className="bg-bg-secondary">Select budget</option>
-                          <option value="<10k" className="bg-bg-secondary">Under $10,000</option>
-                          <option value="10k-25k" className="bg-bg-secondary">$10,000 - $25,000</option>
-                          <option value="25k-50k" className="bg-bg-secondary">$25,000 - $50,000</option>
-                          <option value="50k-100k" className="bg-bg-secondary">$50,000 - $100,000</option>
-                          <option value=">100k" className="bg-bg-secondary">$100,000+</option>
-                        </select>
+                        <Dropdown
+                          value={formData.budget}
+                          onChange={(value) => setFormData((prev) => ({ ...prev, budget: value }))}
+                          options={[
+                            { value: '', label: 'Select budget' },
+                            { value: '<10k', label: 'Under $10,000' },
+                            { value: '10k-25k', label: '$10,000 - $25,000' },
+                            { value: '25k-50k', label: '$25,000 - $50,000' },
+                            { value: '50k-100k', label: '$50,000 - $100,000' },
+                            { value: '>100k', label: '$100,000+' },
+                          ]}
+                          placeholder="Select budget"
+                          name="budget"
+                        />
                       </div>
                     </div>
 

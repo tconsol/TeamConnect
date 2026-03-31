@@ -11,6 +11,7 @@ const Skills = lazy(() => import('@/pages/Skills'));
 const Portfolio = lazy(() => import('@/pages/Portfolio'));
 const Careers = lazy(() => import('@/pages/Careers'));
 const Applications = lazy(() => import('@/pages/Applications'));
+const Users = lazy(() => import('@/pages/Users'));
 const Leads = lazy(() => import('@/pages/Leads'));
 const Profile = lazy(() => import('@/pages/Profile'));
 
@@ -55,6 +56,7 @@ export const router = createBrowserRouter([
       { path: 'portfolio', element: <SuspenseWrap><Portfolio /></SuspenseWrap> },
       { path: 'careers', element: <SuspenseWrap><Careers /></SuspenseWrap> },
       { path: 'applications', element: <SuspenseWrap><Applications /></SuspenseWrap> },
+      { path: 'users', element: <SuspenseWrap><Users /></SuspenseWrap> },
       { path: 'leads', element: <SuspenseWrap><Leads /></SuspenseWrap> },
       { path: 'profile', element: <SuspenseWrap><Profile /></SuspenseWrap> },
     ],
