@@ -9,6 +9,25 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'animations': ['gsap', 'framer-motion', 'lenis'],
+          'vendor': ['react', 'react-dom', 'react-router-dom'],
+          'api': ['axios', '@tanstack/react-query'],
+        },
+      },
+    },
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true,
+      },
+    },
+    sourcemap: false,
+    cssCodeSplit: true,
+  },
   server: {
     port: 5173,
     proxy: {
@@ -17,5 +36,8 @@ export default defineConfig({
         changeOrigin: true,
       },
     },
+  },
+  define: {
+    __PERFORMANCE_OPTIMIZED__: true,
   },
 });
