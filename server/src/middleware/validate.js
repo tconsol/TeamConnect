@@ -1,4 +1,4 @@
-const { z } = require('zod');
+const { z, ZodError } = require('zod');
 
 const validate = (schema) => (req, res, next) => {
   try {
@@ -9,11 +9,14 @@ const validate = (schema) => (req, res, next) => {
     });
     next();
   } catch (error) {
-    const errors = error.errors.map((e) => ({
-      field: e.path.join('.'),
-      message: e.message,
-    }));
-    return res.status(400).json({ success: false, errors });
+    if (error instanceof ZodError) {
+      const errors = error.errors.map((e) => ({
+        field: e.path.join('.'),
+        message: e.message,
+      }));
+      return res.status(400).json({ success: false, errors });
+    }
+    next(error);
   }
 };
 
@@ -28,11 +31,18 @@ const schemas = {
   createService: z.object({
     body: z.object({
       title: z.string().min(1).max(200),
-      shortDescription: z.string().min(1).max(500),
-      description: z.string().min(1),
-      features: z.array(z.object({ title: z.string(), description: z.string() })).optional(),
-      technologies: z.array(z.string()).optional(),
-      order: z.number().optional(),
+      shortDescription: z.string().min(1, 'Short description is required').max(500),
+      description: z.string().min(1, 'Description is required'),
+      icon: z.string().optional(),
+      features: z.preprocess(
+        (v) => { if (typeof v === 'string') { try { return JSON.parse(v); } catch { return []; } } return v; },
+        z.array(z.union([z.string(), z.object({ title: z.string(), description: z.string().optional() })])).optional()
+      ),
+      technologies: z.preprocess(
+        (v) => { if (typeof v === 'string') { try { return JSON.parse(v); } catch { return []; } } return v; },
+        z.array(z.string()).optional()
+      ),
+      order: z.preprocess((v) => (typeof v === 'string' ? Number(v) : v), z.number().optional()),
     }),
   }),
 

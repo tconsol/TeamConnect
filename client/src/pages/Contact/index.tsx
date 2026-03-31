@@ -1,22 +1,28 @@
 import { Helmet } from 'react-helmet-async';
 import { useState } from 'react';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { cmsQueryOptions } from '@/utils/cmsQueryOptions';
 import { submitContact } from '@/utils/api';
 import { useGsapFadeIn } from '@/hooks/useAnimations';
 import Button from '@/components/ui/Button';
+import { Dropdown } from '@/components/ui/Dropdown';
+import { AuroraTextEffect } from '@/components/ui/AuroraTextEffect';
 import {
   HiOutlineEnvelope,
   HiOutlinePhone,
   HiOutlineMapPin,
 } from 'react-icons/hi2';
 
-const contactInfo = [
-  { icon: HiOutlineEnvelope, label: 'Email', value: 'hello@tconsolutions.com' },
-  { icon: HiOutlinePhone, label: 'Phone', value: '+1 (555) 123-4567' },
-  { icon: HiOutlineMapPin, label: 'Office', value: '123 Innovation Drive, Tech City' },
-];
-
 export default function Contact() {
+  const { data: cms } = useQuery(cmsQueryOptions('contact'));
+  const content = cms?.content as Record<string, string> | undefined;
+
+  const contactInfo = [
+    { icon: HiOutlineEnvelope, label: 'Email', value: content?.email || 'info@tconsolutions.com' },
+    { icon: HiOutlinePhone, label: 'Phone', value: content?.phone || '+91 949 283 6371' },
+    { icon: HiOutlineMapPin, label: 'Office', value: content?.address || '123 Innovation Drive, Tech City' },
+  ];
+
   const [formData, setFormData] = useState({
     name: '', email: '', phone: '', company: '', subject: '', service: '', budget: '', message: '',
   });
@@ -53,7 +59,7 @@ export default function Contact() {
             Contact Us
           </span>
           <h1 className="text-hero font-bold text-text-heading leading-tight mb-6">
-            Let's <span className="gradient-text">Connect</span>
+            Let's <AuroraTextEffect text="Connect" />
           </h1>
           <p className="text-subtitle text-text-body max-w-2xl mx-auto leading-relaxed">
             Have a project in mind? We'd love to hear about it. Get in touch and let's create something amazing together.
@@ -72,17 +78,17 @@ export default function Contact() {
                   <div className="w-12 h-12 rounded-xl bg-accent-indigo/10 flex items-center justify-center shrink-0">
                     <info.icon className="w-6 h-6 text-accent-indigo" />
                   </div>
-                  <div>
+                  <div className="flex-1">
                     <h3 className="text-sm font-semibold text-text-heading">{info.label}</h3>
-                    <p className="text-text-body text-sm mt-1">{info.value}</p>
+                    <p className="text-text-body text-sm mt-1 break-all">{info.value}</p>
                   </div>
                 </div>
               ))}
 
               <div className="glass rounded-2xl p-6">
                 <h3 className="text-sm font-semibold text-text-heading mb-3">Business Hours</h3>
-                <p className="text-text-body text-sm">Monday - Friday: 9:00 AM - 6:00 PM EST</p>
-                <p className="text-text-body text-sm">Weekend: By appointment</p>
+                <p className="text-text-body text-sm">{content?.businessHours || 'Monday - Friday: 9:00 AM - 6:00 PM'}</p>
+                <p className="text-text-body text-sm">{content?.weekendHours || 'Weekend: By appointment'}</p>
               </div>
             </div>
 
@@ -152,32 +158,38 @@ export default function Contact() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div>
                         <label className="block text-sm text-text-sub mb-2">Service Interested In</label>
-                        <select
-                          name="service" value={formData.service} onChange={handleChange}
-                          className="w-full px-4 py-3 rounded-xl bg-white/[0.05] border border-white/[0.08] text-white focus:outline-none focus:border-accent-indigo/50 transition-colors"
-                        >
-                          <option value="" className="bg-bg-secondary">Select a service</option>
-                          <option value="web" className="bg-bg-secondary">Web Development</option>
-                          <option value="mobile" className="bg-bg-secondary">Mobile Development</option>
-                          <option value="cloud" className="bg-bg-secondary">Cloud & DevOps</option>
-                          <option value="design" className="bg-bg-secondary">UI/UX Design</option>
-                          <option value="ai" className="bg-bg-secondary">AI & ML</option>
-                          <option value="other" className="bg-bg-secondary">Other</option>
-                        </select>
+                        <Dropdown
+                          value={formData.service}
+                          onChange={(value) => setFormData((prev) => ({ ...prev, service: value }))}
+                          options={[
+                            { value: '', label: 'Select a service' },
+                            { value: 'web', label: 'Web Development' },
+                            { value: 'mobile', label: 'Mobile Development' },
+                            { value: 'cloud', label: 'Cloud & DevOps' },
+                            { value: 'design', label: 'UI/UX Design' },
+                            { value: 'ai', label: 'AI & ML' },
+                            { value: 'other', label: 'Other' },
+                          ]}
+                          placeholder="Select a service"
+                          name="service"
+                        />
                       </div>
                       <div>
                         <label className="block text-sm text-text-sub mb-2">Budget Range</label>
-                        <select
-                          name="budget" value={formData.budget} onChange={handleChange}
-                          className="w-full px-4 py-3 rounded-xl bg-white/[0.05] border border-white/[0.08] text-white focus:outline-none focus:border-accent-indigo/50 transition-colors"
-                        >
-                          <option value="" className="bg-bg-secondary">Select budget</option>
-                          <option value="<10k" className="bg-bg-secondary">Under $10,000</option>
-                          <option value="10k-25k" className="bg-bg-secondary">$10,000 - $25,000</option>
-                          <option value="25k-50k" className="bg-bg-secondary">$25,000 - $50,000</option>
-                          <option value="50k-100k" className="bg-bg-secondary">$50,000 - $100,000</option>
-                          <option value=">100k" className="bg-bg-secondary">$100,000+</option>
-                        </select>
+                        <Dropdown
+                          value={formData.budget}
+                          onChange={(value) => setFormData((prev) => ({ ...prev, budget: value }))}
+                          options={[
+                            { value: '', label: 'Select budget' },
+                            { value: '<10k', label: 'Under $10,000' },
+                            { value: '10k-25k', label: '$10,000 - $25,000' },
+                            { value: '25k-50k', label: '$25,000 - $50,000' },
+                            { value: '50k-100k', label: '$50,000 - $100,000' },
+                            { value: '>100k', label: '$100,000+' },
+                          ]}
+                          placeholder="Select budget"
+                          name="budget"
+                        />
                       </div>
                     </div>
 

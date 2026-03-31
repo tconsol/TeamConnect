@@ -1,6 +1,6 @@
 require('dotenv').config();
 
-module.exports = {
+const config = {
   port: process.env.PORT || 5000,
   nodeEnv: process.env.NODE_ENV || 'development',
   mongoUri: process.env.MONGO_URI,
@@ -14,7 +14,12 @@ module.exports = {
   gcp: {
     projectId: process.env.GCP_PROJECT_ID,
     bucketName: process.env.GCP_BUCKET_NAME,
-    keyFile: process.env.GCP_KEY_FILE,
+    privateKeyId: process.env.GCP_PRIVATE_KEY_ID,
+    privateKey: process.env.GCP_PRIVATE_KEY
+      ?.replace(/\\n/g, '\n')
+      ?.replace(/^["']|["']$/g, ''),
+    clientEmail: process.env.GCP_CLIENT_EMAIL,
+    clientId: process.env.GCP_CLIENT_ID,
   },
   smtp: {
     host: process.env.SMTP_HOST,
@@ -25,3 +30,17 @@ module.exports = {
   },
   redisUrl: process.env.REDIS_URL,
 };
+
+// Validate required config at startup
+const required = [
+  ['mongoUri', config.mongoUri],
+  ['jwt.accessSecret', config.jwt.accessSecret],
+  ['jwt.refreshSecret', config.jwt.refreshSecret],
+];
+const missing = required.filter(([, val]) => !val).map(([key]) => key);
+if (missing.length > 0) {
+  console.error(`❌ Missing required config: ${missing.join(', ')}`);
+  process.exit(1);
+}
+
+module.exports = config;

@@ -8,12 +8,24 @@ const api = axios.create({
 });
 
 export const fetchCMS = async (page: string) => {
-  const { data } = await api.get(`/cms/${page}`);
+  const { data } = await api.get(`/cms/${page}`, {
+    params: { _ts: Date.now() },
+    headers: {
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      Pragma: 'no-cache',
+      Expires: '0',
+    },
+  });
   return data.data;
 };
 
 export const fetchServices = async () => {
   const { data } = await api.get('/services?active=true');
+  return data.data;
+};
+
+export const fetchSkills = async () => {
+  const { data } = await api.get('/skills?active=true');
   return data.data;
 };
 

@@ -86,7 +86,19 @@ export default function PortfolioDetails() {
               )}
             </div>
 
-            <div className="glass rounded-2xl aspect-video bg-gradient-to-br from-accent-indigo/20 to-accent-blue/10" />
+            <div className="glass rounded-2xl overflow-hidden bg-gradient-to-br from-accent-indigo/20 to-accent-blue/10">
+              {project.thumbnail ? (
+                <img
+                  src={project.thumbnail}
+                  alt={project.title}
+                  className="w-full h-full object-cover aspect-video"
+                />
+              ) : (
+                <div className="aspect-video flex items-center justify-center text-text-muted">
+                  <span>No image available</span>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </section>

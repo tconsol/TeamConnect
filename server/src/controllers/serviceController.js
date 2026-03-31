@@ -58,7 +58,7 @@ exports.update = async (req, res, next) => {
     if (!service) throw new AppError('Service not found', 404);
 
     if (req.file) {
-      await deleteFile(service.image);
+      if (service.image) await deleteFile(service.image);
       req.body.image = await uploadFile(req.file, 'services');
     }
     if (typeof req.body.features === 'string') {
@@ -90,7 +90,7 @@ exports.remove = async (req, res, next) => {
     const service = await Service.findById(req.params.id);
     if (!service) throw new AppError('Service not found', 404);
 
-    await deleteFile(service.image);
+    if (service.image) await deleteFile(service.image);
     await service.deleteOne();
 
     await logAction({

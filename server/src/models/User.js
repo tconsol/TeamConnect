@@ -14,11 +14,18 @@ const userSchema = new mongoose.Schema(
     password: { type: String, required: true, minlength: 8 },
     role: {
       type: String,
-      enum: ['admin', 'editor'],
+      enum: ['admin', 'editor', 'superadmin'],
       default: 'editor',
     },
-    refreshTokens: [String],
+    refreshTokens: [{
+      tokenHash: { type: String, required: true },
+      createdAt: { type: Date, default: Date.now },
+    }],
     isActive: { type: Boolean, default: true },
+    createdBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+    },
   },
   { timestamps: true }
 );

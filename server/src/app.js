@@ -22,7 +22,7 @@ app.use(cors({
 // Rate limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 100,
+  max: 500,
   standardHeaders: true,
   legacyHeaders: false,
   message: { success: false, message: 'Too many requests, please try again later.' },
@@ -36,8 +36,23 @@ app.use(cookieParser());
 
 // Logging
 if (config.nodeEnv !== 'test') {
-  app.use(morgan('combined', {
-    stream: { write: (message) => logger.info(message.trim()) },
+  morgan.token('response-time-ms', (req, res) => {
+    const diff = process.hrtime(req._startAt);
+    return diff ? `${(diff[0] * 1e3 + diff[1] * 1e-6).toFixed(0)}ms` : '-';
+  });
+  app.use(morgan(':method :url :status :response-time-ms', {
+    stream: {
+      write: (msg) => {
+        const parts = msg.trim().split(' ');
+        const [method, url, status, time] = parts;
+        logger.info({
+          message: `${time || ''}`,
+          method,
+          statusCode: status,
+          path: url,
+        });
+      },
+    },
   }));
 }
 

@@ -1,9 +1,14 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getApplications, updateApplicationStatus } from '@/services/api';
-import toast from 'react-hot-toast';
+import { getApplications, updateApplicationStatus, deleteApplication } from '@/services/api';
+import { useToast } from '@/components/ui/Toast';
+import { DeleteDrawer } from '@/components/ui/DeleteDrawer';
+import { Dropdown } from '@/components/ui/Dropdown';
+import { HiOutlineTrash } from 'react-icons/hi2';
 
 const STATUSES = ['pending', 'reviewing', 'shortlisted', 'interviewed', 'offered', 'hired', 'rejected'];
+const STATUS_OPTIONS = STATUSES.map((s) => ({ value: s, label: s.charAt(0).toUpperCase() + s.slice(1) }));
+const FILTER_OPTIONS = [{ value: '', label: 'All Statuses' }, ...STATUS_OPTIONS];
 const statusColors: Record<string, string> = {
   pending: 'bg-yellow-500/10 text-yellow-400',
   reviewing: 'bg-blue-500/10 text-blue-400',
@@ -16,8 +21,11 @@ const statusColors: Record<string, string> = {
 
 export default function Applications() {
   const queryClient = useQueryClient();
+  const toast = useToast();
   const [page, setPage] = useState(1);
   const [statusFilter, setStatusFilter] = useState('');
+  const [deleteDrawerOpen, setDeleteDrawerOpen] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState<{ id: string; name: string } | null>(null);
 
   const { data, isLoading } = useQuery({
     queryKey: ['admin-applications', page.toString(), statusFilter],
@@ -33,24 +41,32 @@ export default function Applications() {
     onError: () => toast.error('Failed to update status'),
   });
 
-  const applications = data?.applications || data || [];
-  const totalPages = data?.totalPages || 1;
+  const deleteMutation = useMutation({
+    mutationFn: deleteApplication,
+    onSuccess: () => {
+      toast.success('Application deleted');
+      queryClient.invalidateQueries({ queryKey: ['admin-applications'] });
+      setDeleteDrawerOpen(false);
+      setItemToDelete(null);
+    },
+    onError: () => toast.error('Failed to delete application'),
+  });
+
+  const applications: any[] = data?.data || [];
+  const totalPages: number = data?.pagination?.pages || 1;
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between flex-wrap gap-4">
         <h1 className="text-2xl font-bold">Applications</h1>
         <div className="flex items-center gap-2">
-          <select
+          <Dropdown
             value={statusFilter}
-            onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
-            className="px-3 py-2 bg-bg-card border border-white/[0.08] rounded-lg text-sm text-gray-300 focus:outline-none focus:border-accent-indigo"
-          >
-            <option value="">All Statuses</option>
-            {STATUSES.map((s) => (
-              <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>
-            ))}
-          </select>
+            onChange={(v) => { setStatusFilter(v); setPage(1); }}
+            options={FILTER_OPTIONS}
+            placeholder="All Statuses"
+            className="min-w-[160px]"
+          />
         </div>
       </div>
 
@@ -58,13 +74,14 @@ export default function Applications() {
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-white/[0.06]">
-                <th className="text-left px-4 py-3 text-gray-400 font-medium">Applicant</th>
-                <th className="text-left px-4 py-3 text-gray-400 font-medium hidden md:table-cell">Email</th>
-                <th className="text-left px-4 py-3 text-gray-400 font-medium hidden lg:table-cell">Job</th>
-                <th className="text-left px-4 py-3 text-gray-400 font-medium">Status</th>
-                <th className="text-left px-4 py-3 text-gray-400 font-medium hidden md:table-cell">Resume</th>
-                <th className="text-left px-4 py-3 text-gray-400 font-medium hidden lg:table-cell">Date</th>
+              <tr style={{ background: 'rgba(99,102,241,0.08)', borderBottom: '1px solid rgba(99,102,241,0.2)' }}>
+                <th className="text-left px-4 py-3 text-gray-300 font-semibold">Applicant</th>
+                <th className="text-left px-4 py-3 text-gray-300 font-semibold hidden md:table-cell">Email</th>
+                <th className="text-left px-4 py-3 text-gray-300 font-semibold hidden lg:table-cell">Job</th>
+                <th className="text-left px-4 py-3 text-gray-300 font-semibold">Status</th>
+                <th className="text-left px-4 py-3 text-gray-300 font-semibold hidden md:table-cell">Resume</th>
+                <th className="text-left px-4 py-3 text-gray-300 font-semibold hidden lg:table-cell">Date</th>
+                <th className="text-right px-4 py-3 text-gray-400 font-medium">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -81,19 +98,17 @@ export default function Applications() {
                 ))
               ) : applications.map((app: any) => (
                 <tr key={app._id} className="border-b border-white/[0.04] hover:bg-white/[0.02]">
-                  <td className="px-4 py-3 font-medium">{app.name}</td>
+                  <td className="px-4 py-3 font-medium text-white">{app.name}</td>
                   <td className="px-4 py-3 text-gray-400 hidden md:table-cell">{app.email}</td>
                   <td className="px-4 py-3 text-gray-400 hidden lg:table-cell">{app.job?.title || '—'}</td>
                   <td className="px-4 py-3">
-                    <select
+                    <Dropdown
                       value={app.status}
-                      onChange={(e) => statusMutation.mutate({ id: app._id, status: e.target.value })}
-                      className={`px-2 py-1 rounded-full text-xs border-0 focus:outline-none cursor-pointer ${statusColors[app.status] || 'bg-gray-500/10 text-gray-400'}`}
-                    >
-                      {STATUSES.map((s) => (
-                        <option key={s} value={s} className="bg-bg-secondary text-white">{s.charAt(0).toUpperCase() + s.slice(1)}</option>
-                      ))}
-                    </select>
+                      onChange={(v) => statusMutation.mutate({ id: app._id, status: v })}
+                      options={STATUS_OPTIONS}
+                      compact
+                      badgeClassName={statusColors[app.status] || 'bg-gray-500/10 text-gray-400'}
+                    />
                   </td>
                   <td className="px-4 py-3 hidden md:table-cell">
                     {app.resumeUrl ? (
@@ -102,6 +117,19 @@ export default function Applications() {
                   </td>
                   <td className="px-4 py-3 text-gray-500 text-xs hidden lg:table-cell">
                     {new Date(app.createdAt).toLocaleDateString()}
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center justify-end gap-2">
+                      <button
+                        onClick={() => {
+                          setItemToDelete({ id: app._id, name: app.name });
+                          setDeleteDrawerOpen(true);
+                        }}
+                        className="p-1.5 text-gray-400 hover:text-red-400 transition-colors"
+                      >
+                        <HiOutlineTrash className="w-4 h-4" />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -133,6 +161,22 @@ export default function Applications() {
           </button>
         </div>
       )}
+
+      {/* Delete Drawer */}
+      <DeleteDrawer
+        isOpen={deleteDrawerOpen}
+        title="Delete Application"
+        description="This action cannot be undone. The application will be permanently removed from the system."
+        itemName={itemToDelete?.name}
+        onConfirm={() => {
+          if (itemToDelete) deleteMutation.mutate(itemToDelete.id);
+        }}
+        onCancel={() => {
+          setDeleteDrawerOpen(false);
+          setItemToDelete(null);
+        }}
+        isDeleting={deleteMutation.isPending}
+      />
     </div>
   );
 }

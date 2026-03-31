@@ -34,6 +34,7 @@ api.interceptors.response.use(
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
         window.location.href = '/login';
+        return Promise.reject(error);
       }
     }
     return Promise.reject(error);
@@ -48,14 +49,26 @@ export const login = async (email: string, password: string) => {
 
 export const logout = async () => {
   const refreshToken = localStorage.getItem('refreshToken');
-  await api.post('/auth/logout', { refreshToken });
-  localStorage.removeItem('accessToken');
-  localStorage.removeItem('refreshToken');
+  try {
+    await api.post('/auth/logout', { refreshToken });
+  } finally {
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+  }
 };
 
 export const getMe = async () => {
   const { data } = await api.get('/auth/me');
   return data.data;
+};
+
+export const changePassword = async (currentPassword: string, newPassword: string) => {
+  const { data } = await api.post('/auth/change-password', { currentPassword, newPassword });
+  if (data.data?.accessToken) {
+    localStorage.setItem('accessToken', data.data.accessToken);
+    localStorage.setItem('refreshToken', data.data.refreshToken);
+  }
+  return data;
 };
 
 // Dashboard
@@ -102,6 +115,30 @@ export const updateService = async (id: string, formData: FormData) => {
 
 export const deleteService = async (id: string) => {
   await api.delete(`/services/${id}`);
+};
+
+// Skills
+export const getSkills = async () => {
+  const { data } = await api.get('/skills');
+  return data.data;
+};
+
+export const createSkill = async (formData: FormData) => {
+  const { data } = await api.post('/skills', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+  return data.data;
+};
+
+export const updateSkill = async (id: string, formData: FormData) => {
+  const { data } = await api.put(`/skills/${id}`, formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+  return data.data;
+};
+
+export const deleteSkill = async (id: string) => {
+  await api.delete(`/skills/${id}`);
 };
 
 // Portfolio
@@ -159,6 +196,11 @@ export const updateApplicationStatus = async (id: string, status: string, notes?
   return data.data;
 };
 
+export const deleteApplication = async (id: string) => {
+  const { data } = await api.delete(`/applications/${id}`);
+  return data.data;
+};
+
 // Leads
 export const getLeads = async (params?: Record<string, string>) => {
   const { data } = await api.get('/leads', { params });
@@ -172,6 +214,27 @@ export const updateLeadStatus = async (id: string, status: string, notes?: strin
 
 export const deleteLead = async (id: string) => {
   await api.delete(`/leads/${id}`);
+};
+
+// Users/Admins
+export const getUsers = async () => {
+  const { data } = await api.get('/users');
+  return data.data;
+};
+
+export const createUser = async (payload: { name: string; email: string; password: string; role: string }) => {
+  const { data } = await api.post('/users', payload);
+  return data.data;
+};
+
+export const updateUser = async (id: string, payload: { name?: string; email?: string; role?: string; password?: string }) => {
+  const { data } = await api.patch(`/users/${id}`, payload);
+  return data.data;
+};
+
+export const deleteUser = async (id: string) => {
+  const { data } = await api.delete(`/users/${id}`);
+  return data.data;
 };
 
 export default api;
