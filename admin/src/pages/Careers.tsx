@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getJobs, createJob, updateJob, deleteJob } from '@/services/api';
 import { useToast } from '@/components/ui/Toast';
@@ -199,9 +200,9 @@ export default function Careers() {
       </div>
 
       {/* Modal */}
-      {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(6px)' }}>
-          <div className="w-full max-w-2xl rounded-2xl" style={{ background: '#0d1025', border: '1px solid rgba(99,102,241,0.2)' }}>
+      {showModal && createPortal(
+        <div className="fixed top-0 left-0 z-50 flex items-center justify-center" style={{ width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(6px)' }}>
+          <div className="w-full max-w-2xl rounded-2xl px-4" style={{ background: '#0d1025', border: '1px solid rgba(99,102,241,0.2)' }}>
 
             {/* Header */}
             <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: '1px solid rgba(99,102,241,0.15)' }}>
@@ -336,7 +337,8 @@ export default function Careers() {
             </form>
 
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
