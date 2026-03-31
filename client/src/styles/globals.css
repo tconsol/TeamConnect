@@ -234,6 +234,21 @@
 
   .container-custom {
     @apply max-w-7xl mx-auto px-6 md:px-8;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* Ensure hero content sizing consistency */
+  .hero-title {
+    font-size-adjust: 0.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Hero section width constraint */
+  section[class*="hero"] {
+    width: 100%;
+    box-sizing: border-box;
   }
 
   /* Tag/badge styles */

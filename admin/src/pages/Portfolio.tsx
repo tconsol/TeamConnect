@@ -259,7 +259,7 @@ export default function Portfolio() {
                     {(thumbnailPreview || existingThumbnail) && (
                       <div className="relative w-full">
                         <img 
-                          src={thumbnailPreview || existingThumbnail} 
+                          src={(thumbnailPreview || existingThumbnail) as string} 
                           alt="Thumbnail preview" 
                           className="w-full h-40 object-cover rounded-lg border border-white/[0.08]" 
                         />
