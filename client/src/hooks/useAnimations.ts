@@ -18,7 +18,7 @@ export const useGsapFadeIn = (options?: {
 
     const children = el.children.length > 1 ? el.children : el;
 
-    gsap.fromTo(
+    const tween = gsap.fromTo(
       children,
       {
         y: options?.y ?? 60,
@@ -40,7 +40,8 @@ export const useGsapFadeIn = (options?: {
     );
 
     return () => {
-      ScrollTrigger.getAll().forEach((t) => t.kill());
+      tween.scrollTrigger?.kill();
+      tween.kill();
     };
   }, []);
 
@@ -54,7 +55,7 @@ export const useParallax = (speed: number = 0.5) => {
     const el = ref.current;
     if (!el) return;
 
-    gsap.to(el, {
+    const tween = gsap.to(el, {
       y: () => speed * 100,
       ease: 'none',
       scrollTrigger: {
@@ -64,6 +65,11 @@ export const useParallax = (speed: number = 0.5) => {
         scrub: true,
       },
     });
+
+    return () => {
+      tween.scrollTrigger?.kill();
+      tween.kill();
+    };
   }, [speed]);
 
   return ref;
@@ -142,6 +148,7 @@ export const useScrollProgress = () => {
 export const useLenis = () => {
   useEffect(() => {
     let lenis: any;
+    let animationId: number;
 
     const initLenis = async () => {
       const Lenis = (await import('lenis')).default;
@@ -153,15 +160,16 @@ export const useLenis = () => {
 
       const raf = (time: number) => {
         lenis.raf(time);
-        requestAnimationFrame(raf);
+        animationId = requestAnimationFrame(raf);
       };
 
-      requestAnimationFrame(raf);
+      animationId = requestAnimationFrame(raf);
     };
 
     initLenis();
 
     return () => {
+      if (animationId) cancelAnimationFrame(animationId);
       lenis?.destroy();
     };
   }, []);

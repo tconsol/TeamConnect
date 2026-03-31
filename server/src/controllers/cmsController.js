@@ -1,10 +1,18 @@
 const CMS = require('../models/CMS');
 const { logAction } = require('../utils/auditLogger');
 
+const setNoStoreHeaders = (res) => {
+  res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.set('Pragma', 'no-cache');
+  res.set('Expires', '0');
+  res.set('Surrogate-Control', 'no-store');
+};
+
 exports.getContent = async (req, res, next) => {
   try {
     const { page } = req.params;
     const content = await CMS.findOne({ page });
+    setNoStoreHeaders(res);
     res.json({ success: true, data: content });
   } catch (error) {
     next(error);
@@ -14,6 +22,7 @@ exports.getContent = async (req, res, next) => {
 exports.getAllContent = async (_req, res, next) => {
   try {
     const content = await CMS.find();
+    setNoStoreHeaders(res);
     res.json({ success: true, data: content });
   } catch (error) {
     next(error);

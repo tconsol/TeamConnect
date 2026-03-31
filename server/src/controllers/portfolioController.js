@@ -62,7 +62,7 @@ exports.update = async (req, res, next) => {
     if (!portfolio) throw new AppError('Portfolio not found', 404);
 
     if (req.file) {
-      await deleteFile(portfolio.thumbnail);
+      if (portfolio.thumbnail) await deleteFile(portfolio.thumbnail);
       req.body.thumbnail = await uploadFile(req.file, 'projects');
     }
     if (typeof req.body.technologies === 'string') {
@@ -94,7 +94,7 @@ exports.remove = async (req, res, next) => {
     const portfolio = await Portfolio.findById(req.params.id);
     if (!portfolio) throw new AppError('Portfolio not found', 404);
 
-    await deleteFile(portfolio.thumbnail);
+    if (portfolio.thumbnail) await deleteFile(portfolio.thumbnail);
     for (const img of portfolio.images || []) {
       await deleteFile(img);
     }

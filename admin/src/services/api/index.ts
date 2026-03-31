@@ -34,6 +34,7 @@ api.interceptors.response.use(
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
         window.location.href = '/login';
+        return Promise.reject(error);
       }
     }
     return Promise.reject(error);
@@ -48,14 +49,26 @@ export const login = async (email: string, password: string) => {
 
 export const logout = async () => {
   const refreshToken = localStorage.getItem('refreshToken');
-  await api.post('/auth/logout', { refreshToken });
-  localStorage.removeItem('accessToken');
-  localStorage.removeItem('refreshToken');
+  try {
+    await api.post('/auth/logout', { refreshToken });
+  } finally {
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+  }
 };
 
 export const getMe = async () => {
   const { data } = await api.get('/auth/me');
   return data.data;
+};
+
+export const changePassword = async (currentPassword: string, newPassword: string) => {
+  const { data } = await api.post('/auth/change-password', { currentPassword, newPassword });
+  if (data.data?.accessToken) {
+    localStorage.setItem('accessToken', data.data.accessToken);
+    localStorage.setItem('refreshToken', data.data.refreshToken);
+  }
+  return data;
 };
 
 // Dashboard
@@ -102,6 +115,30 @@ export const updateService = async (id: string, formData: FormData) => {
 
 export const deleteService = async (id: string) => {
   await api.delete(`/services/${id}`);
+};
+
+// Skills
+export const getSkills = async () => {
+  const { data } = await api.get('/skills');
+  return data.data;
+};
+
+export const createSkill = async (formData: FormData) => {
+  const { data } = await api.post('/skills', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+  return data.data;
+};
+
+export const updateSkill = async (id: string, formData: FormData) => {
+  const { data } = await api.put(`/skills/${id}`, formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+  return data.data;
+};
+
+export const deleteSkill = async (id: string) => {
+  await api.delete(`/skills/${id}`);
 };
 
 // Portfolio

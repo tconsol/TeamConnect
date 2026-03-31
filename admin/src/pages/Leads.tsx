@@ -1,10 +1,13 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getLeads, updateLeadStatus, deleteLead } from '@/services/api';
-import toast from 'react-hot-toast';
+import { useToast } from '@/components/ui/Toast';
+import { Dropdown } from '@/components/ui/Dropdown';
 import { HiOutlineTrash, HiOutlineMagnifyingGlass } from 'react-icons/hi2';
 
 const STATUSES = ['new', 'contacted', 'qualified', 'proposal', 'negotiation', 'won', 'lost'];
+const STATUS_OPTIONS = STATUSES.map((s) => ({ value: s, label: s.charAt(0).toUpperCase() + s.slice(1) }));
+const FILTER_OPTIONS = [{ value: '', label: 'All Statuses' }, ...STATUS_OPTIONS];
 const statusColors: Record<string, string> = {
   new: 'bg-blue-500/10 text-blue-400',
   contacted: 'bg-cyan-500/10 text-cyan-400',
@@ -17,6 +20,7 @@ const statusColors: Record<string, string> = {
 
 export default function Leads() {
   const queryClient = useQueryClient();
+  const toast = useToast();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
@@ -44,8 +48,8 @@ export default function Leads() {
     onError: () => toast.error('Failed to delete'),
   });
 
-  const leads = data?.leads || data || [];
-  const totalPages = data?.totalPages || 1;
+  const leads: any[] = data?.data || [];
+  const totalPages: number = data?.pagination?.pages || 1;
 
   return (
     <div className="space-y-6">
@@ -62,16 +66,13 @@ export default function Leads() {
             className="w-full pl-9 pr-3 py-2 bg-bg-card border border-white/[0.08] rounded-lg text-sm text-white placeholder-gray-500 focus:outline-none focus:border-accent-indigo"
           />
         </div>
-        <select
+        <Dropdown
           value={statusFilter}
-          onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
-          className="px-3 py-2 bg-bg-card border border-white/[0.08] rounded-lg text-sm text-gray-300 focus:outline-none focus:border-accent-indigo"
-        >
-          <option value="">All Statuses</option>
-          {STATUSES.map((s) => (
-            <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>
-          ))}
-        </select>
+          onChange={(v) => { setStatusFilter(v); setPage(1); }}
+          options={FILTER_OPTIONS}
+          placeholder="All Statuses"
+          className="min-w-[160px]"
+        />
       </div>
 
       <div className="bg-bg-card border border-white/[0.06] rounded-xl overflow-hidden">
@@ -108,21 +109,19 @@ export default function Leads() {
                   <td className="px-4 py-3 text-gray-400 hidden lg:table-cell">{lead.service || '—'}</td>
                   <td className="px-4 py-3 text-gray-400 hidden lg:table-cell">{lead.budget || '—'}</td>
                   <td className="px-4 py-3">
-                    <select
+                    <Dropdown
                       value={lead.status}
-                      onChange={(e) => statusMutation.mutate({ id: lead._id, status: e.target.value })}
-                      className={`px-2 py-1 rounded-full text-xs border-0 focus:outline-none cursor-pointer ${statusColors[lead.status] || 'bg-gray-500/10 text-gray-400'}`}
-                    >
-                      {STATUSES.map((s) => (
-                        <option key={s} value={s} className="bg-bg-secondary text-white">{s.charAt(0).toUpperCase() + s.slice(1)}</option>
-                      ))}
-                    </select>
+                      onChange={(v) => statusMutation.mutate({ id: lead._id, status: v })}
+                      options={STATUS_OPTIONS}
+                      compact
+                      badgeClassName={statusColors[lead.status] || 'bg-gray-500/10 text-gray-400'}
+                    />
                   </td>
                   <td className="px-4 py-3 text-gray-500 text-xs hidden md:table-cell">
                     {new Date(lead.createdAt).toLocaleDateString()}
                   </td>
                   <td className="px-4 py-3">
-                    <button onClick={() => removeMutation.mutate(lead._id)} className="p-1.5 text-gray-400 hover:text-red-400 transition-colors">
+                    <button onClick={() => { if (window.confirm('Are you sure you want to delete this lead?')) removeMutation.mutate(lead._id); }} className="p-1.5 text-gray-400 hover:text-red-400 transition-colors">
                       <HiOutlineTrash className="w-4 h-4" />
                     </button>
                   </td>

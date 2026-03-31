@@ -1,26 +1,24 @@
 import { Helmet } from 'react-helmet-async';
+import { useQuery } from '@tanstack/react-query';
 import { useGsapFadeIn } from '@/hooks/useAnimations';
+import { cmsQueryOptions } from '@/utils/cmsQueryOptions';
 import SectionHeading from '@/components/ui/SectionHeading';
+import { AuroraTextEffect } from '@/components/ui/AuroraTextEffect';
 import CTASection from '@/sections/home/CTASection';
+import ThreeDSlider, { type SliderItemData } from '@/components/ui/ThreeDSlider';
+import SkillGlobeSafe from '@/components/ui/SkillGlobeSafe';
 
-const values = [
-  { title: 'Innovation', description: 'We push boundaries and embrace new technologies to stay ahead of the curve.', icon: '💡' },
-  { title: 'Quality', description: 'We deliver nothing less than excellence in every line of code and pixel we craft.', icon: '✨' },
-  { title: 'Integrity', description: 'We build trust through transparency, honesty, and ethical business practices.', icon: '🤝' },
-  { title: 'Collaboration', description: 'We believe the best solutions emerge from diverse perspectives working together.', icon: '🚀' },
-];
-
-const team = [
-  { name: 'Alex Johnson', role: 'CEO & Founder' },
-  { name: 'Sarah Chen', role: 'CTO' },
-  { name: 'Mike Williams', role: 'Lead Designer' },
-  { name: 'Emily Davis', role: 'Project Manager' },
-];
+const valueIcons = ['💡', '✨', '🤝', '🚀'];
 
 export default function About() {
   const valuesRef = useGsapFadeIn({ stagger: 0.1 });
-  const teamRef = useGsapFadeIn({ stagger: 0.1 });
   const storyRef = useGsapFadeIn();
+
+  const { data: cms } = useQuery(cmsQueryOptions('about'));
+
+  const content = cms?.content;
+  const values = content?.values || [];
+  const team = content?.team || [];
 
   return (
     <>
@@ -29,16 +27,17 @@ export default function About() {
         <meta name="description" content="Learn about TCON Solutions — a team of innovators building the future of software." />
       </Helmet>
 
+      <div className="overflow-x-clip">
+
       {/* Hero */}
       <section className="relative pt-40 pb-20 overflow-hidden">
-        <div className="absolute inset-0 bg-glow-indigo opacity-20" />
+        <div className="absolute inset-0 bg-glow-violet opacity-20" />
+        <div className="absolute inset-0 dot-pattern opacity-30" />
         <div className="container-custom relative z-10 text-center">
-          <span className="inline-block px-4 py-1.5 rounded-full glass text-xs font-semibold uppercase tracking-[0.2em] text-accent-indigo mb-6">
-            About Us
-          </span>
-          <h1 className="text-hero font-bold text-text-heading leading-tight mb-6">
+          <span className="tag mb-6">About Us</span>
+          <h1 className="text-hero font-extrabold text-text-heading leading-tight mb-6">
             Building the Future of{' '}
-            <span className="gradient-text">Digital</span>
+            <AuroraTextEffect text="Digital" />
           </h1>
           <p className="text-subtitle text-text-body max-w-2xl mx-auto leading-relaxed">
             We're a team of passionate developers, designers, and strategists who believe in the power of technology to transform businesses.
@@ -47,30 +46,26 @@ export default function About() {
       </section>
 
       {/* Story */}
-      <section className="py-32 bg-bg-secondary">
-        <div ref={storyRef} className="container-custom">
+      <section className="py-32 relative overflow-hidden">
+        <div className="absolute inset-0 bg-bg-secondary" />
+        <div className="absolute inset-0 line-grid opacity-20" />
+        <div ref={storyRef} className="container-custom relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div>
-              <span className="text-xs font-semibold uppercase tracking-[0.2em] text-accent-indigo mb-4 block">Our Story</span>
-              <h2 className="text-title font-bold text-text-heading mb-6">
-                From Startup to Industry Leader
+              <span className="tag mb-4">Our Story</span>
+              <h2 className="text-title font-bold text-text-heading mb-6 mt-4">
+                From Startup to{' '}
+                <AuroraTextEffect text="Industry Leader" />
               </h2>
               <div className="space-y-4 text-text-body leading-relaxed">
-                <p>
-                  Founded with a vision to bridge the gap between design and technology, TCON Solutions has grown from a small startup into a trusted digital partner for businesses worldwide.
-                </p>
-                <p>
-                  Our team combines deep technical expertise with creative thinking to deliver solutions that not only look stunning but also perform flawlessly. We believe that great software is built at the intersection of art and engineering.
-                </p>
-                <p>
-                  Today, we serve clients across industries — from fintech startups to enterprise healthcare platforms — always maintaining our commitment to quality, innovation, and client success.
-                </p>
+                <p>{content?.story || 'Founded with a vision to bridge the gap between innovative technology and real-world business needs, TCON Solutions has grown from a small team of passionate developers into a full-service digital agency.'}</p>
               </div>
             </div>
-            <div className="glass rounded-3xl aspect-square flex items-center justify-center">
-              <div className="text-center">
-                <div className="text-6xl font-bold gradient-text mb-2">5+</div>
-                <div className="text-text-muted">Years of Excellence</div>
+            <div className="glass-card rounded-3xl aspect-square flex items-center justify-center relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-accent-violet/10 to-accent-blue/5" />
+              <div className="relative text-center">
+                <div className="text-7xl font-extrabold gradient-text mb-2">5+</div>
+                <div className="text-text-muted text-sm uppercase tracking-widest">Years of Excellence</div>
               </div>
             </div>
           </div>
@@ -81,18 +76,22 @@ export default function About() {
       <section className="py-32">
         <div className="container-custom">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="glass rounded-2xl p-10 glow-hover transition-all duration-500">
-              <span className="text-4xl mb-6 block">🎯</span>
+            <div className="glass-card rounded-2xl p-10">
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-accent-violet/15 to-accent-blue/10 flex items-center justify-center mb-6">
+                <span className="text-2xl">🎯</span>
+              </div>
               <h3 className="text-2xl font-bold text-text-heading mb-4">Our Mission</h3>
               <p className="text-text-body leading-relaxed">
-                To deliver cutting-edge digital solutions that drive growth, efficiency, and innovation for businesses worldwide. We're committed to turning complex challenges into elegant, scalable solutions.
+                {content?.mission || 'To empower businesses with cutting-edge technology solutions that drive measurable results, foster innovation, and create lasting digital impact.'}
               </p>
             </div>
-            <div className="glass rounded-2xl p-10 glow-hover transition-all duration-500">
-              <span className="text-4xl mb-6 block">🔭</span>
+            <div className="glass-card rounded-2xl p-10">
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-accent-violet/15 to-accent-blue/10 flex items-center justify-center mb-6">
+                <span className="text-2xl">🔭</span>
+              </div>
               <h3 className="text-2xl font-bold text-text-heading mb-4">Our Vision</h3>
               <p className="text-text-body leading-relaxed">
-                To be the most trusted technology partner for businesses seeking digital transformation. We envision a world where technology empowers every organization to reach its full potential.
+                {content?.vision || 'To be the most trusted technology partner for businesses worldwide, known for excellence in execution and relentless pursuit of innovation.'}
               </p>
             </div>
           </div>
@@ -100,13 +99,14 @@ export default function About() {
       </section>
 
       {/* Values */}
-      <section className="py-32 bg-bg-secondary">
-        <div className="container-custom">
-          <SectionHeading label="Values" title="What Drives Us" subtitle="The core principles that guide everything we do." />
+      <section className="py-32 relative overflow-hidden">
+        <div className="absolute inset-0 bg-bg-secondary" />
+        <div className="container-custom relative z-10">
+          <SectionHeading label="Values" title="What Drives Us" subtitle="The core principles that guide everything we do." auroraFrom={2} />
           <div ref={valuesRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {values.map((value) => (
-              <div key={value.title} className="glass rounded-2xl p-8 text-center hover:bg-white/[0.08] transition-all duration-500">
-                <span className="text-4xl mb-4 block">{value.icon}</span>
+            {values.map((value: any, i: number) => (
+              <div key={value.title} className="glass-card rounded-2xl p-8 text-center">
+                <span className="text-4xl mb-4 block">{valueIcons[i % valueIcons.length]}</span>
                 <h3 className="text-lg font-semibold text-text-heading mb-3">{value.title}</h3>
                 <p className="text-text-body text-sm leading-relaxed">{value.description}</p>
               </div>
@@ -115,29 +115,37 @@ export default function About() {
         </div>
       </section>
 
-      {/* Team */}
-      <section className="py-32">
-        <div className="container-custom">
-          <SectionHeading label="Team" title="Meet Our Leaders" subtitle="The brilliant minds behind TCON Solutions." />
-          <div ref={teamRef} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {team.map((member) => (
-              <div key={member.name} className="group glass rounded-2xl overflow-hidden hover:bg-white/[0.08] transition-all duration-500">
-                <div className="aspect-square bg-gradient-to-br from-accent-indigo/10 to-accent-blue/10 flex items-center justify-center">
-                  <div className="w-24 h-24 rounded-full bg-gradient-to-br from-accent-indigo to-accent-blue flex items-center justify-center text-3xl font-bold">
-                    {member.name[0]}
-                  </div>
-                </div>
-                <div className="p-6 text-center">
-                  <h3 className="text-lg font-semibold text-text-heading">{member.name}</h3>
-                  <p className="text-text-muted text-sm mt-1">{member.role}</p>
-                </div>
-              </div>
-            ))}
-          </div>
+      {/* Technologies */}
+      <SkillGlobeSafe />
+
+      {/* Team — 3D Slider */}
+      <section className="py-32 overflow-hidden">
+        <div className="container-custom mb-16">
+          <SectionHeading
+            label="Team"
+            title="Meet Our Leaders"
+            subtitle="The brilliant minds behind TCON Solutions."
+            auroraFrom={2}
+          />
         </div>
+        {team.length > 0 && (
+          <div className="px-4 md:px-8">
+            <ThreeDSlider
+              items={team.map((member: any, i: number): SliderItemData => ({
+                title: member.name,
+                num: String(i + 1).padStart(2, '0'),
+                subtitle: member.role,
+                description: member.bio,
+              }))}
+              speedWheel={0.025}
+              containerStyle={{ height: '460px' }}
+            />
+          </div>
+        )}
       </section>
 
       <CTASection />
+      </div>
     </>
   );
 }

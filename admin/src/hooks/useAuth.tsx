@@ -44,8 +44,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const logout = async () => {
-    await apiLogout();
-    setUser(null);
+    try {
+      await apiLogout();
+    } finally {
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
+      setUser(null);
+    }
   };
 
   return (

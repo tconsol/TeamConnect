@@ -4,6 +4,7 @@ import { useMutation } from '@tanstack/react-query';
 import { submitContact } from '@/utils/api';
 import { useGsapFadeIn } from '@/hooks/useAnimations';
 import Button from '@/components/ui/Button';
+import { AuroraTextEffect } from '@/components/ui/AuroraTextEffect';
 import {
   HiOutlineEnvelope,
   HiOutlinePhone,
@@ -53,7 +54,7 @@ export default function Contact() {
             Contact Us
           </span>
           <h1 className="text-hero font-bold text-text-heading leading-tight mb-6">
-            Let's <span className="gradient-text">Connect</span>
+            Let's <AuroraTextEffect text="Connect" />
           </h1>
           <p className="text-subtitle text-text-body max-w-2xl mx-auto leading-relaxed">
             Have a project in mind? We'd love to hear about it. Get in touch and let's create something amazing together.

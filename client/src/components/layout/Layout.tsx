@@ -9,7 +9,7 @@ export default function Layout() {
     <>
       <ScrollProgress />
       <Navbar />
-      <main className="min-h-screen">
+      <main className="min-h-screen pb-24 lg:pb-0">
         <PageTransition>
           <Outlet />
         </PageTransition>

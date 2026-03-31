@@ -1,21 +1,31 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getServices, createService, updateService, deleteService } from '@/services/api';
-import toast from 'react-hot-toast';
+import { useToast } from '@/components/ui/Toast';
 import { HiOutlinePlus, HiOutlinePencil, HiOutlineTrash, HiOutlineXMark } from 'react-icons/hi2';
 
 interface ServiceForm {
   title: string;
+  shortDescription: string;
   description: string;
   features: string;
   technologies: string;
   icon: string;
 }
 
-const emptyForm: ServiceForm = { title: '', description: '', features: '', technologies: '', icon: '' };
+const emptyForm: ServiceForm = { title: '', shortDescription: '', description: '', features: '', technologies: '', icon: '' };
+
+const toSlug = (value: string) =>
+  value
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-');
 
 export default function Services() {
   const queryClient = useQueryClient();
+  const toast = useToast();
   const [showModal, setShowModal] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<ServiceForm>(emptyForm);
@@ -54,8 +64,9 @@ export default function Services() {
     setEditingId(service._id);
     setForm({
       title: service.title || '',
+      shortDescription: service.shortDescription || '',
       description: service.description || '',
-      features: (service.features || []).join(', '),
+      features: (service.features || []).map((f: any) => typeof f === 'object' ? f.title : String(f)).join(', '),
       technologies: (service.technologies || []).join(', '),
       icon: service.icon || '',
     });
@@ -66,8 +77,10 @@ export default function Services() {
     e.preventDefault();
     const fd = new FormData();
     fd.append('title', form.title);
+    fd.append('shortDescription', form.shortDescription);
     fd.append('description', form.description);
-    fd.append('features', JSON.stringify(form.features.split(',').map((s) => s.trim()).filter(Boolean)));
+    const featureTitles = form.features.split(',').map((s) => s.trim()).filter(Boolean);
+    fd.append('features', JSON.stringify(featureTitles.map((t) => ({ title: t, description: '' }))));
     fd.append('technologies', JSON.stringify(form.technologies.split(',').map((s) => s.trim()).filter(Boolean)));
     fd.append('icon', form.icon);
     if (image) fd.append('image', image);
@@ -76,7 +89,7 @@ export default function Services() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-2xl font-bold">Services</h1>
         <button
           onClick={() => { setForm(emptyForm); setEditingId(null); setShowModal(true); }}
@@ -87,8 +100,8 @@ export default function Services() {
       </div>
 
       {/* Table */}
-      <div className="bg-bg-card border border-white/[0.06] rounded-xl overflow-hidden">
-        <table className="w-full text-sm">
+      <div className="bg-bg-card border border-white/[0.06] rounded-xl overflow-hidden overflow-x-auto">
+        <table className="w-full text-sm min-w-[480px]">
           <thead>
             <tr className="border-b border-white/[0.06]">
               <th className="text-left px-4 py-3 text-gray-400 font-medium">Title</th>
@@ -111,13 +124,13 @@ export default function Services() {
               <tr key={service._id} className="border-b border-white/[0.04] hover:bg-white/[0.02]">
                 <td className="px-4 py-3 font-medium">{service.title}</td>
                 <td className="px-4 py-3 text-gray-400 hidden md:table-cell">{(service.technologies || []).join(', ')}</td>
-                <td className="px-4 py-3 text-gray-500 hidden lg:table-cell">{service.slug}</td>
+                <td className="px-4 py-3 text-gray-500 hidden lg:table-cell">{service.slug || toSlug(service.title || '')}</td>
                 <td className="px-4 py-3">
                   <div className="flex items-center justify-end gap-2">
                     <button onClick={() => openEdit(service)} className="p-1.5 text-gray-400 hover:text-white transition-colors">
                       <HiOutlinePencil className="w-4 h-4" />
                     </button>
-                    <button onClick={() => deleteMutation.mutate(service._id)} className="p-1.5 text-gray-400 hover:text-red-400 transition-colors">
+                    <button onClick={() => { if (window.confirm('Are you sure you want to delete this service?')) deleteMutation.mutate(service._id); }} className="p-1.5 text-gray-400 hover:text-red-400 transition-colors">
                       <HiOutlineTrash className="w-4 h-4" />
                     </button>
                   </div>
@@ -133,41 +146,66 @@ export default function Services() {
 
       {/* Modal */}
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-          <div className="bg-bg-card border border-white/[0.08] rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto p-6 m-4">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-lg font-semibold">{editingId ? 'Edit Service' : 'New Service'}</h2>
-              <button onClick={closeModal} className="text-gray-400 hover:text-white"><HiOutlineXMark className="w-5 h-5" /></button>
-            </div>
-            <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(6px)' }}>
+          <div className="w-full max-w-lg rounded-2xl" style={{ background: '#0d1025', border: '1px solid rgba(99,102,241,0.2)' }}>
+
+            {/* Header */}
+            <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: '1px solid rgba(99,102,241,0.15)' }}>
               <div>
-                <label className="block text-sm text-gray-400 mb-1">Title</label>
-                <input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} required className="w-full px-3 py-2 bg-white/[0.04] border border-white/[0.08] rounded-lg text-white focus:outline-none focus:border-accent-indigo" />
+                <h2 className="text-base font-semibold text-white">{editingId ? 'Edit Service' : 'New Service'}</h2>
+                <p className="text-xs" style={{ color: 'rgba(148,163,184,0.55)', marginTop: 2 }}>
+                  {editingId ? 'Update service details' : 'Fill in the service information'}
+                </p>
               </div>
-              <div>
-                <label className="block text-sm text-gray-400 mb-1">Description</label>
-                <textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} required rows={3} className="w-full px-3 py-2 bg-white/[0.04] border border-white/[0.08] rounded-lg text-white focus:outline-none focus:border-accent-indigo resize-none" />
-              </div>
-              <div>
-                <label className="block text-sm text-gray-400 mb-1">Icon (class name)</label>
-                <input value={form.icon} onChange={(e) => setForm({ ...form, icon: e.target.value })} className="w-full px-3 py-2 bg-white/[0.04] border border-white/[0.08] rounded-lg text-white focus:outline-none focus:border-accent-indigo" />
-              </div>
-              <div>
-                <label className="block text-sm text-gray-400 mb-1">Features (comma separated)</label>
-                <input value={form.features} onChange={(e) => setForm({ ...form, features: e.target.value })} className="w-full px-3 py-2 bg-white/[0.04] border border-white/[0.08] rounded-lg text-white focus:outline-none focus:border-accent-indigo" />
-              </div>
-              <div>
-                <label className="block text-sm text-gray-400 mb-1">Technologies (comma separated)</label>
-                <input value={form.technologies} onChange={(e) => setForm({ ...form, technologies: e.target.value })} className="w-full px-3 py-2 bg-white/[0.04] border border-white/[0.08] rounded-lg text-white focus:outline-none focus:border-accent-indigo" />
-              </div>
-              <div>
-                <label className="block text-sm text-gray-400 mb-1">Image</label>
-                <input type="file" accept="image/*" onChange={(e) => setImage(e.target.files?.[0] || null)} className="w-full text-sm text-gray-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-accent-indigo/10 file:text-accent-indigo file:cursor-pointer" />
-              </div>
-              <button type="submit" disabled={saveMutation.isPending} className="w-full py-2.5 bg-accent-indigo text-white rounded-lg hover:bg-accent-indigo/90 disabled:opacity-50 transition-colors">
-                {saveMutation.isPending ? 'Saving...' : editingId ? 'Update Service' : 'Create Service'}
+              <button onClick={closeModal} className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-white transition-colors" style={{ background: 'rgba(255,255,255,0.06)' }}>
+                <HiOutlineXMark className="w-4 h-4" />
               </button>
+            </div>
+
+            {/* Body */}
+            <form onSubmit={handleSubmit}>
+              <div style={{ maxHeight: 'calc(90vh - 140px)', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 16, padding: '20px 24px 20px' }}>
+                <div>
+                  <label className="block text-xs font-medium mb-1.5" style={{ color: 'rgba(148,163,184,0.7)' }}>Title</label>
+                  <input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} required className="w-full px-3 py-2.5 rounded-lg text-sm text-white focus:outline-none" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }} />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium mb-1.5" style={{ color: 'rgba(148,163,184,0.7)' }}>Short Description</label>
+                  <input value={form.shortDescription} onChange={(e) => setForm({ ...form, shortDescription: e.target.value })} required maxLength={500} placeholder="One-line summary" className="w-full px-3 py-2.5 rounded-lg text-sm text-white focus:outline-none" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }} />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium mb-1.5" style={{ color: 'rgba(148,163,184,0.7)' }}>Description</label>
+                  <textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} required rows={3} className="w-full px-3 py-2.5 rounded-lg text-sm text-white focus:outline-none resize-none" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }} />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium mb-1.5" style={{ color: 'rgba(148,163,184,0.7)' }}>Icon (class name)</label>
+                  <input value={form.icon} onChange={(e) => setForm({ ...form, icon: e.target.value })} className="w-full px-3 py-2.5 rounded-lg text-sm text-white focus:outline-none" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }} />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium mb-1.5" style={{ color: 'rgba(148,163,184,0.7)' }}>Features (comma separated)</label>
+                  <input value={form.features} onChange={(e) => setForm({ ...form, features: e.target.value })} className="w-full px-3 py-2.5 rounded-lg text-sm text-white focus:outline-none" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }} />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium mb-1.5" style={{ color: 'rgba(148,163,184,0.7)' }}>Technologies (comma separated)</label>
+                  <input value={form.technologies} onChange={(e) => setForm({ ...form, technologies: e.target.value })} className="w-full px-3 py-2.5 rounded-lg text-sm text-white focus:outline-none" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }} />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium mb-1.5" style={{ color: 'rgba(148,163,184,0.7)' }}>Image</label>
+                  <input type="file" accept="image/*" onChange={(e) => setImage(e.target.files?.[0] || null)} className="w-full text-sm text-gray-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-indigo-500/10 file:text-indigo-400 file:cursor-pointer" />
+                </div>
+              </div>
+
+              {/* Footer */}
+              <div className="flex items-center justify-end gap-3 px-6 py-4" style={{ borderTop: '1px solid rgba(99,102,241,0.12)' }}>
+                <button type="button" onClick={closeModal} className="px-4 py-2 rounded-lg text-sm transition-colors" style={{ background: 'rgba(255,255,255,0.06)', color: 'rgba(148,163,184,0.8)' }}>
+                  Cancel
+                </button>
+                <button type="submit" disabled={saveMutation.isPending} className="px-5 py-2 rounded-lg text-sm font-medium text-white disabled:opacity-50 transition-all" style={{ background: 'linear-gradient(135deg,#6366F1,#3B82F6)' }}>
+                  {saveMutation.isPending ? 'Saving…' : editingId ? 'Update Service' : 'Create Service'}
+                </button>
+              </div>
             </form>
+
           </div>
         </div>
       )}

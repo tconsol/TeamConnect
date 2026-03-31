@@ -38,6 +38,16 @@ exports.create = async (req, res, next) => {
     if (typeof req.body.benefits === 'string') {
       req.body.benefits = JSON.parse(req.body.benefits);
     }
+    if (typeof req.body.salaryRange === 'string') {
+      req.body.salaryRange = JSON.parse(req.body.salaryRange);
+    }
+    if (req.body.salaryRange) {
+      req.body.salaryRange.currency = 'INR';
+      req.body.salaryRange.period = 'annum';
+    }
+    if (typeof req.body.techStack === 'string') {
+      req.body.techStack = JSON.parse(req.body.techStack);
+    }
 
     const job = await Job.create(req.body);
 
@@ -68,6 +78,16 @@ exports.update = async (req, res, next) => {
     }
     if (typeof req.body.benefits === 'string') {
       req.body.benefits = JSON.parse(req.body.benefits);
+    }
+    if (typeof req.body.salaryRange === 'string') {
+      req.body.salaryRange = JSON.parse(req.body.salaryRange);
+    }
+    if (req.body.salaryRange) {
+      req.body.salaryRange.currency = 'INR';
+      req.body.salaryRange.period = 'annum';
+    }
+    if (typeof req.body.techStack === 'string') {
+      req.body.techStack = JSON.parse(req.body.techStack);
     }
 
     Object.assign(job, req.body);

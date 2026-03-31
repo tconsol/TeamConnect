@@ -1,9 +1,24 @@
 const Application = require('../models/Application');
 const Job = require('../models/Job');
 const { AppError } = require('../middleware/errorHandler');
-const { uploadFile } = require('../services/gcpStorage');
+const { uploadFile, getSignedUrl } = require('../services/gcpStorage');
 const { sendApplicationEmail, sendStatusUpdateEmail } = require('../services/emailService');
 const { logAction } = require('../utils/auditLogger');
+
+async function resolveResumeUrl(url) {
+  if (!url || !url.startsWith('gs://')) return url;
+  try {
+    return await getSignedUrl(url);
+  } catch {
+    return url;
+  }
+}
+
+async function resolveApplicationUrls(app) {
+  const obj = app.toObject ? app.toObject() : { ...app };
+  obj.resumeUrl = await resolveResumeUrl(obj.resumeUrl);
+  return obj;
+}
 
 exports.getAll = async (req, res, next) => {
   try {
@@ -25,9 +40,11 @@ exports.getAll = async (req, res, next) => {
       Application.countDocuments(filter),
     ]);
 
+    const resolved = await Promise.all(applications.map(resolveApplicationUrls));
+
     res.json({
       success: true,
-      data: applications,
+      data: resolved,
       pagination: { page, limit, total, pages: Math.ceil(total / limit) },
     });
   } catch (error) {
@@ -39,7 +56,8 @@ exports.getById = async (req, res, next) => {
   try {
     const application = await Application.findById(req.params.id).populate('job');
     if (!application) throw new AppError('Application not found', 404);
-    res.json({ success: true, data: application });
+    const resolved = await resolveApplicationUrls(application);
+    res.json({ success: true, data: resolved });
   } catch (error) {
     next(error);
   }
@@ -59,12 +77,12 @@ exports.apply = async (req, res, next) => {
       resumeUrl,
     });
 
-    job.applicationCount += 1;
-    await job.save();
+    await Job.updateOne({ _id: job._id }, { $inc: { applicationCount: 1 } });
 
     sendApplicationEmail(application, job).catch(() => {});
 
-    res.status(201).json({ success: true, data: application });
+    const resolved = await resolveApplicationUrls(application);
+    res.status(201).json({ success: true, data: resolved });
   } catch (error) {
     next(error);
   }

@@ -35,4 +35,13 @@ portfolioSchema.pre('save', function (next) {
   next();
 });
 
+portfolioSchema.pre('findOneAndUpdate', function (next) {
+  const update = this.getUpdate();
+  const title = update?.title || update?.$set?.title;
+  if (title) {
+    this.setUpdate({ ...update, slug: slugify(title, { lower: true, strict: true }) });
+  }
+  next();
+});
+
 module.exports = mongoose.model('Portfolio', portfolioSchema);

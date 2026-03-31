@@ -15,9 +15,21 @@ const jobSchema = new mongoose.Schema(
     requirements: [String],
     responsibilities: [String],
     benefits: [String],
-    salaryRange: { min: Number, max: Number, currency: { type: String, default: 'USD' } },
+    salaryRange: {
+      min: Number,
+      max: Number,
+      currency: { type: String, default: 'INR' },
+      period: { type: String, enum: ['annum'], default: 'annum' },
+    },
     isActive: { type: Boolean, default: true },
     applicationCount: { type: Number, default: 0 },
+    techStack: {
+      frontend: [String],
+      backend: [String],
+      databases: [String],
+      frameworks: [String],
+      devTools: [String],
+    },
   },
   { timestamps: true }
 );

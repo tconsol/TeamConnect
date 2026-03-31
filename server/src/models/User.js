@@ -17,7 +17,10 @@ const userSchema = new mongoose.Schema(
       enum: ['admin', 'editor'],
       default: 'editor',
     },
-    refreshTokens: [String],
+    refreshTokens: [{
+      tokenHash: { type: String, required: true },
+      createdAt: { type: Date, default: Date.now },
+    }],
     isActive: { type: Boolean, default: true },
   },
   { timestamps: true }

@@ -1,9 +1,12 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getApplications, updateApplicationStatus } from '@/services/api';
-import toast from 'react-hot-toast';
+import { useToast } from '@/components/ui/Toast';
+import { Dropdown } from '@/components/ui/Dropdown';
 
 const STATUSES = ['pending', 'reviewing', 'shortlisted', 'interviewed', 'offered', 'hired', 'rejected'];
+const STATUS_OPTIONS = STATUSES.map((s) => ({ value: s, label: s.charAt(0).toUpperCase() + s.slice(1) }));
+const FILTER_OPTIONS = [{ value: '', label: 'All Statuses' }, ...STATUS_OPTIONS];
 const statusColors: Record<string, string> = {
   pending: 'bg-yellow-500/10 text-yellow-400',
   reviewing: 'bg-blue-500/10 text-blue-400',
@@ -16,6 +19,7 @@ const statusColors: Record<string, string> = {
 
 export default function Applications() {
   const queryClient = useQueryClient();
+  const toast = useToast();
   const [page, setPage] = useState(1);
   const [statusFilter, setStatusFilter] = useState('');
 
@@ -33,24 +37,21 @@ export default function Applications() {
     onError: () => toast.error('Failed to update status'),
   });
 
-  const applications = data?.applications || data || [];
-  const totalPages = data?.totalPages || 1;
+  const applications: any[] = data?.data || [];
+  const totalPages: number = data?.pagination?.pages || 1;
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between flex-wrap gap-4">
         <h1 className="text-2xl font-bold">Applications</h1>
         <div className="flex items-center gap-2">
-          <select
+          <Dropdown
             value={statusFilter}
-            onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
-            className="px-3 py-2 bg-bg-card border border-white/[0.08] rounded-lg text-sm text-gray-300 focus:outline-none focus:border-accent-indigo"
-          >
-            <option value="">All Statuses</option>
-            {STATUSES.map((s) => (
-              <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>
-            ))}
-          </select>
+            onChange={(v) => { setStatusFilter(v); setPage(1); }}
+            options={FILTER_OPTIONS}
+            placeholder="All Statuses"
+            className="min-w-[160px]"
+          />
         </div>
       </div>
 
@@ -85,15 +86,13 @@ export default function Applications() {
                   <td className="px-4 py-3 text-gray-400 hidden md:table-cell">{app.email}</td>
                   <td className="px-4 py-3 text-gray-400 hidden lg:table-cell">{app.job?.title || '—'}</td>
                   <td className="px-4 py-3">
-                    <select
+                    <Dropdown
                       value={app.status}
-                      onChange={(e) => statusMutation.mutate({ id: app._id, status: e.target.value })}
-                      className={`px-2 py-1 rounded-full text-xs border-0 focus:outline-none cursor-pointer ${statusColors[app.status] || 'bg-gray-500/10 text-gray-400'}`}
-                    >
-                      {STATUSES.map((s) => (
-                        <option key={s} value={s} className="bg-bg-secondary text-white">{s.charAt(0).toUpperCase() + s.slice(1)}</option>
-                      ))}
-                    </select>
+                      onChange={(v) => statusMutation.mutate({ id: app._id, status: v })}
+                      options={STATUS_OPTIONS}
+                      compact
+                      badgeClassName={statusColors[app.status] || 'bg-gray-500/10 text-gray-400'}
+                    />
                   </td>
                   <td className="px-4 py-3 hidden md:table-cell">
                     {app.resumeUrl ? (

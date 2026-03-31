@@ -2,6 +2,23 @@ const nodemailer = require('nodemailer');
 const config = require('../config');
 const logger = require('../config/logger');
 
+const escapeHtml = (str) => {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+};
+
+const maskEmail = (email) => {
+  if (!email) return '***';
+  const [local, domain] = email.split('@');
+  if (!domain) return '***';
+  return `${local[0]}***@${domain}`;
+};
+
 let transporter;
 try {
   transporter = nodemailer.createTransport({
@@ -30,7 +47,7 @@ const sendEmail = async ({ to, subject, html }) => {
       subject,
       html,
     });
-    logger.info(`Email sent to ${to}`);
+    logger.info(`Email sent to ${maskEmail(to)}`);
   } catch (error) {
     logger.error('Email send error:', error.message);
   }
@@ -39,17 +56,17 @@ const sendEmail = async ({ to, subject, html }) => {
 const sendContactEmail = async (lead) => {
   await sendEmail({
     to: config.smtp.user,
-    subject: `New Contact: ${lead.subject}`,
+    subject: `New Contact: ${escapeHtml(lead.subject)}`,
     html: `
       <h2>New Contact Form Submission</h2>
-      <p><strong>Name:</strong> ${lead.name}</p>
-      <p><strong>Email:</strong> ${lead.email}</p>
-      <p><strong>Phone:</strong> ${lead.phone || 'N/A'}</p>
-      <p><strong>Company:</strong> ${lead.company || 'N/A'}</p>
-      <p><strong>Service:</strong> ${lead.service || 'N/A'}</p>
-      <p><strong>Budget:</strong> ${lead.budget || 'N/A'}</p>
+      <p><strong>Name:</strong> ${escapeHtml(lead.name)}</p>
+      <p><strong>Email:</strong> ${escapeHtml(lead.email)}</p>
+      <p><strong>Phone:</strong> ${escapeHtml(lead.phone) || 'N/A'}</p>
+      <p><strong>Company:</strong> ${escapeHtml(lead.company) || 'N/A'}</p>
+      <p><strong>Service:</strong> ${escapeHtml(lead.service) || 'N/A'}</p>
+      <p><strong>Budget:</strong> ${escapeHtml(lead.budget) || 'N/A'}</p>
       <p><strong>Message:</strong></p>
-      <p>${lead.message}</p>
+      <p>${escapeHtml(lead.message)}</p>
     `,
   });
 };
@@ -57,14 +74,14 @@ const sendContactEmail = async (lead) => {
 const sendApplicationEmail = async (application, job) => {
   await sendEmail({
     to: config.smtp.user,
-    subject: `New Application: ${job.title}`,
+    subject: `New Application: ${escapeHtml(job.title)}`,
     html: `
       <h2>New Job Application</h2>
-      <p><strong>Position:</strong> ${job.title}</p>
-      <p><strong>Name:</strong> ${application.name}</p>
-      <p><strong>Email:</strong> ${application.email}</p>
-      <p><strong>Phone:</strong> ${application.phone || 'N/A'}</p>
-      <p><strong>LinkedIn:</strong> ${application.linkedIn || 'N/A'}</p>
+      <p><strong>Position:</strong> ${escapeHtml(job.title)}</p>
+      <p><strong>Name:</strong> ${escapeHtml(application.name)}</p>
+      <p><strong>Email:</strong> ${escapeHtml(application.email)}</p>
+      <p><strong>Phone:</strong> ${escapeHtml(application.phone) || 'N/A'}</p>
+      <p><strong>LinkedIn:</strong> ${escapeHtml(application.linkedIn) || 'N/A'}</p>
     `,
   });
 };
@@ -80,12 +97,12 @@ const sendStatusUpdateEmail = async (email, name, jobTitle, status) => {
 
   await sendEmail({
     to: email,
-    subject: `Application Update: ${jobTitle}`,
+    subject: `Application Update: ${escapeHtml(jobTitle)}`,
     html: `
       <h2>Application Status Update</h2>
-      <p>Dear ${name},</p>
-      <p>${statusMessages[status] || `Your application status has been updated to: ${status}`}</p>
-      <p>Position: ${jobTitle}</p>
+      <p>Dear ${escapeHtml(name)},</p>
+      <p>${statusMessages[status] || `Your application status has been updated to: ${escapeHtml(status)}`}</p>
+      <p>Position: ${escapeHtml(jobTitle)}</p>
       <br/>
       <p>Best regards,<br/>TCON Solutions Team</p>
     `,

@@ -21,7 +21,9 @@ const errorHandler = (err, req, res, _next) => {
 
   if (err.code === 11000) {
     statusCode = 409;
-    const field = Object.keys(err.keyValue)[0];
+    const field = err.keyValue && typeof err.keyValue === 'object'
+      ? Object.keys(err.keyValue)[0] || 'unknown'
+      : 'unknown';
     message = `Duplicate value for ${field}`;
   }
 
@@ -33,9 +35,8 @@ const errorHandler = (err, req, res, _next) => {
   logger.error({
     message: err.message,
     statusCode,
-    stack: err.stack,
-    path: req.path,
     method: req.method,
+    path: req.path,
   });
 
   res.status(statusCode).json({
