@@ -13,5 +13,6 @@ router.post(
   applicationController.apply
 );
 router.patch('/:id/status', authenticate, applicationController.updateStatus);
+router.delete('/:id', authenticate, applicationController.delete);
 
 module.exports = router;

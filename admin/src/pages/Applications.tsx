@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getApplications, updateApplicationStatus } from '@/services/api';
+import { getApplications, updateApplicationStatus, deleteApplication } from '@/services/api';
 import { useToast } from '@/components/ui/Toast';
+import { DeleteDrawer } from '@/components/ui/DeleteDrawer';
 import { Dropdown } from '@/components/ui/Dropdown';
+import { HiOutlineTrash } from 'react-icons/hi2';
 
 const STATUSES = ['pending', 'reviewing', 'shortlisted', 'interviewed', 'offered', 'hired', 'rejected'];
 const STATUS_OPTIONS = STATUSES.map((s) => ({ value: s, label: s.charAt(0).toUpperCase() + s.slice(1) }));
@@ -22,6 +24,8 @@ export default function Applications() {
   const toast = useToast();
   const [page, setPage] = useState(1);
   const [statusFilter, setStatusFilter] = useState('');
+  const [deleteDrawerOpen, setDeleteDrawerOpen] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState<{ id: string; name: string } | null>(null);
 
   const { data, isLoading } = useQuery({
     queryKey: ['admin-applications', page.toString(), statusFilter],
@@ -35,6 +39,17 @@ export default function Applications() {
       queryClient.invalidateQueries({ queryKey: ['admin-applications'] });
     },
     onError: () => toast.error('Failed to update status'),
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: deleteApplication,
+    onSuccess: () => {
+      toast.success('Application deleted');
+      queryClient.invalidateQueries({ queryKey: ['admin-applications'] });
+      setDeleteDrawerOpen(false);
+      setItemToDelete(null);
+    },
+    onError: () => toast.error('Failed to delete application'),
   });
 
   const applications: any[] = data?.data || [];
@@ -66,6 +81,7 @@ export default function Applications() {
                 <th className="text-left px-4 py-3 text-gray-300 font-semibold">Status</th>
                 <th className="text-left px-4 py-3 text-gray-300 font-semibold hidden md:table-cell">Resume</th>
                 <th className="text-left px-4 py-3 text-gray-300 font-semibold hidden lg:table-cell">Date</th>
+                <th className="text-right px-4 py-3 text-gray-400 font-medium">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -102,6 +118,19 @@ export default function Applications() {
                   <td className="px-4 py-3 text-gray-500 text-xs hidden lg:table-cell">
                     {new Date(app.createdAt).toLocaleDateString()}
                   </td>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center justify-end gap-2">
+                      <button
+                        onClick={() => {
+                          setItemToDelete({ id: app._id, name: app.name });
+                          setDeleteDrawerOpen(true);
+                        }}
+                        className="p-1.5 text-gray-400 hover:text-red-400 transition-colors"
+                      >
+                        <HiOutlineTrash className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -132,6 +161,22 @@ export default function Applications() {
           </button>
         </div>
       )}
+
+      {/* Delete Drawer */}
+      <DeleteDrawer
+        isOpen={deleteDrawerOpen}
+        title="Delete Application"
+        description="This action cannot be undone. The application will be permanently removed from the system."
+        itemName={itemToDelete?.name}
+        onConfirm={() => {
+          if (itemToDelete) deleteMutation.mutate(itemToDelete.id);
+        }}
+        onCancel={() => {
+          setDeleteDrawerOpen(false);
+          setItemToDelete(null);
+        }}
+        isDeleting={deleteMutation.isPending}
+      />
     </div>
   );
 }

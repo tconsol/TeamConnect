@@ -43,6 +43,11 @@ const seedCMSContent = {
       subtitle: 'Let\'s discuss how we can help transform your vision into a stunning digital reality.',
       buttonText: 'Start a Conversation',
     },
+    socialLinks: [
+      { platform: 'twitter', href: 'https://twitter.com/tconsolutions' },
+      { platform: 'linkedin', href: 'https://linkedin.com/company/tconsolutions' },
+      { platform: 'instagram', href: 'https://www.instagram.com/tcon.solutions' },
+    ],
   },
   about: {
     title: 'About TCON Solutions',
@@ -438,10 +443,12 @@ async function seedDatabase() {
       console.log(`✅ CMS page '${page}' seeded`);
     }
 
-    // Seed Services
+    // Seed Services (use create() so pre-save hooks generate slugs)
     const existingServices = await Service.countDocuments();
     if (existingServices === 0) {
-      await Service.insertMany(seedServices);
+      for (const serviceData of seedServices) {
+        await Service.create(serviceData);
+      }
       console.log(`✅ ${seedServices.length} services seeded`);
     } else {
       console.log(`⚠️  Services already exist (${existingServices})`);
@@ -450,7 +457,9 @@ async function seedDatabase() {
     // Seed Portfolio
     const existingPortfolios = await Portfolio.countDocuments();
     if (existingPortfolios === 0) {
-      await Portfolio.insertMany(seedPortfolios);
+      for (const portfolioData of seedPortfolios) {
+        await Portfolio.create(portfolioData);
+      }
       console.log(`✅ ${seedPortfolios.length} portfolio items seeded`);
     } else {
       console.log(`⚠️  Portfolio items already exist (${existingPortfolios})`);
@@ -459,7 +468,9 @@ async function seedDatabase() {
     // Seed Jobs
     const existingJobs = await Job.countDocuments();
     if (existingJobs === 0) {
-      await Job.insertMany(seedJobs);
+      for (const jobData of seedJobs) {
+        await Job.create(jobData);
+      }
       console.log(`✅ ${seedJobs.length} jobs seeded`);
     } else {
       console.log(`⚠️  Jobs already exist (${existingJobs})`);
@@ -468,7 +479,9 @@ async function seedDatabase() {
     // Seed Skills
     const existingSkills = await Skill.countDocuments();
     if (existingSkills === 0) {
-      await Skill.insertMany(seedSkills);
+      for (const skillData of seedSkills) {
+        await Skill.create(skillData);
+      }
       console.log(`✅ ${seedSkills.length} skills seeded`);
     } else {
       console.log(`⚠️  Skills already exist (${existingSkills})`);

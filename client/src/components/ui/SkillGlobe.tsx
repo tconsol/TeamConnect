@@ -58,26 +58,7 @@ const ICON_MAP: Record<string, IconType> = {
   SiJava: FaJava,
 };
 
-const FALLBACK_SKILLS: TechCard[] = [
-  { name: 'React', proficiency: 95, color: '#61DAFB', iconKey: 'SiReact', order: 1 },
-  { name: 'Next.js', proficiency: 90, color: '#F8FAFC', iconKey: 'SiNextdotjs', order: 2 },
-  { name: 'TypeScript', proficiency: 92, color: '#3178C6', iconKey: 'SiTypescript', order: 3 },
-  { name: 'Tailwind CSS', proficiency: 95, color: '#38BDF8', iconKey: 'SiTailwindcss', order: 4 },
-  { name: 'Vue.js', proficiency: 88, color: '#42B883', iconKey: 'SiVuedotjs', order: 5 },
-  { name: 'Angular', proficiency: 85, color: '#DD0031', iconKey: 'SiAngular', order: 6 },
-  { name: 'Node.js', proficiency: 93, color: '#6ABB3E', iconKey: 'SiNodedotjs', order: 7 },
-  { name: 'JavaScript', proficiency: 94, color: '#F7DF1E', iconKey: 'SiJavascript', order: 8 },
-  { name: 'Java', proficiency: 87, color: '#EA580C', iconKey: 'FaJava', order: 9 },
-  { name: 'Python', proficiency: 90, color: '#FACC15', iconKey: 'SiPython', order: 10 },
-  { name: 'Go', proficiency: 82, color: '#60A5FA', iconKey: 'SiGo', order: 11 },
-  { name: 'PHP', proficiency: 85, color: '#818CF8', iconKey: 'SiPhp', order: 12 },
-  { name: 'Ruby', proficiency: 80, color: '#E11D48', iconKey: 'SiRuby', order: 13 },
-  { name: 'Flutter', proficiency: 86, color: '#60A5FA', iconKey: 'SiFlutter', order: 14 },
-  { name: 'Swift', proficiency: 84, color: '#FB923C', iconKey: 'SiSwift', order: 15 },
-  { name: 'Kotlin', proficiency: 83, color: '#C084FC', iconKey: 'SiKotlin', order: 16 },
-  { name: 'MongoDB', proficiency: 90, color: '#4ADE80', iconKey: 'SiMongodb', order: 17 },
-  { name: 'PostgreSQL', proficiency: 88, color: '#60A5FA', iconKey: 'SiPostgresql', order: 18 },
-];
+
 
 export default function SkillGlobe() {
   const { data } = useQuery({
@@ -86,7 +67,7 @@ export default function SkillGlobe() {
     refetchOnWindowFocus: true,
   });
 
-  const skills: TechCard[] = (Array.isArray(data) && data.length > 0 ? data : FALLBACK_SKILLS)
+  const skills: TechCard[] = (Array.isArray(data) && data.length > 0 ? data : [])
     .slice()
     .sort((a, b) => (a.order || 0) - (b.order || 0));
 

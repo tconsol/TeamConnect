@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@/components/ui/Toast';
 import { DeleteDrawer } from '@/components/ui/DeleteDrawer';
 import { HiOutlinePlus, HiOutlinePencil, HiOutlineTrash, HiOutlineXMark, HiOutlineEye, HiOutlineEyeSlash } from 'react-icons/hi2';
-import { getUsers, createUser, deleteUser } from '@/services/api';
+import { getUsers, createUser, updateUser, deleteUser } from '@/services/api';
 
 // Types
 interface User {
@@ -20,10 +20,24 @@ export default function Users() {
   const queryClient = useQueryClient();
   const toast = useToast();
   const [showModal, setShowModal] = useState(false);
+  const [editingUser, setEditingUser] = useState<User | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [form, setForm] = useState({ name: '', email: '', password: '', role: 'admin' });
   const [deleteDrawerOpen, setDeleteDrawerOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<{ id: string; name: string } | null>(null);
+
+  const openEdit = (user: User) => {
+    setEditingUser(user);
+    setForm({ name: user.name, email: user.email, password: '', role: user.role });
+    setShowModal(true);
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+    setEditingUser(null);
+    setForm({ name: '', email: '', password: '', role: 'admin' });
+    setShowPassword(false);
+  };
 
   // Get users from API
   const { data: users = [], isLoading } = useQuery({
@@ -39,8 +53,20 @@ export default function Users() {
       setShowModal(false);
       setForm({ name: '', email: '', password: '', role: 'admin' });
     },
-    onError: (error: any) => {
-      toast.error(error?.response?.data?.message || 'Failed to create admin user');
+    onError: () => {
+      toast.error('Failed to create admin user');
+    },
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: ({ id, ...data }: any) => updateUser(id, data),
+    onSuccess: () => {
+      toast.success('Admin user updated successfully');
+      queryClient.invalidateQueries({ queryKey: ['admin-users'] });
+      closeModal();
+    },
+    onError: () => {
+      toast.error('Failed to update admin user');
     },
   });
 
@@ -52,18 +78,28 @@ export default function Users() {
       setDeleteDrawerOpen(false);
       setItemToDelete(null);
     },
-    onError: (error: any) => {
-      toast.error(error?.response?.data?.message || 'Failed to delete admin user');
+    onError: () => {
+      toast.error('Failed to delete admin user');
     },
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.name || !form.email || !form.password) {
-      toast.error('All fields are required');
+    if (!form.name || !form.email) {
+      toast.error('Name and email are required');
       return;
     }
-    createMutation.mutate(form);
+    if (!editingUser && !form.password) {
+      toast.error('Password is required for new users');
+      return;
+    }
+    if (editingUser) {
+      const payload: any = { id: editingUser._id, name: form.name, email: form.email, role: form.role };
+      if (form.password) payload.password = form.password;
+      updateMutation.mutate(payload);
+    } else {
+      createMutation.mutate(form);
+    }
   };
 
   return (
@@ -74,7 +110,7 @@ export default function Users() {
           <p className="text-sm text-gray-500 mt-0.5">Manage admin users and their permissions</p>
         </div>
         <button
-          onClick={() => setShowModal(true)}
+          onClick={() => { setShowModal(true); }}
           className="flex items-center gap-2 px-4 py-2 bg-accent-indigo text-white rounded-lg hover:bg-accent-indigo/90 transition-colors"
         >
           <HiOutlinePlus className="w-4 h-4" /> Create Admin
@@ -127,7 +163,10 @@ export default function Users() {
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center justify-end gap-2">
-                      <button className="p-1.5 text-gray-400 hover:text-white transition-colors">
+                      <button
+                        onClick={() => openEdit(user)}
+                        className="p-1.5 text-gray-400 hover:text-white transition-colors"
+                      >
                         <HiOutlinePencil className="w-4 h-4" />
                       </button>
                       <button
@@ -155,13 +194,13 @@ export default function Users() {
             {/* Header */}
             <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: '1px solid rgba(99,102,241,0.15)' }}>
               <div>
-                <h2 className="text-base font-semibold text-white">Create New Admin</h2>
+                <h2 className="text-base font-semibold text-white">{editingUser ? 'Edit Admin' : 'Create New Admin'}</h2>
                 <p className="text-xs" style={{ color: 'rgba(148,163,184,0.55)', marginTop: 2 }}>
-                  Add a new admin user to manage TCON Solutions
+                  {editingUser ? 'Update admin user details' : 'Add a new admin user to manage TCON Solutions'}
                 </p>
               </div>
               <button
-                onClick={() => setShowModal(false)}
+                onClick={closeModal}
                 className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-white transition-colors"
                 style={{ background: 'rgba(255,255,255,0.06)' }}
               >
@@ -170,96 +209,98 @@ export default function Users() {
             </div>
 
             {/* Body */}
-            <form onSubmit={handleSubmit} style={{ maxHeight: 'calc(90vh - 140px)', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 16, padding: '20px 24px 20px' }}>
-              <div>
-                <label className="block text-xs font-medium mb-1.5" style={{ color: 'rgba(148,163,184,0.7)' }}>
-                  Full Name
-                </label>
-                <input
-                  type="text"
-                  value={form.name}
-                  onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  required
-                  className="w-full px-3 py-2.5 rounded-lg text-sm text-white focus:outline-none"
-                  style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
-                  placeholder="John Doe"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-medium mb-1.5" style={{ color: 'rgba(148,163,184,0.7)' }}>
-                  Email Address
-                </label>
-                <input
-                  type="email"
-                  value={form.email}
-                  onChange={(e) => setForm({ ...form, email: e.target.value })}
-                  required
-                  className="w-full px-3 py-2.5 rounded-lg text-sm text-white focus:outline-none"
-                  style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
-                  placeholder="john@tconsolutions.com"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-medium mb-1.5" style={{ color: 'rgba(148,163,184,0.7)' }}>
-                  Password
-                </label>
-                <div className="relative">
+            <form onSubmit={handleSubmit}>
+              <div style={{ maxHeight: 'calc(90vh - 140px)', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 16, padding: '20px 24px 20px' }}>
+                <div>
+                  <label className="block text-xs font-medium mb-1.5" style={{ color: 'rgba(148,163,184,0.7)' }}>
+                    Full Name
+                  </label>
                   <input
-                    type={showPassword ? 'text' : 'password'}
-                    value={form.password}
-                    onChange={(e) => setForm({ ...form, password: e.target.value })}
+                    type="text"
+                    value={form.name}
+                    onChange={(e) => setForm({ ...form, name: e.target.value })}
                     required
-                    className="w-full px-3 py-2.5 pr-10 rounded-lg text-sm text-white focus:outline-none"
+                    className="w-full px-3 py-2.5 rounded-lg text-sm text-white focus:outline-none"
                     style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
-                    placeholder="••••••••"
+                    placeholder="John Doe"
                   />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-300 transition-colors"
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium mb-1.5" style={{ color: 'rgba(148,163,184,0.7)' }}>
+                    Email Address
+                  </label>
+                  <input
+                    type="email"
+                    value={form.email}
+                    onChange={(e) => setForm({ ...form, email: e.target.value })}
+                    required
+                    className="w-full px-3 py-2.5 rounded-lg text-sm text-white focus:outline-none"
+                    style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
+                    placeholder="john@tconsolutions.com"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium mb-1.5" style={{ color: 'rgba(148,163,184,0.7)' }}>
+                    Password{editingUser ? ' (leave blank to keep unchanged)' : ''}
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      value={form.password}
+                      onChange={(e) => setForm({ ...form, password: e.target.value })}
+                      required={!editingUser}
+                      className="w-full px-3 py-2.5 pr-10 rounded-lg text-sm text-white focus:outline-none"
+                      style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
+                      placeholder="••••••••"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-300 transition-colors"
+                    >
+                      {showPassword ? <HiOutlineEyeSlash className="w-4 h-4" /> : <HiOutlineEye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium mb-1.5" style={{ color: 'rgba(148,163,184,0.7)' }}>
+                    Role
+                  </label>
+                  <select
+                    value={form.role}
+                    onChange={(e) => setForm({ ...form, role: e.target.value })}
+                    className="w-full px-3 py-2.5 rounded-lg text-sm text-white focus:outline-none"
+                    style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
                   >
-                    {showPassword ? <HiOutlineEyeSlash className="w-4 h-4" /> : <HiOutlineEye className="w-4 h-4" />}
-                  </button>
+                    <option value="admin">Admin</option>
+                    <option value="superadmin">Super Admin</option>
+                  </select>
                 </div>
               </div>
 
-              <div>
-                <label className="block text-xs font-medium mb-1.5" style={{ color: 'rgba(148,163,184,0.7)' }}>
-                  Role
-                </label>
-                <select
-                  value={form.role}
-                  onChange={(e) => setForm({ ...form, role: e.target.value })}
-                  className="w-full px-3 py-2.5 rounded-lg text-sm text-white focus:outline-none"
-                  style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
+              {/* Footer */}
+              <div className="flex items-center justify-end gap-3 px-6 py-4" style={{ borderTop: '1px solid rgba(99,102,241,0.12)' }}>
+                <button
+                  type="button"
+                  onClick={closeModal}
+                  className="px-4 py-2 rounded-lg text-sm transition-colors"
+                  style={{ background: 'rgba(255,255,255,0.06)', color: 'rgba(148,163,184,0.8)' }}
                 >
-                  <option value="admin">Admin</option>
-                  <option value="superadmin">Super Admin</option>
-                </select>
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={createMutation.isPending || updateMutation.isPending}
+                  className="px-5 py-2 rounded-lg text-sm font-medium text-white disabled:opacity-50 transition-all"
+                  style={{ background: 'linear-gradient(135deg,#6366F1,#3B82F6)' }}
+                >
+                  {(createMutation.isPending || updateMutation.isPending) ? 'Saving...' : editingUser ? 'Update Admin' : 'Create Admin'}
+                </button>
               </div>
             </form>
-
-            {/* Footer */}
-            <div className="flex items-center justify-end gap-3 px-6 py-4" style={{ borderTop: '1px solid rgba(99,102,241,0.12)' }}>
-              <button
-                type="button"
-                onClick={() => setShowModal(false)}
-                className="px-4 py-2 rounded-lg text-sm transition-colors"
-                style={{ background: 'rgba(255,255,255,0.06)', color: 'rgba(148,163,184,0.8)' }}
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleSubmit}
-                disabled={createMutation.isPending}
-                className="px-5 py-2 rounded-lg text-sm font-medium text-white disabled:opacity-50 transition-all"
-                style={{ background: 'linear-gradient(135deg,#6366F1,#3B82F6)' }}
-              >
-                {createMutation.isPending ? 'Creating...' : 'Create Admin'}
-              </button>
-            </div>
           </div>
         </div>
       )}

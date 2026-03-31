@@ -120,3 +120,25 @@ exports.updateStatus = async (req, res, next) => {
     next(error);
   }
 };
+
+exports.delete = async (req, res, next) => {
+  try {
+    const application = await Application.findById(req.params.id);
+    if (!application) throw new AppError('Application not found', 404);
+
+    await Application.findByIdAndDelete(req.params.id);
+
+    await logAction({
+      user: req.user._id,
+      action: 'delete',
+      resource: 'application',
+      resourceId: application._id,
+      details: { email: application.email, job: application.job },
+      ip: req.ip,
+    });
+
+    res.json({ success: true, message: 'Application deleted successfully', data: { id: req.params.id } });
+  } catch (error) {
+    next(error);
+  }
+};

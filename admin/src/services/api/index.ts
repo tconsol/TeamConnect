@@ -196,6 +196,11 @@ export const updateApplicationStatus = async (id: string, status: string, notes?
   return data.data;
 };
 
+export const deleteApplication = async (id: string) => {
+  const { data } = await api.delete(`/applications/${id}`);
+  return data.data;
+};
+
 // Leads
 export const getLeads = async (params?: Record<string, string>) => {
   const { data } = await api.get('/leads', { params });
@@ -219,6 +224,11 @@ export const getUsers = async () => {
 
 export const createUser = async (payload: { name: string; email: string; password: string; role: string }) => {
   const { data } = await api.post('/users', payload);
+  return data.data;
+};
+
+export const updateUser = async (id: string, payload: { name?: string; email?: string; role?: string; password?: string }) => {
+  const { data } = await api.patch(`/users/${id}`, payload);
   return data.data;
 };
 

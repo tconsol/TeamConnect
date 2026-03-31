@@ -37,16 +37,13 @@ exports.createUser = async (req, res, next) => {
       });
     }
 
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Create user
+    // Create user — password hashing handled by pre-save hook in User model
     const user = new User({
       name,
       email,
-      password: hashedPassword,
+      password,
       role: role || 'admin',
-      createdBy: req.user?._id, // Track who created this user
+      createdBy: req.user?._id,
     });
 
     await user.save();
@@ -62,10 +59,37 @@ exports.createUser = async (req, res, next) => {
       },
     });
 
-    res.json({
-      success: true,
-      data: user.toObject({ transform: (doc, ret) => { delete ret.password; return ret; } }),
+    res.json({ success: true, data: user });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Update user
+exports.updateUser = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { name, email, role, password } = req.body;
+
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    if (name) user.name = name;
+    if (email) user.email = email;
+    if (role) user.role = role;
+    if (password) user.password = password; // pre-save hook handles hashing
+
+    await user.save();
+
+    await AuditLog.create({
+      action: 'UPDATE_USER',
+      user: req.user?._id,
+      details: { userId: user._id, email: user.email, role: user.role },
     });
+
+    res.json({ success: true, data: user });
   } catch (error) {
     next(error);
   }
