@@ -158,7 +158,7 @@ export default function Footer() {
       <div className="container-custom relative z-10">
         {/* Main Footer Content */}
         <div className="py-16 lg:py-20">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-12">
 
             {/* Brand column */}
             <div className="lg:col-span-4">
