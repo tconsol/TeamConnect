@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { HelmetProvider } from 'react-helmet-async';
 import { router } from '@/routes';
 import { useLenis } from '@/hooks/useAnimations';
+import { usePrefetchPages } from '@/hooks/usePrefetchPages';
 import CustomCursor from '@/components/ui/CustomCursor';
 
 const queryClient = new QueryClient({
@@ -16,14 +17,23 @@ const queryClient = new QueryClient({
   },
 });
 
-function App() {
+function AppContent() {
   useLenis();
+  usePrefetchPages();
 
+  return (
+    <>
+      <CustomCursor />
+      <RouterProvider router={router} />
+    </>
+  );
+}
+
+function App() {
   return (
     <HelmetProvider>
       <QueryClientProvider client={queryClient}>
-        <CustomCursor />
-        <RouterProvider router={router} />
+        <AppContent />
       </QueryClientProvider>
     </HelmetProvider>
   );

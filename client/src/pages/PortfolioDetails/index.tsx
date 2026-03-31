@@ -3,12 +3,10 @@ import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { fetchPortfolioBySlug } from '@/utils/api';
 import { PageSkeleton } from '@/components/ui/Skeleton';
-import { useGsapFadeIn } from '@/hooks/useAnimations';
-import { HiArrowLeft } from 'react-icons/hi2';
+import { HiArrowLeft, HiArrowTopRightOnSquare } from 'react-icons/hi2';
 
 export default function PortfolioDetails() {
   const { slug } = useParams<{ slug: string }>();
-  const ref = useGsapFadeIn();
 
   const { data: project, isLoading, error } = useQuery({
     queryKey: ['portfolio', slug],
@@ -24,8 +22,8 @@ export default function PortfolioDetails() {
         <div className="text-center">
           <h2 className="text-3xl font-bold text-text-heading mb-4">Project Not Found</h2>
           <p className="text-text-body mb-8">The project you're looking for doesn't exist or has been removed.</p>
-          <Link to="/portfolio" className="text-accent-indigo hover:text-accent-blue transition-colors">
-            ← Back to Portfolio
+          <Link to="/portfolio" className="inline-flex items-center gap-2 text-accent-indigo hover:text-accent-blue transition-colors">
+            <HiArrowLeft className="w-4 h-4" /> Back to Portfolio
           </Link>
         </div>
       </div>
@@ -39,101 +37,186 @@ export default function PortfolioDetails() {
         <meta name="description" content={project.shortDescription} />
       </Helmet>
 
-      {/* Hero */}
-      <section className="relative pt-32 pb-16">
-        <div className="absolute inset-0 bg-glow-indigo opacity-20" />
-        <div ref={ref} className="container-custom relative z-10">
+      {/* Hero: title + meta */}
+      <section className="relative pt-28 pb-10 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-accent-indigo/10 via-transparent to-transparent pointer-events-none" />
+        <div className="container-custom relative z-10">
           <Link
             to="/portfolio"
-            className="inline-flex items-center gap-2 text-text-muted hover:text-white transition-colors mb-8"
+            className="inline-flex items-center gap-2 text-text-muted hover:text-white transition-colors mb-8 group"
           >
-            <HiArrowLeft className="w-4 h-4" />
+            <HiArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
             Back to Portfolio
           </Link>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
-            <div>
-              <span className="text-xs font-semibold text-accent-indigo uppercase tracking-wider">
-                {project.category}
-              </span>
-              <h1 className="text-display font-bold text-text-heading mt-2 mb-4">{project.title}</h1>
-              {project.client && (
-                <p className="text-text-sub mb-2">
-                  <span className="text-text-muted">Client:</span> {project.client}
-                </p>
+          <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 mb-8">
+            <div className="max-w-3xl">
+              {project.category && (
+                <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-accent-indigo/10 text-accent-indigo border border-accent-indigo/20 mb-4">
+                  {project.category}
+                </span>
               )}
-              <p className="text-text-body leading-relaxed mb-6">{project.description || project.shortDescription}</p>
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-text-heading leading-tight mb-4">
+                {project.title}
+              </h1>
+              <p className="text-base text-text-body max-w-xl leading-relaxed">{project.shortDescription}</p>
+            </div>
+            {project.liveUrl && (
+              <a
+                href={project.liveUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="shrink-0 inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-gradient-to-r from-accent-indigo to-accent-blue text-white text-sm font-semibold hover:shadow-lg hover:shadow-accent-indigo/30 hover:-translate-y-0.5 transition-all"
+              >
+                Live Site <HiArrowTopRightOnSquare className="w-4 h-4" />
+              </a>
+            )}
+          </div>
 
-              {project.technologies?.length > 0 && (
-                <div className="flex flex-wrap gap-2 mb-6">
-                  {project.technologies.map((tech: string) => (
-                    <span key={tech} className="px-3 py-1 rounded-full text-xs glass text-text-sub">
-                      {tech}
-                    </span>
-                  ))}
+          {/* Meta strip */}
+          <div className="flex flex-wrap items-center gap-8 border-t border-white/[0.06] pt-5">
+            {project.client && (
+              <div>
+                <span className="block text-[10px] uppercase tracking-widest mb-1 text-text-muted/60">Client</span>
+                <span className="text-text-sub font-medium text-sm">{project.client}</span>
+              </div>
+            )}
+            {project.year && (
+              <div>
+                <span className="block text-[10px] uppercase tracking-widest mb-1 text-text-muted/60">Year</span>
+                <span className="text-text-sub font-medium text-sm">{project.year}</span>
+              </div>
+            )}
+            {project.category && (
+              <div>
+                <span className="block text-[10px] uppercase tracking-widest mb-1 text-text-muted/60">Category</span>
+                <span className="text-text-sub font-medium text-sm">{project.category}</span>
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* Image + Sidebar row */}
+      <section className="pb-16">
+        <div className="container-custom">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+            {/* Image — takes 2 cols */}
+            <div className="lg:col-span-2">
+              {project.thumbnail ? (
+                <div className="rounded-2xl overflow-hidden w-full shadow-2xl shadow-black/40 max-h-96">
+                  <img
+                    src={project.thumbnail}
+                    alt={project.title}
+                    className="w-full h-auto object-cover object-center"
+                  />
                 </div>
-              )}
-
-              {project.liveUrl && (
-                <a
-                  href={project.liveUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-accent-indigo to-accent-blue text-white font-semibold hover:shadow-lg hover:shadow-accent-indigo/25 transition-all"
-                >
-                  Visit Live Site →
-                </a>
+              ) : (
+                <div className="rounded-2xl w-full aspect-video bg-gradient-to-br from-accent-indigo/20 to-accent-blue/10 flex items-center justify-center text-text-muted">
+                  No image available
+                </div>
               )}
             </div>
 
-            <div className="glass rounded-2xl overflow-hidden bg-gradient-to-br from-accent-indigo/20 to-accent-blue/10">
-              {project.thumbnail ? (
-                <img
-                  src={project.thumbnail}
-                  alt={project.title}
-                  className="w-full h-full object-cover aspect-video"
-                />
-              ) : (
-                <div className="aspect-video flex items-center justify-center text-text-muted">
-                  <span>No image available</span>
+            {/* Sticky sidebar — 1 col */}
+            <div className="sticky top-28 self-start space-y-5">
+              {/* Tech stack */}
+              {project.technologies?.length > 0 && (
+                <div className="glass-card rounded-2xl p-6">
+                  <h3 className="text-[10px] font-semibold text-text-heading uppercase tracking-wider mb-4">Tech Stack</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {project.technologies.map((tech: string) => (
+                      <span
+                        key={tech}
+                        className="px-3 py-1.5 rounded-lg text-xs font-medium border border-white/[0.08] text-text-sub bg-white/[0.04] hover:border-accent-indigo/40 hover:text-accent-indigo transition-colors cursor-default"
+                      >
+                        {tech}
+                      </span>
+                    ))}
+                  </div>
                 </div>
               )}
+
+              {/* CTA */}
+              <div className="glass-card rounded-2xl p-6 bg-gradient-to-br from-accent-indigo/10 to-accent-blue/5">
+                <h3 className="text-sm font-semibold text-text-heading mb-1">Like what you see?</h3>
+                <p className="text-text-muted text-xs mb-4 leading-relaxed">Let's build something amazing together.</p>
+                <Link
+                  to="/contact"
+                  className="block text-center px-4 py-2.5 rounded-xl bg-gradient-to-r from-accent-indigo to-accent-blue text-white text-sm font-semibold hover:shadow-lg hover:shadow-accent-indigo/25 hover:-translate-y-0.5 transition-all"
+                >
+                  Start a Project
+                </Link>
+              </div>
+
+              <Link
+                to="/portfolio"
+                className="inline-flex items-center gap-2 text-text-muted hover:text-white text-sm transition-colors group"
+              >
+                <HiArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+                All Projects
+              </Link>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Details */}
-      <section className="py-20 bg-bg-secondary">
-        <div className="container-custom">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {project.challenges && (
-              <div className="glass rounded-2xl p-8">
-                <h3 className="text-lg font-semibold text-text-heading mb-4">Challenge</h3>
-                <p className="text-text-body text-sm leading-relaxed">{project.challenges}</p>
-              </div>
-            )}
-            {project.solution && (
-              <div className="glass rounded-2xl p-8">
-                <h3 className="text-lg font-semibold text-text-heading mb-4">Solution</h3>
-                <p className="text-text-body text-sm leading-relaxed">{project.solution}</p>
-              </div>
-            )}
-            {project.results && (
-              <div className="glass rounded-2xl p-8">
-                <h3 className="text-lg font-semibold text-text-heading mb-4">Results</h3>
-                <p className="text-text-body text-sm leading-relaxed">{project.results}</p>
-              </div>
-            )}
-          </div>
+      {/* Challenge / Solution / Results */}
+      <section className="py-16">
+        <div className="container-custom space-y-16">
 
+          {(project.challenges || project.solution || project.results) && (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {project.challenges && (
+                <div className="glass-card rounded-2xl p-8 border-t-2 border-accent-violet">
+                  <span className="w-8 h-8 rounded-lg bg-accent-violet/20 flex items-center justify-center text-accent-violet font-bold text-xs mb-4">01</span>
+                  <h3 className="text-base font-semibold text-text-heading mb-3">The Challenge</h3>
+                  <p className="text-text-body text-sm leading-relaxed">{project.challenges}</p>
+                </div>
+              )}
+              {project.solution && (
+                <div className="glass-card rounded-2xl p-8 border-t-2 border-accent-cyan">
+                  <span className="w-8 h-8 rounded-lg bg-accent-cyan/20 flex items-center justify-center text-accent-cyan font-bold text-xs mb-4">02</span>
+                  <h3 className="text-base font-semibold text-text-heading mb-3">Our Solution</h3>
+                  <p className="text-text-body text-sm leading-relaxed">{project.solution}</p>
+                </div>
+              )}
+              {project.results && (
+                <div className="glass-card rounded-2xl p-8 border-t-2 border-accent-blue">
+                  <span className="w-8 h-8 rounded-lg bg-accent-blue/20 flex items-center justify-center text-accent-blue font-bold text-xs mb-4">03</span>
+                  <h3 className="text-base font-semibold text-text-heading mb-3">The Results</h3>
+                  <p className="text-text-body text-sm leading-relaxed">{project.results}</p>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* About */}
+          {(project.description || project.shortDescription) && (
+            <div className="max-w-3xl">
+              <h2 className="text-2xl font-bold text-text-heading mb-5">About This Project</h2>
+              <p className="text-text-body leading-relaxed text-base whitespace-pre-line">
+                {project.description || project.shortDescription}
+              </p>
+            </div>
+          )}
+
+          {/* Testimonial */}
           {project.testimonial?.quote && (
-            <div className="mt-16 glass rounded-2xl p-10 text-center max-w-3xl mx-auto">
-              <p className="text-xl text-text-sub italic leading-relaxed mb-4">
+            <div className="relative glass-card rounded-2xl p-10 overflow-hidden max-w-3xl">
+              <div className="absolute top-2 right-4 text-[120px] leading-none text-accent-indigo/10 font-serif select-none">"</div>
+              <p className="text-xl text-text-sub italic leading-relaxed mb-6 relative z-10">
                 "{project.testimonial.quote}"
               </p>
-              <p className="text-text-heading font-semibold">{project.testimonial.author}</p>
-              <p className="text-text-muted text-sm">{project.testimonial.role}</p>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-accent-indigo to-accent-blue flex items-center justify-center text-white font-bold text-sm shrink-0">
+                  {project.testimonial.author?.[0]}
+                </div>
+                <div>
+                  <p className="text-text-heading font-semibold text-sm">{project.testimonial.author}</p>
+                  <p className="text-text-muted text-xs">{project.testimonial.role}</p>
+                </div>
+              </div>
             </div>
           )}
         </div>
