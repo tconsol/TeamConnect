@@ -395,6 +395,25 @@ export default function Skills() {
         </div>,
         document.body
       )}
+
+      {deleteDrawerOpen && itemToDelete && (
+        <DeleteDrawer
+          isOpen={deleteDrawerOpen}
+          title="Delete Skill"
+          description="This skill will be permanently removed. This action cannot be undone."
+          itemName={itemToDelete.name}
+          onConfirm={() => {
+            if (itemToDelete) {
+              deleteMutation.mutate(itemToDelete.id);
+            }
+          }}
+          onCancel={() => {
+            setDeleteDrawerOpen(false);
+            setItemToDelete(null);
+          }}
+          isDeleting={deleteMutation.isPending}
+        />
+      )}
     </div>
   );
 }

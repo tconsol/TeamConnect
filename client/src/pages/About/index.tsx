@@ -136,6 +136,7 @@ export default function About() {
                 num: String(i + 1).padStart(2, '0'),
                 subtitle: member.role,
                 description: member.bio,
+                image: member.image,
               }))}
               speedWheel={0.025}
               containerStyle={{ height: '460px' }}

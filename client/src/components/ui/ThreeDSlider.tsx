@@ -1,10 +1,83 @@
 import { useState, useEffect, useRef } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import { HiXMark } from 'react-icons/hi2';
+
+function DefaultCard({ item, isActive }: { item: SliderItemData; isActive: boolean }) {
+  const [isHovered, setIsHovered] = useState(false);
+  const imgSrc = item.image || item.imageUrl;
+  const showBio = isHovered || isActive;
+
+  return (
+    <div
+      className="w-full h-full rounded-3xl overflow-hidden relative"
+      style={{ border: `1px solid ${isActive ? 'rgba(139,92,246,0.45)' : 'rgba(255,255,255,0.07)'}` }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      {/* Full-card image */}
+      {imgSrc ? (
+        <img
+          src={imgSrc}
+          alt={item.title}
+          className="absolute inset-0 w-full h-full object-cover object-center"
+          onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
+        />
+      ) : (
+        <div
+          className="absolute inset-0 flex items-center justify-center text-7xl font-extrabold"
+          style={{ background: 'linear-gradient(135deg, rgba(139,92,246,0.25), rgba(59,130,246,0.15))', color: 'rgba(255,255,255,0.12)' }}
+        >
+          {item.title[0]}
+        </div>
+      )}
+
+      {/* Dark scrim so text is always readable */}
+      <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(5,7,20,0.5) 60%, rgba(5,7,20,0.1) 100%)' }} />
+
+      {/* Top badges */}
+      <div className="absolute top-3 left-4 right-4 flex items-center justify-between z-10">
+        <div
+          className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-extrabold text-white shadow-lg flex-shrink-0"
+          style={{ background: 'linear-gradient(135deg, #8B5CF6, #3B82F6)' }}
+        >
+          {item.title[0]}
+        </div>
+        <span className="text-xs font-mono text-white/30">{item.num}</span>
+      </div>
+
+      {/* Bottom glassy content */}
+      <div
+        className="absolute bottom-0 left-0 right-0 z-10 px-5 pt-4 pb-5 rounded-b-3xl"
+        style={{
+          background: 'rgba(93, 97, 117, 0.15)',
+          backdropFilter: 'blur(5px)',
+          WebkitBackdropFilter: 'blur(5px)',
+        }}
+      >
+        <p className="text-xs text-indigo-400 uppercase tracking-wider font-semibold mb-1">{item.subtitle}</p>
+        <h3 className="text-lg font-bold text-white leading-tight">{item.title}</h3>
+
+        {/* Bio - shown on hover or when active */}
+        <div
+          className="overflow-hidden transition-all duration-400"
+          style={{ maxHeight: showBio ? '100px' : '0px', opacity: showBio ? 1 : 0, transitionDuration: '350ms' }}
+        >
+          {item.description && (
+            <p className="text-xs text-gray-300 leading-relaxed pt-2 line-clamp-3">
+              {item.description}
+            </p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export interface SliderItemData {
   title: string;
   num: string;
   imageUrl?: string;
+  image?: string;
   subtitle?: string;
   description?: string;
   data?: Record<string, unknown>;
@@ -96,41 +169,7 @@ export default function ThreeDSlider({
   };
 
   const defaultCard = (item: SliderItemData, isActive: boolean) => (
-    <div
-      className="w-full h-full flex flex-col justify-end p-6 rounded-3xl overflow-hidden relative"
-      style={{
-        background: isActive
-          ? 'linear-gradient(135deg, rgba(139,92,246,0.15) 0%, rgba(59,130,246,0.1) 100%)'
-          : 'linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%)',
-        border: `1px solid ${isActive ? 'rgba(139,92,246,0.3)' : 'rgba(255,255,255,0.07)'}`,
-      }}
-    >
-      {/* Avatar */}
-      <div className="absolute top-6 left-6">
-        <div
-          className="w-16 h-16 rounded-full flex items-center justify-center text-2xl font-extrabold text-white"
-          style={{ background: 'linear-gradient(135deg, #8B5CF6, #3B82F6)' }}
-        >
-          {item.title[0]}
-        </div>
-      </div>
-
-      {/* Number badge */}
-      <div className="absolute top-6 right-6 text-xs font-mono text-text-muted opacity-60">
-        {item.num}
-      </div>
-
-      {/* Content */}
-      <div>
-        <p className="text-xs text-text-muted uppercase tracking-wider mb-1">{item.subtitle}</p>
-        <h3 className="text-xl font-bold text-text-heading mb-2">{item.title}</h3>
-        {item.description && (
-          <p className="text-xs text-text-body leading-relaxed line-clamp-3 opacity-80">
-            {item.description}
-          </p>
-        )}
-      </div>
-    </div>
+    <DefaultCard item={item} isActive={isActive} />
   );
 
   return (
@@ -170,7 +209,7 @@ export default function ThreeDSlider({
               }
             }}
           >
-            <div className="w-72 h-96 pointer-events-none">
+            <div className="w-72 h-96" style={{ pointerEvents: isActive ? 'auto' : 'none' }}>
               {renderCard ? renderCard(item, isActive) : defaultCard(item, isActive)}
             </div>
           </motion.div>

@@ -138,8 +138,10 @@ function buildOrbits(links: Array<{ platform: string; href: string }>): OrbitCon
 
 export default function Footer() {
   const { data: homeCMS } = useQuery(cmsQueryOptions('home'));
+  const { data: aboutCMS } = useQuery(cmsQueryOptions('about'));
   const socialLinks = (homeCMS?.content?.socialLinks as Array<{ platform: string; href: string }> | undefined);
   const orbits = socialLinks?.length ? buildOrbits(socialLinks) : [];
+  const teamMembers = (aboutCMS?.content?.team as Array<{ name: string; role: string; image?: string }> | undefined);
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -177,6 +179,8 @@ export default function Footer() {
                 </div>
               </div>
               )}
+
+
             </div>
 
             {/* Link columns */}

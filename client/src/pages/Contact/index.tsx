@@ -78,9 +78,9 @@ export default function Contact() {
                   <div className="w-12 h-12 rounded-xl bg-accent-indigo/10 flex items-center justify-center shrink-0">
                     <info.icon className="w-6 h-6 text-accent-indigo" />
                   </div>
-                  <div>
+                  <div className="flex-1">
                     <h3 className="text-sm font-semibold text-text-heading">{info.label}</h3>
-                    <p className="text-text-body text-sm mt-1">{info.value}</p>
+                    <p className="text-text-body text-sm mt-1 break-all">{info.value}</p>
                   </div>
                 </div>
               ))}

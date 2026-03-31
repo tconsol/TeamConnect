@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useId } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getCMSContent, updateCMSContent } from '@/services/api';
 import { useToast } from '@/components/ui/Toast';
-import { HiOutlinePlus, HiOutlineTrash, HiOutlineChevronDown, HiOutlineChevronUp } from 'react-icons/hi2';
+import { Dropdown, type DropdownOption } from '@/components/ui/Dropdown';
+import { HiOutlinePlus, HiOutlineTrash, HiOutlineChevronDown, HiOutlineChevronUp, HiOutlineArrowUpTray, HiOutlinePhoto } from 'react-icons/hi2';
 
 const PAGES = ['home', 'about', 'services', 'solutions', 'portfolio', 'careers', 'contact'];
 
@@ -37,27 +38,35 @@ const Section = ({ title, children, defaultOpen = true }: { title: string; child
 };
 
 /* ─── Social Links Editor ─── */
-const SocialLinksEditor = ({ links, onChange }: { links: Array<{ platform: string; href: string }>; onChange: (v: Array<{ platform: string; href: string }>) => void }) => (
-  <Section title="Social Links">
-    <div className="space-y-3">
-      {links.map((link, i) => (
-        <div key={i} className="flex items-center gap-2">
-          <select value={link.platform} onChange={e => { const n = [...links]; n[i] = { ...n[i], platform: e.target.value }; onChange(n); }}
-            className="px-3 py-2 rounded-lg bg-white/[0.04] border border-white/[0.08] text-sm text-white focus:outline-none focus:border-accent-indigo/40 capitalize">
-            {SOCIAL_PLATFORMS.map(p => <option key={p} value={p} className="bg-[#0d1025]">{p}</option>)}
-          </select>
-          <input value={link.href} onChange={e => { const n = [...links]; n[i] = { ...n[i], href: e.target.value }; onChange(n); }} placeholder="https://..."
-            className="flex-1 px-3 py-2 rounded-lg bg-white/[0.04] border border-white/[0.08] text-sm text-white placeholder:text-gray-600 focus:outline-none focus:border-accent-indigo/40" />
-          <button onClick={() => onChange(links.filter((_, j) => j !== i))} className="p-2 text-red-400 hover:text-red-300 transition-colors"><HiOutlineTrash className="w-4 h-4" /></button>
-        </div>
-      ))}
-      <button onClick={() => onChange([...links, { platform: 'twitter', href: '' }])}
-        className="flex items-center gap-1.5 text-xs text-accent-indigo hover:text-accent-indigo/80 transition-colors">
-        <HiOutlinePlus className="w-3.5 h-3.5" /> Add Link
-      </button>
-    </div>
-  </Section>
-);
+const SocialLinksEditor = ({ links, onChange }: { links: Array<{ platform: string; href: string }>; onChange: (v: Array<{ platform: string; href: string }>) => void }) => {
+  const platformOptions: DropdownOption[] = SOCIAL_PLATFORMS.map(p => ({ value: p, label: p.charAt(0).toUpperCase() + p.slice(1) }));
+  
+  return (
+    <Section title="Social Links">
+      <div className="space-y-3">
+        {links.map((link, i) => (
+          <div key={i} className="flex items-center gap-2">
+            <div className="w-32 flex-shrink-0">
+              <Dropdown 
+                value={link.platform} 
+                onChange={e => { const n = [...links]; n[i] = { ...n[i], platform: e }; onChange(n); }}
+                options={platformOptions}
+                placeholder="Platform"
+              />
+            </div>
+            <input value={link.href} onChange={e => { const n = [...links]; n[i] = { ...n[i], href: e.target.value }; onChange(n); }} placeholder="https://..."
+              className="flex-1 px-3 py-2 rounded-lg bg-white/[0.04] border border-white/[0.08] text-sm text-white placeholder:text-gray-600 focus:outline-none focus:border-accent-indigo/40" />
+            <button onClick={() => onChange(links.filter((_, j) => j !== i))} className="p-2 text-red-400 hover:text-red-300 transition-colors"><HiOutlineTrash className="w-4 h-4" /></button>
+          </div>
+        ))}
+        <button onClick={() => onChange([...links, { platform: 'twitter', href: '' }])}
+          className="flex items-center gap-1.5 text-xs text-accent-indigo hover:text-accent-indigo/80 transition-colors">
+          <HiOutlinePlus className="w-3.5 h-3.5" /> Add Link
+        </button>
+      </div>
+    </Section>
+  );
+};
 
 /* ─── List Item Editor (stats, process steps, values, team, perks, etc.) ─── */
 const ListEditor = ({ title, items, fields, onChange }: { title: string; items: any[]; fields: { key: string; label: string; multiline?: boolean }[]; onChange: (v: any[]) => void }) => (
@@ -77,6 +86,106 @@ const ListEditor = ({ title, items, fields, onChange }: { title: string; items: 
       <button onClick={() => { const empty: any = {}; fields.forEach(f => empty[f.key] = ''); onChange([...items, empty]); }}
         className="flex items-center gap-1.5 text-xs text-accent-indigo hover:text-accent-indigo/80">
         <HiOutlinePlus className="w-3.5 h-3.5" /> Add {title.replace(/s$/, '')}
+      </button>
+    </div>
+  </Section>
+);
+
+/* ─── Modern Image Upload Component ─── */
+const ModernImageUpload = ({ value, onChange }: { value: string; onChange: (v: string) => void }) => {
+  const [isDragging, setIsDragging] = useState(false);
+  const uploadId = useId();
+
+  const handleFile = (file: File) => {
+    if (file && file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        onChange(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) handleFile(file);
+  };
+
+  return (
+    <div className="relative group">
+      <input
+        type="file"
+        accept="image/*"
+        onChange={(e) => e.target.files?.[0] && handleFile(e.target.files[0])}
+        className="hidden"
+        id={uploadId}
+      />
+      <label
+        htmlFor={uploadId}
+        onDragEnter={() => setIsDragging(true)}
+        onDragLeave={() => setIsDragging(false)}
+        onDrop={handleDrop}
+        className={`block p-4 rounded-lg border-2 border-dashed transition-all cursor-pointer ${
+          isDragging
+            ? 'border-accent-indigo bg-accent-indigo/10 scale-[1.02]'
+            : 'border-white/[0.1] bg-white/[0.02] hover:border-accent-indigo/50 hover:bg-accent-indigo/5'
+        }`}
+      >
+        {value ? (
+          <div className="flex items-center gap-3">
+            <div className="relative w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 ring-2 ring-accent-indigo/30">
+              <img src={value} alt="preview" className="w-full h-full object-cover" />
+            </div>
+            <div>
+              <p className="text-xs text-white/60">Click to change image</p>
+              <p className="text-[10px] text-white/40 mt-0.5">or drag & drop here</p>
+            </div>
+          </div>
+        ) : (
+          <div className="flex flex-col items-center justify-center py-3">
+            <HiOutlineArrowUpTray className="w-5 h-5 text-accent-indigo/60 mb-2 group-hover:text-accent-indigo transition-colors" />
+            <p className="text-xs font-medium text-white/70 group-hover:text-white transition-colors">Upload image</p>
+            <p className="text-[10px] text-white/40 mt-0.5">PNG, JPG, GIF up to 5MB</p>
+          </div>
+        )}
+      </label>
+    </div>
+  );
+};
+
+/* ─── Team Members Editor with Image Upload ─── */
+const TeamEditor = ({ items, onChange }: { items: any[]; onChange: (v: any[]) => void }) => (
+  <Section title={`Team Members (${items.length})`} defaultOpen={false}>
+    <div className="space-y-4">
+      {items.map((item, i) => (
+        <div key={i} className="p-4 rounded-lg border border-white/[0.06] bg-white/[0.02] space-y-4 group hover:border-white/[0.12] transition-colors">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-lg bg-accent-indigo/20 flex items-center justify-center">
+                <HiOutlinePhoto className="w-4 h-4 text-accent-indigo/60" />
+              </div>
+              <span className="text-xs font-semibold text-white/60">Member #{i + 1}</span>
+            </div>
+            <button onClick={() => onChange(items.filter((_, j) => j !== i))} className="p-1.5 text-white/40 hover:text-red-400 hover:bg-red-400/10 rounded transition-all"><HiOutlineTrash className="w-4 h-4" /></button>
+          </div>
+          
+          <ModernImageUpload 
+            value={item.image ?? ''} 
+            onChange={v => { const n = [...items]; n[i] = { ...n[i], image: v }; onChange(n); }} 
+          />
+          
+          <div className="space-y-3">
+            <Field label="Name" value={item.name ?? ''} onChange={v => { const n = [...items]; n[i] = { ...n[i], name: v }; onChange(n); }} />
+            <Field label="Role" value={item.role ?? ''} onChange={v => { const n = [...items]; n[i] = { ...n[i], role: v }; onChange(n); }} />
+            <Field label="Bio" multiline value={item.bio ?? ''} onChange={v => { const n = [...items]; n[i] = { ...n[i], bio: v }; onChange(n); }} />
+          </div>
+        </div>
+      ))}
+      <button onClick={() => onChange([...items, { name: '', role: '', bio: '', image: '' }])}
+        className="flex items-center gap-1.5 text-xs text-accent-indigo hover:text-accent-indigo/80 transition-colors px-3 py-2 rounded hover:bg-accent-indigo/5">
+        <HiOutlinePlus className="w-4 h-4" /> Add Team Member
       </button>
     </div>
   </Section>
@@ -157,7 +266,7 @@ function renderAboutForm(content: any, setContent: (c: any) => void) {
         <Field label="Vision" multiline value={c.vision} onChange={v => set('vision', v)} />
       </Section>
       <ListEditor title="Values" items={c.values || []} onChange={v => set('values', v)} fields={[{ key: 'title', label: 'Title' }, { key: 'description', label: 'Description', multiline: true }]} />
-      <ListEditor title="Team Members" items={c.team || []} onChange={v => set('team', v)} fields={[{ key: 'name', label: 'Name' }, { key: 'role', label: 'Role' }, { key: 'bio', label: 'Bio', multiline: true }]} />
+      <TeamEditor items={c.team || []} onChange={v => set('team', v)} />
     </div>
   );
 }
@@ -326,7 +435,7 @@ export default function CMS() {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold">CMS Content</h1>
-          <p className="text-sm text-gray-500 mt-0.5">Edit page content — changes are saved to the database.</p>
+          <p className="text-sm text-gray-500 mt-0.5">Edit page content changes are saved to the database.</p>
         </div>
         <div className="flex items-center gap-2">
           <button

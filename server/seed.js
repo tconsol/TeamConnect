@@ -61,10 +61,10 @@ const seedCMSContent = {
       { title: 'Collaboration', description: 'We work as an extension of your team, fostering open communication and shared ownership of success.' },
     ],
     team: [
-      { name: 'Alex Morgan', role: 'CEO & Founder', bio: 'Visionary technologist with 15+ years of experience building digital products for Fortune 500 companies.' },
-      { name: 'Sarah Chen', role: 'CTO', bio: 'Former lead architect at Google with deep expertise in cloud-native architecture and AI/ML systems.' },
-      { name: 'James Wilson', role: 'Head of Design', bio: 'Award-winning designer who has shaped user experiences for startups and enterprises alike.' },
-      { name: 'Priya Patel', role: 'VP of Engineering', bio: 'Full-stack engineering leader passionate about clean architecture and scalable distributed systems.' },
+      { name: 'Alex Morgan', role: 'CEO & Founder', bio: 'Visionary technologist with 15+ years of experience building digital products for Fortune 500 companies.', image: '' },
+      { name: 'Sarah Chen', role: 'CTO', bio: 'Former lead architect at Google with deep expertise in cloud-native architecture and AI/ML systems.', image: '' },
+      { name: 'James Wilson', role: 'Head of Design', bio: 'Award-winning designer who has shaped user experiences for startups and enterprises alike.', image: '' },
+      { name: 'Priya Patel', role: 'VP of Engineering', bio: 'Full-stack engineering leader passionate about clean architecture and scalable distributed systems.', image: '' },
     ],
   },
   services: {
