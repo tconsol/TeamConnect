@@ -16,6 +16,9 @@ export default function PortfolioSection() {
   const { data: portfolios } = useQuery({
     queryKey: ['portfolios', 'featured'],
     queryFn: () => fetchPortfolios({ featured: 'true' }),
+    staleTime: 45 * 60 * 1000,
+    refetchInterval: 50 * 60 * 1000,
+    refetchOnMount: true,
   });
 
   const projects = (portfolios || []).slice(0, 3);

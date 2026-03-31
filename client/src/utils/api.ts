@@ -35,12 +35,17 @@ export const fetchServiceBySlug = async (slug: string) => {
 };
 
 export const fetchPortfolios = async (params?: Record<string, string>) => {
-  const { data } = await api.get('/portfolio', { params: { active: 'true', ...params } });
+  const { data } = await api.get('/portfolio', {
+    params: { active: 'true', ...params },
+    headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate', Pragma: 'no-cache' },
+  });
   return data.data;
 };
 
 export const fetchPortfolioBySlug = async (slug: string) => {
-  const { data } = await api.get(`/portfolio/${slug}`);
+  const { data } = await api.get(`/portfolio/${slug}`, {
+    headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate', Pragma: 'no-cache' },
+  });
   return data.data;
 };
 

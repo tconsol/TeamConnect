@@ -25,6 +25,9 @@ export default function Portfolio() {
   const { data: projects = [], isLoading } = useQuery({
     queryKey: ['portfolios'],
     queryFn: () => fetchPortfolios(),
+    staleTime: 45 * 60 * 1000,
+    refetchInterval: 50 * 60 * 1000,
+    refetchOnMount: true,
   });
 
   const categories = useMemo(() => {

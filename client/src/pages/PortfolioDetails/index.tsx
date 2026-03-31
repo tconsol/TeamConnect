@@ -5,6 +5,22 @@ import { fetchPortfolioBySlug } from '@/utils/api';
 import { PageSkeleton } from '@/components/ui/Skeleton';
 import { HiArrowLeft, HiArrowTopRightOnSquare } from 'react-icons/hi2';
 
+// Converts a value (string or array) to a clean string array
+// Handles legacy data with emojis, newlines, and commas
+const toArray = (val: unknown): string[] => {
+  if (!val) return [];
+  if (Array.isArray(val)) {
+    return (val as string[]).map((s) => String(s).trim()).filter(Boolean);
+  }
+  const str = String(val).trim();
+  if (!str) return [];
+  // Split by newline first (highest priority for legacy data) — trim trailing commas
+  const lines = str.split(/[\r\n]+/).map((s) => s.replace(/,\s*$/, '').trim()).filter(Boolean);
+  if (lines.length > 1) return lines;
+  // Fall back to comma split
+  return str.split(',').map((s) => s.trim()).filter(Boolean);
+};
+
 export default function PortfolioDetails() {
   const { slug } = useParams<{ slug: string }>();
 
@@ -12,6 +28,9 @@ export default function PortfolioDetails() {
     queryKey: ['portfolio', slug],
     queryFn: () => fetchPortfolioBySlug(slug!),
     enabled: !!slug,
+    staleTime: 45 * 60 * 1000,
+    refetchInterval: 50 * 60 * 1000,
+    refetchOnMount: true,
   });
 
   if (isLoading) return <PageSkeleton />;
@@ -165,31 +184,58 @@ export default function PortfolioDetails() {
       <section className="py-16">
         <div className="container-custom space-y-16">
 
-          {(project.challenges || project.solution || project.results) && (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {project.challenges && (
-                <div className="glass-card rounded-2xl p-8 border-t-2 border-accent-violet">
-                  <span className="w-8 h-8 rounded-lg bg-accent-violet/20 flex items-center justify-center text-accent-violet font-bold text-xs mb-4">01</span>
-                  <h3 className="text-base font-semibold text-text-heading mb-3">The Challenge</h3>
-                  <p className="text-text-body text-sm leading-relaxed">{project.challenges}</p>
-                </div>
-              )}
-              {project.solution && (
-                <div className="glass-card rounded-2xl p-8 border-t-2 border-accent-cyan">
-                  <span className="w-8 h-8 rounded-lg bg-accent-cyan/20 flex items-center justify-center text-accent-cyan font-bold text-xs mb-4">02</span>
-                  <h3 className="text-base font-semibold text-text-heading mb-3">Our Solution</h3>
-                  <p className="text-text-body text-sm leading-relaxed">{project.solution}</p>
-                </div>
-              )}
-              {project.results && (
-                <div className="glass-card rounded-2xl p-8 border-t-2 border-accent-blue">
-                  <span className="w-8 h-8 rounded-lg bg-accent-blue/20 flex items-center justify-center text-accent-blue font-bold text-xs mb-4">03</span>
-                  <h3 className="text-base font-semibold text-text-heading mb-3">The Results</h3>
-                  <p className="text-text-body text-sm leading-relaxed">{project.results}</p>
-                </div>
-              )}
-            </div>
-          )}
+          {(() => {
+            const challenges = toArray(project.challenges);
+            const solution = toArray(project.solution);
+            const results = toArray(project.results);
+            if (!challenges.length && !solution.length && !results.length) return null;
+            return (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {challenges.length > 0 && (
+                  <div className="glass-card rounded-2xl p-8 border-t-2 border-accent-violet">
+                    <span className="w-8 h-8 rounded-lg bg-accent-violet/20 flex items-center justify-center text-accent-violet font-bold text-xs mb-4">01</span>
+                    <h3 className="text-base font-semibold text-text-heading mb-3">The Challenge</h3>
+                    <ul className="space-y-1.5">
+                      {challenges.map((c, i) => (
+                        <li key={i} className="flex items-start gap-2 text-text-body text-sm leading-relaxed">
+                          <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-accent-violet shrink-0" />
+                          {c}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                {solution.length > 0 && (
+                  <div className="glass-card rounded-2xl p-8 border-t-2 border-accent-cyan">
+                    <span className="w-8 h-8 rounded-lg bg-accent-cyan/20 flex items-center justify-center text-accent-cyan font-bold text-xs mb-4">02</span>
+                    <h3 className="text-base font-semibold text-text-heading mb-3">Our Solution</h3>
+                    <ul className="space-y-1.5">
+                      {solution.map((s, i) => (
+                        <li key={i} className="flex items-start gap-2 text-text-body text-sm leading-relaxed">
+                          <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-accent-cyan shrink-0" />
+                          {s}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                {results.length > 0 && (
+                  <div className="glass-card rounded-2xl p-8 border-t-2 border-accent-blue">
+                    <span className="w-8 h-8 rounded-lg bg-accent-blue/20 flex items-center justify-center text-accent-blue font-bold text-xs mb-4">03</span>
+                    <h3 className="text-base font-semibold text-text-heading mb-3">The Results</h3>
+                    <ul className="space-y-1.5">
+                      {results.map((r, i) => (
+                        <li key={i} className="flex items-start gap-2 text-text-body text-sm leading-relaxed">
+                          <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-accent-blue shrink-0" />
+                          {r}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            );
+          })()}
 
           {/* About */}
           {(project.description || project.shortDescription) && (

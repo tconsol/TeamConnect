@@ -34,7 +34,9 @@ try {
 
 const bucket = storage ? storage.bucket(config.gcp.bucketName) : null;
 
-const SENSITIVE_FOLDERS = ['resumes', 'portfolio-images', 'team-members'];
+// Only resumes and team-members need signed URLs (private content).
+// portfolio-images are public content — they get permanent storage.googleapis.com URLs.
+const SENSITIVE_FOLDERS = ['resumes', 'team-members'];
 
 const uploadFile = async (file, folder) => {
   if (!bucket) throw new Error(`GCP Storage not configured: ${gcpError || 'unknown error'}`);

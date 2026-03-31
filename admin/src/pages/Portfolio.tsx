@@ -12,7 +12,7 @@ interface PortfolioForm {
   category: string;
   client: string;
   description: string;
-  challenge: string;
+  challenges: string;
   solution: string;
   results: string;
   technologies: string;
@@ -20,7 +20,7 @@ interface PortfolioForm {
   isFeatured: boolean;
 }
 
-const emptyForm: PortfolioForm = { title: '', shortDescription: '', category: '', client: '', description: '', challenge: '', solution: '', results: '', technologies: '', liveUrl: '', isFeatured: false };
+const emptyForm: PortfolioForm = { title: '', shortDescription: '', category: '', client: '', description: '', challenges: '', solution: '', results: '', technologies: '', liveUrl: '', isFeatured: false };
 
 export default function Portfolio() {
   const queryClient = useQueryClient();
@@ -75,9 +75,9 @@ export default function Portfolio() {
       category: item.category || '',
       client: item.client || '',
       description: item.description || '',
-      challenge: item.challenge || '',
-      solution: item.solution || '',
-      results: item.results || '',
+      challenges: (item.challenges || []).join(', '),
+      solution: (item.solution || []).join(', '),
+      results: (item.results || []).join(', '),
       technologies: (item.technologies || []).join(', '),
       liveUrl: item.liveUrl || '',
       isFeatured: item.isFeatured || false,
@@ -106,9 +106,9 @@ export default function Portfolio() {
     fd.append('category', form.category);
     fd.append('client', form.client);
     fd.append('description', form.description);
-    fd.append('challenge', form.challenge);
-    fd.append('solution', form.solution);
-    fd.append('results', form.results);
+    fd.append('challenges', JSON.stringify(form.challenges.split(',').map((s) => s.trim()).filter(Boolean)));
+    fd.append('solution', JSON.stringify(form.solution.split(',').map((s) => s.trim()).filter(Boolean)));
+    fd.append('results', JSON.stringify(form.results.split(',').map((s) => s.trim()).filter(Boolean)));
     fd.append('technologies', JSON.stringify(form.technologies.split(',').map((s) => s.trim()).filter(Boolean)));
     fd.append('liveUrl', form.liveUrl);
     fd.append('isFeatured', String(form.isFeatured));
@@ -234,16 +234,16 @@ export default function Portfolio() {
                   <textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} required rows={3} className="w-full px-3 py-2 bg-white/[0.04] border border-white/[0.08] rounded-lg text-white focus:outline-none focus:border-accent-indigo resize-none" />
                 </div>
                 <div>
-                  <label className="block text-sm text-gray-400 mb-1">Challenge</label>
-                  <textarea value={form.challenge} onChange={(e) => setForm({ ...form, challenge: e.target.value })} rows={2} className="w-full px-3 py-2 bg-white/[0.04] border border-white/[0.08] rounded-lg text-white focus:outline-none focus:border-accent-indigo resize-none" />
+                  <label className="block text-sm text-gray-400 mb-1">Challenge <span className="text-xs text-gray-500">(comma-separated)</span></label>
+                  <textarea value={form.challenges} onChange={(e) => setForm({ ...form, challenges: e.target.value })} rows={2} placeholder="e.g. Tight deadline, Legacy codebase, Scalability" className="w-full px-3 py-2 bg-white/[0.04] border border-white/[0.08] rounded-lg text-white focus:outline-none focus:border-accent-indigo resize-none" />
                 </div>
                 <div>
-                  <label className="block text-sm text-gray-400 mb-1">Solution</label>
-                  <textarea value={form.solution} onChange={(e) => setForm({ ...form, solution: e.target.value })} rows={2} className="w-full px-3 py-2 bg-white/[0.04] border border-white/[0.08] rounded-lg text-white focus:outline-none focus:border-accent-indigo resize-none" />
+                  <label className="block text-sm text-gray-400 mb-1">Solution <span className="text-xs text-gray-500">(comma-separated)</span></label>
+                  <textarea value={form.solution} onChange={(e) => setForm({ ...form, solution: e.target.value })} rows={2} placeholder="e.g. Agile sprints, Microservices, CI/CD pipeline" className="w-full px-3 py-2 bg-white/[0.04] border border-white/[0.08] rounded-lg text-white focus:outline-none focus:border-accent-indigo resize-none" />
                 </div>
                 <div>
-                  <label className="block text-sm text-gray-400 mb-1">Results</label>
-                  <textarea value={form.results} onChange={(e) => setForm({ ...form, results: e.target.value })} rows={2} className="w-full px-3 py-2 bg-white/[0.04] border border-white/[0.08] rounded-lg text-white focus:outline-none focus:border-accent-indigo resize-none" />
+                  <label className="block text-sm text-gray-400 mb-1">Results <span className="text-xs text-gray-500">(comma-separated)</span></label>
+                  <textarea value={form.results} onChange={(e) => setForm({ ...form, results: e.target.value })} rows={2} placeholder="e.g. 40% faster load time, 99.9% uptime, 2x more users" className="w-full px-3 py-2 bg-white/[0.04] border border-white/[0.08] rounded-lg text-white focus:outline-none focus:border-accent-indigo resize-none" />
                 </div>
                 <div>
                   <label className="block text-sm text-gray-400 mb-1">Technologies (comma separated)</label>

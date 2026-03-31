@@ -125,8 +125,27 @@ exports.updateContent = async (req, res, next) => {
     const { page } = req.params;
     let updatedContent = req.body.content;
 
-    // Process team member images for about page
+    // Process team member images for about page — handle deletions and replacements
     if (page === 'about' && updatedContent?.team) {
+      // Get current team from DB to compare
+      const existing = await CMS.findOne({ page });
+      const oldTeam = existing?.content?.team || [];
+
+      // Delete GCS files for removed or replaced members
+      for (const oldMember of oldTeam) {
+        if (!oldMember.image || !oldMember.image.startsWith('gs://')) continue;
+
+        const stillExists = updatedContent.team.find(
+          (m) => m.image === oldMember.image
+        );
+        if (!stillExists) {
+          // Member removed or image replaced — delete old file from bucket
+          await deleteFile(oldMember.image).catch((err) =>
+            console.warn(`⚠ Could not delete old team image: ${err.message}`)
+          );
+        }
+      }
+
       updatedContent.team = await processTeamImages(updatedContent.team);
     }
 

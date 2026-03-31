@@ -13,9 +13,9 @@ const portfolioSchema = new mongoose.Schema(
     images: [String],
     technologies: [String],
     liveUrl: { type: String },
-    challenges: { type: String },
-    solution: { type: String },
-    results: { type: String },
+    challenges: [String],
+    solution: [String],
+    results: [String],
     testimonial: {
       quote: String,
       author: String,
