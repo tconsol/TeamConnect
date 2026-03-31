@@ -40,7 +40,7 @@ export default function Dashboard() {
   if (isLoading) {
     return (
       <div className="space-y-6">
-        <h1 className="text-xl font-bold text-white">Dashboard</h1>
+        <h1 className="text-xl font-bold dark:text-white text-slate-900">Dashboard</h1>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
           {Array.from({ length: 5 }).map((_, i) => (
             <div key={i} className="analytics-card p-6 animate-pulse">
@@ -93,8 +93,8 @@ export default function Dashboard() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-bold text-white">Dashboard</h1>
-          <p className="text-sm mt-0.5" style={{ color: 'rgba(148,163,184,0.6)' }}>
+          <h1 className="text-xl font-bold dark:text-white text-slate-900">Dashboard</h1>
+          <p className="text-sm mt-0.5" style={{ color: 'var(--tc-text-muted)' }}>
             Performance overview
           </p>
         </div>
@@ -127,7 +127,7 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Bar Chart — Overview */}
         <div className="analytics-card p-6 lg:col-span-2">
-          <h2 className="text-base font-semibold text-white mb-1">Content Overview</h2>
+          <h2 className="text-base font-semibold dark:text-white text-slate-900 mb-1">Content Overview</h2>
           <p className="text-xs mb-5" style={{ color: 'rgba(148,163,184,0.5)' }}>Total items by category</p>
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={countsBarData} barCategoryGap="35%">
@@ -146,7 +146,7 @@ export default function Dashboard() {
 
         {/* Pie Chart — Leads by Status */}
         <div className="analytics-card p-6">
-          <h2 className="text-base font-semibold text-white mb-1">Leads by Status</h2>
+          <h2 className="text-base font-semibold dark:text-white text-slate-900 mb-1">Leads by Status</h2>
           <p className="text-xs mb-2" style={{ color: 'rgba(148,163,184,0.5)' }}>Distribution breakdown</p>
           <ResponsiveContainer width="100%" height={220}>
             <PieChart>
@@ -176,7 +176,7 @@ export default function Dashboard() {
 
       {/* Charts row 2 — Area Chart trend */}
       <div className="analytics-card p-6">
-        <h2 className="text-base font-semibold text-white mb-1">Growth Trend</h2>
+        <h2 className="text-base font-semibold dark:text-white text-slate-900 mb-1">Growth Trend</h2>
         <p className="text-xs mb-5" style={{ color: 'rgba(148,163,184,0.5)' }}>Leads & Users over last 6 months</p>
         <ResponsiveContainer width="100%" height={200}>
           <AreaChart data={trendData}>
@@ -203,7 +203,7 @@ export default function Dashboard() {
       {/* Recent Activity */}
       {data?.recentActivity && (
         <div className="analytics-card p-6">
-          <h2 className="text-base font-semibold text-white mb-4">Recent Activity</h2>
+          <h2 className="text-base font-semibold dark:text-white text-slate-900 mb-4">Recent Activity</h2>
           <div className="space-y-1">
             {data.recentActivity.slice(0, 10).map((log: any) => (
               <div
@@ -219,7 +219,7 @@ export default function Dashboard() {
                     {log.user?.name?.[0] || 'S'}
                   </div>
                   <div>
-                    <span className="text-sm text-white/80">{log.user?.name || 'System'}</span>
+                    <span className="text-sm dark:text-white/80 text-slate-700">{log.user?.name || 'System'}</span>
                     <span className="text-sm mx-1" style={{ color: 'rgba(148,163,184,0.4)' }}>{log.action}</span>
                     <span className="text-sm text-indigo-400">{log.resource}</span>
                   </div>

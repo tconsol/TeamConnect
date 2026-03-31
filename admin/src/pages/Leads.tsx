@@ -82,7 +82,7 @@ export default function Leads() {
         />
       </div>
 
-      <div className="bg-bg-card border border-white/[0.06] rounded-xl overflow-hidden">
+      <div className="tc-table-wrap">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
@@ -110,11 +110,11 @@ export default function Leads() {
                   </tr>
                 ))
               ) : leads.map((lead: any) => (
-                <tr key={lead._id} className="border-b border-white/[0.04] hover:bg-white/[0.02]">
-                  <td className="px-4 py-3 font-medium text-white">{lead.name}</td>
-                  <td className="px-4 py-3 text-gray-400 hidden md:table-cell">{lead.email}</td>
-                  <td className="px-4 py-3 text-gray-400 hidden lg:table-cell">{lead.service || '—'}</td>
-                  <td className="px-4 py-3 text-gray-400 hidden lg:table-cell">{lead.budget || '—'}</td>
+                <tr key={lead._id} className="border-b border-slate-100 dark:border-white/[0.04] hover:bg-white/[0.02]">
+                  <td className="px-4 py-3 font-medium dark:text-white text-slate-900">{lead.name}</td>
+                  <td className="px-4 py-3 dark:text-slate-400 text-slate-500 hidden md:table-cell">{lead.email}</td>
+                  <td className="px-4 py-3 dark:text-slate-400 text-slate-500 hidden lg:table-cell">{lead.service || '—'}</td>
+                  <td className="px-4 py-3 dark:text-slate-400 text-slate-500 hidden lg:table-cell">{lead.budget || '—'}</td>
                   <td className="px-4 py-3">
                     <Dropdown
                       value={lead.status}
@@ -162,7 +162,7 @@ export default function Leads() {
           <button
             onClick={() => setPage((p) => Math.max(1, p - 1))}
             disabled={page === 1}
-            className="px-3 py-1.5 text-sm bg-bg-card border border-white/[0.06] rounded-lg disabled:opacity-30 hover:bg-white/[0.04] transition-colors"
+            className="px-3 py-1.5 text-sm analytics-card border-0 rounded-lg disabled:opacity-30 hover:bg-indigo-500/[0.06] transition-colors dark:text-slate-300 text-slate-600"
           >
             Previous
           </button>
@@ -170,7 +170,7 @@ export default function Leads() {
           <button
             onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
             disabled={page === totalPages}
-            className="px-3 py-1.5 text-sm bg-bg-card border border-white/[0.06] rounded-lg disabled:opacity-30 hover:bg-white/[0.04] transition-colors"
+            className="px-3 py-1.5 text-sm analytics-card border-0 rounded-lg disabled:opacity-30 hover:bg-indigo-500/[0.06] transition-colors dark:text-slate-300 text-slate-600"
           >
             Next
           </button>
@@ -180,18 +180,18 @@ export default function Leads() {
       {/* Lead Details Modal */}
       {viewingLead && createPortal(
         <div className="fixed top-0 left-0 z-50 flex items-center justify-center" style={{ width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(6px)' }}>
-          <div className="w-full max-w-lg rounded-2xl px-4" style={{ background: '#0d1025', border: '1px solid rgba(99,102,241,0.2)' }}>
+          <div className="w-full max-w-lg rounded-2xl px-4 tc-modal-box">
 
             {/* Header */}
             <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: '1px solid rgba(99,102,241,0.15)' }}>
               <div>
                 <h2 className="text-base font-semibold text-white">Lead Details</h2>
-                <p className="text-xs" style={{ color: 'rgba(148,163,184,0.55)', marginTop: 2 }}>{viewingLead.name}</p>
+                <p className="text-xs tc-modal-sub" style={{ marginTop: 2 }}>{viewingLead.name}</p>
               </div>
               <button 
                 onClick={() => setViewingLead(null)} 
                 className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-white transition-colors" 
-                style={{ background: 'rgba(255,255,255,0.06)' }}
+                style={{ background: 'var(--tc-modal-field-bg)', color: 'var(--tc-text-secondary)' }}
               >
                 <HiOutlineXMark className="w-4 h-4" />
               </button>
@@ -202,33 +202,33 @@ export default function Leads() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs text-gray-400 mb-2 uppercase tracking-wide">Name</label>
-                  <p className="text-white">{viewingLead.name}</p>
+                  <p className="dark:text-white text-slate-900">{viewingLead.name}</p>
                 </div>
                 <div>
                   <label className="block text-xs text-gray-400 mb-2 uppercase tracking-wide">Email</label>
-                  <p className="text-white break-all">{viewingLead.email}</p>
+                  <p className="dark:text-white text-slate-900 break-all">{viewingLead.email}</p>
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs text-gray-400 mb-2 uppercase tracking-wide">Phone</label>
-                  <p className="text-white">{viewingLead.phone || '—'}</p>
+                  <p className="dark:text-white text-slate-900">{viewingLead.phone || '—'}</p>
                 </div>
                 <div>
                   <label className="block text-xs text-gray-400 mb-2 uppercase tracking-wide">Company</label>
-                  <p className="text-white">{viewingLead.company || '—'}</p>
+                  <p className="dark:text-white text-slate-900">{viewingLead.company || '—'}</p>
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs text-gray-400 mb-2 uppercase tracking-wide">Service</label>
-                  <p className="text-white capitalize">{viewingLead.service || '—'}</p>
+                  <p className="dark:text-white text-slate-900 capitalize">{viewingLead.service || '—'}</p>
                 </div>
                 <div>
                   <label className="block text-xs text-gray-400 mb-2 uppercase tracking-wide">Budget</label>
-                  <p className="text-white">{viewingLead.budget || '—'}</p>
+                  <p className="dark:text-white text-slate-900">{viewingLead.budget || '—'}</p>
                 </div>
               </div>
 
@@ -247,12 +247,12 @@ export default function Leads() {
 
               <div>
                 <label className="block text-xs text-gray-400 mb-2 uppercase tracking-wide">Message</label>
-                <p className="text-white text-sm leading-relaxed whitespace-pre-wrap">{viewingLead.message || '—'}</p>
+                <p className="dark:text-white text-slate-900 text-sm leading-relaxed whitespace-pre-wrap">{viewingLead.message || '—'}</p>
               </div>
 
               <div>
                 <label className="block text-xs text-gray-400 mb-2 uppercase tracking-wide">Date</label>
-                <p className="text-white text-sm">{new Date(viewingLead.createdAt).toLocaleString()}</p>
+                <p className="dark:text-white text-slate-900 text-sm">{new Date(viewingLead.createdAt).toLocaleString()}</p>
               </div>
             </div>
 
@@ -261,8 +261,7 @@ export default function Leads() {
               <button 
                 type="button" 
                 onClick={() => setViewingLead(null)} 
-                className="px-4 py-2 rounded-lg text-sm transition-colors" 
-                style={{ background: 'rgba(255,255,255,0.06)', color: 'rgba(148,163,184,0.8)' }}
+                className="px-4 py-2 rounded-lg text-sm transition-colors tc-cancel-btn"
               >
                 Close
               </button>

@@ -44,6 +44,7 @@ function DropdownMenu({
   const spaceBelow = vh - position.top;
   const openUp = spaceBelow < estimatedH + 8 && position.top > estimatedH + 8;
   const top = openUp ? position.top - estimatedH - 8 : position.top + 8;
+  const isDark = document.documentElement.classList.contains('dark');
 
   return createPortal(
     <div
@@ -53,10 +54,10 @@ function DropdownMenu({
         left: position.left,
         width: position.width,
         zIndex: 99999,
-        background: '#0f1123',
-        border: '1px solid rgba(99,102,241,0.35)',
+        background: isDark ? '#0f1123' : '#ffffff',
+        border: `1px solid ${isDark ? 'rgba(99,102,241,0.35)' : 'rgba(99,102,241,0.25)'}`,
         borderRadius: '10px',
-        boxShadow: '0 8px 32px rgba(0,0,0,0.6)',
+        boxShadow: isDark ? '0 8px 32px rgba(0,0,0,0.6)' : '0 8px 32px rgba(0,0,0,0.12)',
         overflow: 'hidden auto',
         maxHeight: maxH,
         scrollbarWidth: 'none' as any,
@@ -80,9 +81,9 @@ function DropdownMenu({
               width: '100%',
               padding: '10px 14px',
               background: isSel ? 'rgba(99,102,241,0.15)' : 'transparent',
-              color: isSel ? '#a5b4fc' : 'rgba(255,255,255,0.75)',
+              color: isSel ? '#a5b4fc' : (isDark ? 'rgba(255,255,255,0.75)' : '#1e293b'),
               border: 'none',
-              borderBottom: '1px solid rgba(255,255,255,0.04)',
+              borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.04)' : 'rgba(99,102,241,0.08)'}`,
               cursor: 'pointer',
               fontSize: 14,
               fontFamily: 'inherit',
@@ -180,10 +181,10 @@ export function Dropdown({
           justifyContent: 'space-between',
           width: '100%',
           padding: '9px 12px',
-          background: 'rgba(255,255,255,0.04)',
-          border: open ? '1px solid rgba(99,102,241,0.55)' : '1px solid rgba(255,255,255,0.1)',
+          background: 'var(--tc-input-bg)',
+          border: open ? '1px solid rgba(99,102,241,0.55)' : '1px solid var(--tc-input-border)',
           borderRadius: 8,
-          color: selected ? '#fff' : 'rgba(156,163,175,1)',
+          color: selected ? 'var(--tc-input-color)' : 'var(--tc-td-muted)',
           cursor: 'pointer',
           fontSize: 14,
           fontFamily: 'inherit',

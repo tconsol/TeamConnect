@@ -106,7 +106,7 @@ export default function Services() {
       </div>
 
       {/* Table */}
-      <div className="bg-bg-card border border-white/[0.06] rounded-xl overflow-hidden overflow-x-auto">
+      <div className="tc-table-wrap overflow-x-auto">
         <table className="w-full text-sm min-w-[480px]">
           <thead>
               <tr style={{ background: 'rgba(99,102,241,0.08)', borderBottom: '1px solid rgba(99,102,241,0.2)' }}>
@@ -127,13 +127,13 @@ export default function Services() {
                 </tr>
               ))
             ) : (data || []).map((service: any) => (
-              <tr key={service._id} className="border-b border-white/[0.04] hover:bg-white/[0.02]">
-                <td className="px-4 py-3 font-medium text-white">{service.title}</td>
-                <td className="px-4 py-3 text-gray-400 hidden md:table-cell">{(service.technologies || []).join(', ')}</td>
+              <tr key={service._id} className="border-b border-slate-100 dark:border-white/[0.04] hover:bg-white/[0.02]">
+                <td className="px-4 py-3 font-medium dark:text-white text-slate-900">{service.title}</td>
+                <td className="px-4 py-3 dark:text-slate-400 text-slate-500 hidden md:table-cell">{(service.technologies || []).join(', ')}</td>
                 <td className="px-4 py-3 text-gray-500 hidden lg:table-cell">{service.slug || toSlug(service.title || '')}</td>
                 <td className="px-4 py-3">
                   <div className="flex items-center justify-end gap-2">
-                    <button onClick={() => openEdit(service)} className="p-1.5 text-gray-400 hover:text-white transition-colors">
+                    <button onClick={() => openEdit(service)} className="edit-btn p-1.5 rounded transition-colors">
                       <HiOutlinePencil className="w-4 h-4" />
                     </button>
                     <button onClick={() => {
@@ -156,17 +156,17 @@ export default function Services() {
       {/* Modal */}
       {showModal && createPortal(
         <div className="fixed top-0 left-0 z-50 flex items-center justify-center" style={{ width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(6px)' }}>
-          <div className="w-full max-w-lg rounded-2xl px-4" style={{ background: '#0d1025', border: '1px solid rgba(99,102,241,0.2)' }}>
+          <div className="w-full max-w-lg rounded-2xl px-4 tc-modal-box">
 
             {/* Header */}
             <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: '1px solid rgba(99,102,241,0.15)' }}>
               <div>
                 <h2 className="text-base font-semibold text-white">{editingId ? 'Edit Service' : 'New Service'}</h2>
-                <p className="text-xs" style={{ color: 'rgba(148,163,184,0.55)', marginTop: 2 }}>
+                <p className="text-xs tc-modal-sub" style={{ marginTop: 2 }}>
                   {editingId ? 'Update service details' : 'Fill in the service information'}
                 </p>
               </div>
-              <button onClick={closeModal} className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-white transition-colors" style={{ background: 'rgba(255,255,255,0.06)' }}>
+              <button onClick={closeModal} className="w-8 h-8 flex items-center justify-center rounded-lg transition-colors" style={{ background: 'var(--tc-modal-field-bg)', color: 'var(--tc-text-secondary)' }}>
                 <HiOutlineXMark className="w-4 h-4" />
               </button>
             </div>
@@ -206,7 +206,7 @@ export default function Services() {
 
               {/* Footer */}
               <div className="flex items-center justify-end gap-3 px-6 py-4" style={{ borderTop: '1px solid rgba(99,102,241,0.12)' }}>
-                <button type="button" onClick={closeModal} className="px-4 py-2 rounded-lg text-sm transition-colors" style={{ background: 'rgba(255,255,255,0.06)', color: 'rgba(148,163,184,0.8)' }}>
+                <button type="button" onClick={closeModal} className="px-4 py-2 rounded-lg text-sm transition-colors tc-cancel-btn">
                   Cancel
                 </button>
                 <button type="submit" disabled={saveMutation.isPending} className="px-5 py-2 rounded-lg text-sm font-medium text-white disabled:opacity-50 transition-all" style={{ background: 'linear-gradient(135deg,#6366F1,#3B82F6)' }}>

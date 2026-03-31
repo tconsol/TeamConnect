@@ -2,6 +2,100 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── Theme Variables ── */
+:root {
+  /* Light mode defaults */
+  --tc-bg-body:        #f1f5f9;
+  --tc-bg-sidebar:     linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  --tc-bg-topbar:      rgba(248, 250, 252, 0.92);
+  --tc-border-sidebar: rgba(99,102,241,0.18);
+  --tc-border-topbar:  rgba(99,102,241,0.12);
+  --tc-text-body:      #1e293b;
+  --tc-card-bg:        rgba(255,255,255,0.9);
+  --tc-card-border:    rgba(99,102,241,0.18);
+  --tc-card-shadow:    0 1px 4px rgba(99,102,241,0.08);
+  --tc-input-bg:       #f8fafc;
+  --tc-input-border:   rgba(99,102,241,0.22);
+  --tc-input-color:    #1e293b;
+  --tc-placeholder:    rgba(100,116,139,0.5);
+  --tc-scrollbar-track: #e2e8f0;
+  --tc-scrollbar-thumb: rgba(99,102,241,0.28);
+  --tc-scrollbar-hover: rgba(99,102,241,0.45);
+  --tc-row-hover:      rgba(99,102,241,0.06);
+  /* Modal */
+  --tc-modal-bg:       #ffffff;
+  --tc-modal-border:   rgba(99,102,241,0.22);
+  --tc-modal-overlay:  rgba(15,23,42,0.55);
+  /* Text */
+  --tc-text-primary:   #0f172a;
+  --tc-text-secondary: #475569;
+  --tc-text-muted:     #94a3b8;
+  /* Table */
+  --tc-th-bg:          rgba(99,102,241,0.06);
+  --tc-th-border:      rgba(99,102,241,0.14);
+  --tc-th-text:        #374151;
+  --tc-td-text:        #1e293b;
+  --tc-td-muted:       #64748b;
+  --tc-row-border:     rgba(99,102,241,0.08);
+  /* Icon buttons in topbar */
+  --tc-icon-btn:       #64748b;
+  --tc-icon-btn-hover: #4f46e5;
+  --tc-icon-btn-hover-bg: rgba(99,102,241,0.10);
+  /* Field bg inside modals (different from page-level inputs) */
+  --tc-modal-field-bg:     #f8fafc;
+  --tc-modal-field-border: rgba(99,102,241,0.20);
+}
+
+.dark {
+  /* Dark mode overrides */
+  --tc-bg-body:        #080b18;
+  --tc-bg-sidebar:     linear-gradient(180deg, #0d1025 0%, #090c1e 100%);
+  --tc-bg-topbar:      rgba(8, 11, 24, 0.8);
+  --tc-border-sidebar: rgba(99,102,241,0.12);
+  --tc-border-topbar:  rgba(99,102,241,0.08);
+  --tc-text-body:      #e2e8f0;
+  --tc-card-bg:        linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%);
+  --tc-card-border:    rgba(99,102,241,0.12);
+  --tc-card-shadow:    none;
+  --tc-input-bg:       rgba(13,16,37,0.8);
+  --tc-input-border:   rgba(99,102,241,0.15);
+  --tc-input-color:    #e2e8f0;
+  --tc-placeholder:    rgba(148,163,184,0.4);
+  --tc-scrollbar-track: #0d1025;
+  --tc-scrollbar-thumb: rgba(99,102,241,0.25);
+  --tc-scrollbar-hover: rgba(99,102,241,0.45);
+  --tc-row-hover:      rgba(99,102,241,0.04);
+  /* Modal */
+  --tc-modal-bg:       #0d1025;
+  --tc-modal-border:   rgba(99,102,241,0.20);
+  --tc-modal-overlay:  rgba(0,0,0,0.70);
+  /* Text */
+  --tc-text-primary:   #f1f5f9;
+  --tc-text-secondary: #94a3b8;
+  --tc-text-muted:     rgba(148,163,184,0.55);
+  /* Table */
+  --tc-th-bg:          rgba(99,102,241,0.08);
+  --tc-th-border:      rgba(99,102,241,0.20);
+  --tc-th-text:        #cbd5e1;
+  --tc-td-text:        #f1f5f9;
+  --tc-td-muted:       #94a3b8;
+  --tc-row-border:     rgba(255,255,255,0.04);
+  /* Icon buttons in topbar */
+  --tc-icon-btn:       rgba(165,180,252,0.45);
+  --tc-icon-btn-hover: #a5b4fc;
+  --tc-icon-btn-hover-bg: rgba(99,102,241,0.08);
+  /* Field bg inside modals */
+  --tc-modal-field-bg:     rgba(255,255,255,0.04);
+  --tc-modal-field-border: rgba(255,255,255,0.08);
+}
+
+/* ── View Transition (circle-spread animation) ── */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 html, body, #root {
@@ -12,20 +106,21 @@ html, body, #root {
 
 body {
   font-family: 'Inter', system-ui, sans-serif;
-  background: #080b18;
-  color: #e2e8f0;
+  background: var(--tc-bg-body);
+  color: var(--tc-text-body);
 }
 
-/* Dark analytics scrollbar */
+/* Scrollbar */
 ::-webkit-scrollbar { width: 5px; height: 5px; }
-::-webkit-scrollbar-track { background: #0d1025; }
-::-webkit-scrollbar-thumb { background: rgba(99,102,241,0.25); border-radius: 10px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(99,102,241,0.45); }
+::-webkit-scrollbar-track { background: var(--tc-scrollbar-track); }
+::-webkit-scrollbar-thumb { background: var(--tc-scrollbar-thumb); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: var(--tc-scrollbar-hover); }
 
 /* Analytics-style card */
 .analytics-card {
-  background: linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%);
-  border: 1px solid rgba(99,102,241,0.12);
+  background: var(--tc-card-bg);
+  border: 1px solid var(--tc-card-border);
+  box-shadow: var(--tc-card-shadow);
   border-radius: 12px;
   transition: border-color 0.2s, box-shadow 0.2s;
 }
@@ -43,26 +138,67 @@ body {
 }
 
 /* Table row hover */
-tr:hover td { background: rgba(99,102,241,0.04); }
+tr:hover td { background: var(--tc-row-hover); }
 
-/* Form elements — dark theme */
+/* ── Modal helper class ── */
+.tc-modal-box {
+  background: var(--tc-modal-bg) !important;
+  border: 1px solid var(--tc-modal-border) !important;
+}
+.tc-modal-box h2 { color: var(--tc-text-primary); }
+.tc-modal-box .tc-modal-sub { color: var(--tc-text-muted); }
+.tc-modal-box label { color: var(--tc-text-secondary) !important; }
+.tc-cancel-btn {
+  background: var(--tc-modal-field-bg) !important;
+  color: var(--tc-text-secondary) !important;
+  border: 1px solid var(--tc-modal-field-border) !important;
+}
+
+/* ── Table wrapper ── */
+.tc-table-wrap {
+  background: var(--tc-card-bg);
+  border: 1px solid var(--tc-card-border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.tc-table-wrap th {
+  color: var(--tc-th-text) !important;
+  background: var(--tc-th-bg) !important;
+}
+/* Skeleton shimmer */
+.tc-skel { background: var(--tc-modal-field-bg) !important; }
+
+/* Form elements */
 input, select, textarea {
-  background: rgba(13,16,37,0.8) !important;
-  border-color: rgba(99,102,241,0.15) !important;
-  color: #e2e8f0 !important;
+  background: var(--tc-input-bg) !important;
+  border-color: var(--tc-input-border) !important;
+  color: var(--tc-input-color) !important;
 }
 input:focus, select:focus, textarea:focus {
   border-color: rgba(99,102,241,0.4) !important;
   outline: none;
   box-shadow: 0 0 0 2px rgba(99,102,241,0.12);
 }
-input::placeholder, textarea::placeholder { color: rgba(148,163,184,0.4) !important; }
+input::placeholder, textarea::placeholder { color: var(--tc-placeholder) !important; }
 
 /* Badge utilities */
 .badge-green { background: rgba(52,211,153,0.1); color: #34d399; border: 1px solid rgba(52,211,153,0.2); border-radius: 6px; padding: 2px 8px; font-size: 11px; font-weight: 600; }
 .badge-amber { background: rgba(251,191,36,0.1); color: #fbbf24; border: 1px solid rgba(251,191,36,0.2); border-radius: 6px; padding: 2px 8px; font-size: 11px; font-weight: 600; }
 .badge-rose  { background: rgba(251,113,133,0.1); color: #fb7185; border: 1px solid rgba(251,113,133,0.2); border-radius: 6px; padding: 2px 8px; font-size: 11px; font-weight: 600; }
 .badge-blue  { background: rgba(59,130,246,0.1);  color: #60a5fa; border: 1px solid rgba(59,130,246,0.2);  border-radius: 6px; padding: 2px 8px; font-size: 11px; font-weight: 600; }
+
+/* CMS section / item helpers */
+.cms-section-wrap { border-color: rgba(99,102,241,0.15); }
+.dark .cms-section-wrap { border-color: rgba(255,255,255,0.06); }
+.cms-section-btn { color: var(--tc-text-primary); background: rgba(99,102,241,0.04); }
+.cms-section-btn:hover { background: rgba(99,102,241,0.08); }
+.dark .cms-section-btn { background: rgba(255,255,255,0.03); }
+.dark .cms-section-btn:hover { background: rgba(255,255,255,0.05); }
+.cms-item { border-color: rgba(99,102,241,0.12); background: rgba(99,102,241,0.02); }
+.dark .cms-item { border-color: rgba(255,255,255,0.06); background: rgba(255,255,255,0.02); }
+/* Pencil edit icon — green hover */
+.edit-btn { color: #9ca3af; transition: color 0.15s, background 0.15s; }
+.edit-btn:hover { color: #22c55e !important; background: rgba(34,197,94,0.1) !important; }
 
 /* Toast progress bar animation */
 @keyframes toast-shrink {

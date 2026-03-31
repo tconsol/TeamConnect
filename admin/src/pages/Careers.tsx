@@ -43,7 +43,7 @@ const JOB_TYPES = [
 const fieldClass = "w-full px-3 py-2.5 rounded-lg text-sm text-white focus:outline-none resize-none";
 const fieldStyle = { background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' };
 const labelClass = "block text-xs font-medium mb-1.5";
-const labelStyle = { color: 'rgba(148,163,184,0.7)' };
+const labelStyle = { color: 'var(--tc-text-secondary)' };
 
 export default function Careers() {
   const queryClient = useQueryClient();
@@ -153,7 +153,7 @@ export default function Careers() {
         </button>
       </div>
 
-      <div className="bg-bg-card border border-white/[0.06] rounded-xl overflow-hidden overflow-x-auto">
+      <div className="tc-table-wrap overflow-x-auto">
         <table className="w-full text-sm min-w-[480px]">
           <thead>
               <tr style={{ background: 'rgba(99,102,241,0.08)', borderBottom: '1px solid rgba(99,102,241,0.2)' }}>
@@ -176,10 +176,10 @@ export default function Careers() {
                 </tr>
               ))
             ) : (data || []).map((job: any) => (
-              <tr key={job._id} className="border-b border-white/[0.04] hover:bg-white/[0.02]">
-                <td className="px-4 py-3 font-medium text-white">{job.title}</td>
-                <td className="px-4 py-3 text-gray-400 hidden md:table-cell">{job.department}</td>
-                <td className="px-4 py-3 text-gray-400 capitalize hidden lg:table-cell">{job.type}</td>
+              <tr key={job._id} className="border-b border-slate-100 dark:border-white/[0.04] hover:bg-white/[0.02]">
+                <td className="px-4 py-3 font-medium dark:text-white text-slate-900">{job.title}</td>
+                <td className="px-4 py-3 dark:text-slate-400 text-slate-500 hidden md:table-cell">{job.department}</td>
+                <td className="px-4 py-3 dark:text-slate-400 text-slate-500 capitalize hidden lg:table-cell">{job.type}</td>
                 <td className="px-4 py-3 text-center hidden md:table-cell">
                   <span className={`inline-block px-2 py-0.5 rounded-full text-xs ${job.isActive ? 'bg-green-500/10 text-green-400' : 'bg-gray-500/10 text-gray-400'}`}>
                     {job.isActive ? 'Active' : 'Inactive'}
@@ -187,7 +187,7 @@ export default function Careers() {
                 </td>
                 <td className="px-4 py-3">
                   <div className="flex items-center justify-end gap-2">
-                    <button onClick={() => openEdit(job)} className="p-1.5 text-gray-400 hover:text-white transition-colors">
+                    <button onClick={() => openEdit(job)} className="edit-btn p-1.5 rounded transition-colors">
                       <HiOutlinePencil className="w-4 h-4" />
                     </button>
                     <button onClick={() => {
@@ -226,17 +226,17 @@ export default function Careers() {
       {/* Modal */}
       {showModal && createPortal(
         <div className="fixed top-0 left-0 z-50 flex items-center justify-center" style={{ width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(6px)' }}>
-          <div className="w-full max-w-2xl rounded-2xl px-4" style={{ background: '#0d1025', border: '1px solid rgba(99,102,241,0.2)' }}>
+          <div className="w-full max-w-2xl rounded-2xl px-4 tc-modal-box">
 
             {/* Header */}
             <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: '1px solid rgba(99,102,241,0.15)' }}>
               <div>
                 <h2 className="text-base font-semibold text-white">{editingId ? 'Edit Job' : 'New Job'}</h2>
-                <p className="text-xs" style={{ color: 'rgba(148,163,184,0.55)', marginTop: 2 }}>
+                <p className="text-xs tc-modal-sub" style={{ marginTop: 2 }}>
                   {editingId ? 'Update job listing details' : 'Fill in the job listing information'}
                 </p>
               </div>
-              <button onClick={closeModal} className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-white transition-colors" style={{ background: 'rgba(255,255,255,0.06)' }}>
+              <button onClick={closeModal} className="w-8 h-8 flex items-center justify-center rounded-lg transition-colors" style={{ background: 'var(--tc-modal-field-bg)', color: 'var(--tc-text-secondary)' }}>
                 <HiOutlineXMark className="w-4 h-4" />
               </button>
             </div>
@@ -343,7 +343,7 @@ export default function Careers() {
                   </div>
                   <label className="flex items-center gap-2 cursor-pointer mt-3">
                     <input type="checkbox" checked={form.isActive} onChange={(e) => setForm({ ...form, isActive: e.target.checked })} className="rounded border-white/20 text-accent-indigo focus:ring-accent-indigo" />
-                    <span className="text-sm" style={{ color: 'rgba(148,163,184,0.7)' }}>Active listing</span>
+                    <span className="text-sm" style={{ color: 'var(--tc-text-secondary)' }}>Active listing</span>
                   </label>
                 </div>
 
@@ -351,7 +351,7 @@ export default function Careers() {
 
               {/* Footer */}
               <div className="flex items-center justify-end gap-3 px-6 py-4" style={{ borderTop: '1px solid rgba(99,102,241,0.12)' }}>
-                <button type="button" onClick={closeModal} className="px-4 py-2 rounded-lg text-sm transition-colors" style={{ background: 'rgba(255,255,255,0.06)', color: 'rgba(148,163,184,0.8)' }}>
+                <button type="button" onClick={closeModal} className="px-4 py-2 rounded-lg text-sm transition-colors tc-cancel-btn">
                   Cancel
                 </button>
                 <button type="submit" disabled={saveMutation.isPending} className="px-5 py-2 rounded-lg text-sm font-medium text-white disabled:opacity-50 transition-all" style={{ background: 'linear-gradient(135deg,#6366F1,#3B82F6)' }}>

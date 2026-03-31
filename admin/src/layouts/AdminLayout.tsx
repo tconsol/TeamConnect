@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
+import ThemeToggle from '@/components/ui/ThemeToggle';
 import logo from '@/assets/tconsollogo.png';
 import {
   HiOutlineHome,
@@ -43,7 +44,7 @@ export default function AdminLayout() {
   };
 
   return (
-    <div className="flex h-screen" style={{ background: '#080b18' }}>
+    <div className="flex h-screen" style={{ background: 'var(--tc-bg-body)' }}>
       {/* ── Mobile sidebar overlay ── */}
       {mobileOpen && (
         <div className="fixed inset-0 z-40 md:hidden" onClick={() => setMobileOpen(false)} style={{ background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)' }} />
@@ -55,14 +56,14 @@ export default function AdminLayout() {
           mobileOpen ? 'fixed inset-y-0 left-0 z-50 w-64' : 'hidden'
         } md:relative md:flex ${collapsed ? 'md:w-[68px]' : 'md:w-64'}`}
         style={{
-          background: 'linear-gradient(180deg, #0d1025 0%, #090c1e 100%)',
-          borderRight: '1px solid rgba(99,102,241,0.12)',
+          background: 'var(--tc-bg-sidebar)',
+          borderRight: '1px solid var(--tc-border-sidebar)',
         }}
       >
         {/* Brand */}
         <div
           className={`flex items-center ${collapsed ? 'justify-center px-2' : 'px-4'} py-4`}
-          style={{ borderBottom: '1px solid rgba(99,102,241,0.1)' }}
+          style={{ borderBottom: '1px solid var(--tc-border-topbar)' }}
         >
           <img src={logo} alt="TCON" className={`object-contain transition-all duration-300 ${collapsed ? 'h-8' : 'h-9'}`} />
           {/* Mobile close button */}
@@ -77,7 +78,7 @@ export default function AdminLayout() {
         {/* Nav */}
         <nav className="flex-1 px-2 py-4 space-y-0.5 overflow-y-auto">
           {!collapsed && (
-            <p className="px-3 pb-2 pt-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-indigo-400/40">
+            <p className="px-3 pb-2 pt-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-indigo-400/40">
               Navigation
             </p>
           )}
@@ -91,8 +92,8 @@ export default function AdminLayout() {
               className={({ isActive }) =>
                 `flex items-center ${collapsed ? 'justify-center' : ''} gap-3 ${collapsed ? 'px-2' : 'px-3'} py-2.5 rounded-lg text-sm font-medium transition-all duration-200 group ${
                   isActive
-                    ? 'text-white'
-                    : 'text-indigo-200/50 hover:text-indigo-100 hover:bg-indigo-500/[0.08]'
+                    ? 'text-slate-900 dark:text-white'
+                    : 'text-slate-500 dark:text-indigo-200/50 hover:text-slate-800 dark:hover:text-indigo-100 hover:bg-indigo-500/[0.08]'
                 }`
               }
               style={({ isActive }) =>
@@ -112,7 +113,7 @@ export default function AdminLayout() {
         </nav>
 
         {/* Footer */}
-        <div className="px-2 py-3 space-y-1" style={{ borderTop: '1px solid rgba(99,102,241,0.1)' }}>
+        <div className="px-2 py-3 space-y-1" style={{ borderTop: '1px solid var(--tc-border-sidebar)' }}>
           {/* Profile link */}
           <NavLink
             to="/profile"
@@ -120,8 +121,8 @@ export default function AdminLayout() {
             className={({ isActive }) =>
               `flex items-center ${collapsed ? 'justify-center' : ''} gap-3 ${collapsed ? 'px-2' : 'px-3'} py-2.5 rounded-lg text-sm w-full transition-all duration-200 ${
                 isActive
-                  ? 'text-indigo-300 bg-indigo-500/[0.1]'
-                  : 'text-indigo-200/50 hover:text-indigo-100 hover:bg-indigo-500/[0.08]'
+                  ? 'text-indigo-700 dark:text-indigo-300 bg-indigo-500/[0.1]'
+                  : 'text-slate-500 dark:text-indigo-200/50 hover:text-slate-800 dark:hover:text-indigo-100 hover:bg-indigo-500/[0.08]'
               }`
             }
           >
@@ -147,16 +148,19 @@ export default function AdminLayout() {
         <div
           className="flex items-center justify-between px-4 md:px-8 py-3 md:py-4 flex-shrink-0"
           style={{
-            background: 'rgba(8,11,24,0.8)',
+            background: 'var(--tc-bg-topbar)',
             backdropFilter: 'blur(12px)',
-            borderBottom: '1px solid rgba(99,102,241,0.08)',
+            borderBottom: '1px solid var(--tc-border-topbar)',
           }}
         >
           <div className="flex items-center gap-3">
             {/* Mobile hamburger */}
             <button
               onClick={() => setMobileOpen(true)}
-              className="p-1.5 rounded-lg transition-colors text-indigo-300/50 hover:text-indigo-200 hover:bg-indigo-500/[0.08] md:hidden"
+              className="p-1.5 rounded-lg transition-colors md:hidden"
+              style={{ color: 'var(--tc-icon-btn)' }}
+              onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = 'var(--tc-icon-btn-hover)'; (e.currentTarget as HTMLButtonElement).style.background = 'var(--tc-icon-btn-hover-bg)'; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = 'var(--tc-icon-btn)'; (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
               title="Open menu"
             >
               <HiOutlineBars3 className="w-5 h-5" />
@@ -164,7 +168,10 @@ export default function AdminLayout() {
             {/* Collapse toggle (desktop only) */}
             <button
               onClick={() => setCollapsed((c) => !c)}
-              className="p-1.5 rounded-lg transition-colors text-indigo-300/50 hover:text-indigo-200 hover:bg-indigo-500/[0.08] hidden md:flex"
+              className="p-1.5 rounded-lg transition-colors hidden md:flex"
+              style={{ color: 'var(--tc-icon-btn)' }}
+              onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = 'var(--tc-icon-btn-hover)'; (e.currentTarget as HTMLButtonElement).style.background = 'var(--tc-icon-btn-hover-bg)'; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = 'var(--tc-icon-btn)'; (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
               title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
             >
               {collapsed ? (
@@ -173,18 +180,19 @@ export default function AdminLayout() {
                 <HiOutlineChevronLeft className="w-4 h-4" />
               )}
             </button>
-            <span className="text-xs font-medium text-indigo-400/60 hidden sm:inline">TCON Solutions</span>
-            <span className="text-indigo-400/30 text-xs hidden sm:inline">›</span>
-            <span className="text-xs font-medium text-white/60 hidden sm:inline">Admin Panel</span>
+            <span className="text-xs font-medium text-indigo-600/80 dark:text-indigo-400/60 hidden sm:inline">TCON Solutions</span>
+            <span className="text-slate-400/60 dark:text-indigo-400/30 text-xs hidden sm:inline">›</span>
+            <span className="text-xs font-medium text-slate-600 dark:text-white/60 hidden sm:inline">Admin Panel</span>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
+            <ThemeToggle />
             <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold text-indigo-300" style={{ background: 'linear-gradient(135deg,rgba(99,102,241,0.2),rgba(59,130,246,0.1))' }}>
+              <div className="w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold text-indigo-600 dark:text-indigo-300" style={{ background: 'linear-gradient(135deg,rgba(99,102,241,0.2),rgba(59,130,246,0.1))' }}>
                 {user?.name?.charAt(0)?.toUpperCase() || 'A'}
               </div>
               <div className="hidden sm:block">
-                <p className="text-xs font-medium text-white/80 leading-tight">{user?.name}</p>
-                <p className="text-[10px] text-indigo-300/40 leading-tight">{user?.email}</p>
+                <p className="text-xs font-medium text-slate-800 dark:text-white/80 leading-tight">{user?.name}</p>
+                <p className="text-[10px] text-slate-500/70 dark:text-indigo-300/40 leading-tight">{user?.email}</p>
               </div>
             </div>
             <div

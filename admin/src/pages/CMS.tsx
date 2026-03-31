@@ -27,8 +27,8 @@ const Field = ({ label, value, onChange, multiline, placeholder }: { label: stri
 const Section = ({ title, children, defaultOpen = true }: { title: string; children: React.ReactNode; defaultOpen?: boolean }) => {
   const [open, setOpen] = useState(defaultOpen);
   return (
-    <div className="rounded-xl border border-white/[0.06] overflow-hidden">
-      <button onClick={() => setOpen(!open)} className="w-full flex items-center justify-between px-4 py-3 text-sm font-medium text-white bg-white/[0.03] hover:bg-white/[0.05] transition-colors">
+    <div className="rounded-xl border cms-section-wrap overflow-hidden">
+      <button onClick={() => setOpen(!open)} className="w-full flex items-center justify-between px-4 py-3 text-sm font-medium cms-section-btn transition-colors">
         {title}
         {open ? <HiOutlineChevronUp className="w-4 h-4 text-gray-500" /> : <HiOutlineChevronDown className="w-4 h-4 text-gray-500" />}
       </button>
@@ -73,7 +73,7 @@ const ListEditor = ({ title, items, fields, onChange }: { title: string; items: 
   <Section title={`${title} (${items.length})`} defaultOpen={false}>
     <div className="space-y-4">
       {items.map((item, i) => (
-        <div key={i} className="p-3 rounded-lg border border-white/[0.06] bg-white/[0.02] space-y-3">
+        <div key={i} className="p-3 rounded-lg border cms-item space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-xs font-medium text-gray-500">#{i + 1}</span>
             <button onClick={() => onChange(items.filter((_, j) => j !== i))} className="p-1 text-red-400 hover:text-red-300"><HiOutlineTrash className="w-3.5 h-3.5" /></button>
@@ -160,7 +160,7 @@ const TeamEditor = ({ items, onChange }: { items: any[]; onChange: (v: any[]) =>
   <Section title={`Team Members (${items.length})`} defaultOpen={false}>
     <div className="space-y-4">
       {items.map((item, i) => (
-        <div key={i} className="p-4 rounded-lg border border-white/[0.06] bg-white/[0.02] space-y-4 group hover:border-white/[0.12] transition-colors">
+        <div key={i} className="p-4 rounded-lg border cms-item space-y-4 group transition-colors">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-lg bg-accent-indigo/20 flex items-center justify-center">
@@ -196,7 +196,7 @@ const SolutionsEditor = ({ items, onChange }: { items: any[]; onChange: (v: any[
   <Section title={`Solutions (${items.length})`} defaultOpen={false}>
     <div className="space-y-4">
       {items.map((item, i) => (
-        <div key={i} className="p-3 rounded-lg border border-white/[0.06] bg-white/[0.02] space-y-3">
+        <div key={i} className="p-3 rounded-lg border cms-item space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-xs font-medium text-gray-500">#{i + 1}</span>
             <button onClick={() => onChange(items.filter((_, j) => j !== i))} className="p-1 text-red-400 hover:text-red-300"><HiOutlineTrash className="w-3.5 h-3.5" /></button>
@@ -451,7 +451,7 @@ export default function CMS() {
           <button
             onClick={() => setShowJson(!showJson)}
             className="h-9 px-4 rounded-lg text-sm font-medium transition-colors"
-            style={{ background: showJson ? 'rgba(139,92,246,0.15)' : 'rgba(255,255,255,0.06)', color: showJson ? '#a78bfa' : 'rgba(148,163,184,0.8)', border: `1px solid ${showJson ? 'rgba(139,92,246,0.3)' : 'rgba(255,255,255,0.08)'}` }}
+            style={{ background: showJson ? 'rgba(139,92,246,0.15)' : 'var(--tc-modal-field-bg)', color: showJson ? '#a78bfa' : 'var(--tc-text-secondary)', border: `1px solid ${showJson ? 'rgba(139,92,246,0.3)' : 'var(--tc-modal-field-border)'}` }}
           >
             {showJson ? 'Form View' : 'JSON View'}
           </button>
@@ -474,7 +474,7 @@ export default function CMS() {
             className={`px-4 py-2 rounded-lg text-sm font-medium capitalize transition-colors ${
               selectedPage === page
                 ? 'bg-accent-indigo text-white'
-                : 'bg-bg-card text-gray-400 hover:text-white border border-white/[0.06]'
+                : 'bg-bg-card text-gray-400 dark:hover:text-white hover:text-slate-900 border dark:border-white/[0.06] border-slate-200'
             }`}
           >
             {page}
@@ -483,10 +483,10 @@ export default function CMS() {
       </div>
 
       {/* Content Editor */}
-      <div className="bg-bg-card border border-white/[0.06] rounded-xl overflow-hidden">
+      <div className="tc-table-wrap overflow-hidden">
         <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.06]">
           <span className="text-sm text-gray-400">
-            Editing: <span className="text-white capitalize">{selectedPage}</span>
+            Editing: <span className="capitalize font-medium dark:text-white text-slate-800">{selectedPage}</span>
           </span>
           {showJson && jsonError && <span className="text-xs text-red-400">{jsonError}</span>}
         </div>

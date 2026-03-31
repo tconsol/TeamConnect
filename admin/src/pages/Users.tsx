@@ -118,7 +118,7 @@ export default function Users() {
       </div>
 
       {/* Table */}
-      <div className="bg-bg-card border border-white/[0.06] rounded-xl overflow-hidden overflow-x-auto">
+      <div className="tc-table-wrap overflow-x-auto">
         <table className="w-full text-sm min-w-[480px]">
           <thead>
             <tr style={{ background: 'rgba(99,102,241,0.08)', borderBottom: '1px solid rgba(99,102,241,0.2)' }}>
@@ -145,9 +145,9 @@ export default function Users() {
               </tr>
             ) : (
               users.map((user: User) => (
-                <tr key={user._id} className="border-b border-white/[0.04] hover:bg-white/[0.02]">
-                  <td className="px-4 py-3 font-medium text-white">{user.name}</td>
-                  <td className="px-4 py-3 text-gray-400 break-all">{user.email}</td>
+                <tr key={user._id} className="border-b border-slate-100 dark:border-white/[0.04] hover:bg-white/[0.02]">
+                  <td className="px-4 py-3 font-medium dark:text-white text-slate-900">{user.name}</td>
+                  <td className="px-4 py-3 dark:text-slate-400 text-slate-500 break-all">{user.email}</td>
                   <td className="px-4 py-3 hidden md:table-cell">
                     <span className={`inline-flex px-2.5 py-1 rounded-full text-xs font-semibold ${user.role === 'superadmin' ? 'bg-purple-500/10 text-purple-400' : 'bg-blue-500/10 text-blue-400'}`}>
                       {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
@@ -165,7 +165,7 @@ export default function Users() {
                     <div className="flex items-center justify-end gap-2">
                       <button
                         onClick={() => openEdit(user)}
-                        className="p-1.5 text-gray-400 hover:text-white transition-colors"
+                        className="edit-btn p-1.5 rounded transition-colors"
                       >
                         <HiOutlinePencil className="w-4 h-4" />
                       </button>
@@ -190,19 +190,19 @@ export default function Users() {
       {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(6px)' }}>
-          <div className="w-full max-w-lg rounded-2xl px-4" style={{ background: '#0d1025', border: '1px solid rgba(99,102,241,0.2)' }}>
+          <div className="w-full max-w-lg rounded-2xl px-4 tc-modal-box">
             {/* Header */}
             <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: '1px solid rgba(99,102,241,0.15)' }}>
               <div>
                 <h2 className="text-base font-semibold text-white">{editingUser ? 'Edit Admin' : 'Create New Admin'}</h2>
-                <p className="text-xs" style={{ color: 'rgba(148,163,184,0.55)', marginTop: 2 }}>
+                <p className="text-xs tc-modal-sub" style={{ marginTop: 2 }}>
                   {editingUser ? 'Update admin user details' : 'Add a new admin user to manage TCON Solutions'}
                 </p>
               </div>
               <button
                 onClick={closeModal}
-                className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-white transition-colors"
-                style={{ background: 'rgba(255,255,255,0.06)' }}
+                className="w-8 h-8 flex items-center justify-center rounded-lg transition-colors"
+                style={{ background: 'var(--tc-modal-field-bg)', color: 'var(--tc-text-secondary)' }}
               >
                 <HiOutlineXMark className="w-4 h-4" />
               </button>
@@ -286,8 +286,7 @@ export default function Users() {
                 <button
                   type="button"
                   onClick={closeModal}
-                  className="px-4 py-2 rounded-lg text-sm transition-colors"
-                  style={{ background: 'rgba(255,255,255,0.06)', color: 'rgba(148,163,184,0.8)' }}
+                  className="px-4 py-2 rounded-lg text-sm transition-colors tc-cancel-btn"
                 >
                   Cancel
                 </button>

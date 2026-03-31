@@ -189,7 +189,7 @@ export default function Skills() {
         </button>
       </div>
 
-      <div className="bg-bg-card border border-white/[0.06] rounded-xl overflow-hidden overflow-x-auto">
+      <div className="tc-table-wrap overflow-x-auto">
         <table className="w-full text-sm min-w-[480px]">
           <thead>
               <tr style={{ background: 'rgba(99,102,241,0.08)', borderBottom: '1px solid rgba(99,102,241,0.2)' }}>
@@ -217,16 +217,16 @@ export default function Skills() {
               (skills || []).map((item: any) => {
                 const Icon = ICON_MAP[item.iconKey] || SiReact;
                 return (
-                  <tr key={item._id} className="border-b border-white/[0.04] hover:bg-white/[0.02]">
-                  <td className="px-4 py-3 font-medium text-white">{item.name}</td>
+                  <tr key={item._id} className="border-b border-slate-100 dark:border-white/[0.04] hover:bg-white/[0.02]">
+                  <td className="px-4 py-3 font-medium dark:text-white text-slate-900">{item.name}</td>
                     <td className="px-4 py-3 hidden md:table-cell">
-                      <div className="flex items-center gap-2 text-gray-300">
+                      <div className="flex items-center gap-2 dark:text-slate-300 text-slate-600">
                         <Icon className="w-4 h-4" style={{ color: item.color || '#8B5CF6' }} />
                         <span className="text-xs">{item.iconKey}</span>
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-gray-300 hidden md:table-cell">{item.proficiency}%</td>
-                    <td className="px-4 py-3 text-gray-400 hidden lg:table-cell">{item.order}</td>
+                    <td className="px-4 py-3 dark:text-slate-300 text-slate-600 hidden md:table-cell">{item.proficiency}%</td>
+                    <td className="px-4 py-3 dark:text-slate-400 text-slate-500 hidden lg:table-cell">{item.order}</td>
                     <td className="px-4 py-3 hidden lg:table-cell">
                       <span className={item.isActive ? 'text-emerald-400' : 'text-gray-500'}>
                         {item.isActive ? 'Active' : 'Inactive'}
@@ -236,7 +236,7 @@ export default function Skills() {
                       <div className="flex items-center justify-end gap-2">
                         <button
                           onClick={() => openEdit(item)}
-                          className="p-1.5 text-gray-400 hover:text-white transition-colors"
+                          className="edit-btn p-1.5 rounded transition-colors"
                         >
                           <HiOutlinePencil className="w-4 h-4" />
                         </button>
@@ -265,17 +265,17 @@ export default function Skills() {
 
       {showModal && createPortal(
         <div className="fixed top-0 left-0 z-50 flex items-center justify-center" style={{ width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(6px)' }}>
-          <div className="w-full max-w-xl rounded-2xl px-4" style={{ background: '#0d1025', border: '1px solid rgba(99,102,241,0.2)' }}>
+          <div className="w-full max-w-xl rounded-2xl px-4 tc-modal-box">
 
             {/* Header */}
             <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: '1px solid rgba(99,102,241,0.15)' }}>
               <div>
                 <h2 className="text-base font-semibold text-white">{editingId ? 'Edit Skill' : 'New Skill'}</h2>
-                <p className="text-xs" style={{ color: 'rgba(148,163,184,0.55)', marginTop: 2 }}>
+                <p className="text-xs tc-modal-sub" style={{ marginTop: 2 }}>
                   Configure icon, color, proficiency, and optional uploaded image.
                 </p>
               </div>
-              <button onClick={closeModal} className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-white transition-colors" style={{ background: 'rgba(255,255,255,0.06)' }}>
+              <button onClick={closeModal} className="w-8 h-8 flex items-center justify-center rounded-lg transition-colors" style={{ background: 'var(--tc-modal-field-bg)', color: 'var(--tc-text-secondary)' }}>
                 <HiOutlineXMark className="w-4 h-4" />
               </button>
             </div>
@@ -382,7 +382,7 @@ export default function Skills() {
 
               {/* Footer */}
               <div className="flex items-center justify-end gap-3 px-6 py-4" style={{ borderTop: '1px solid rgba(99,102,241,0.12)' }}>
-                <button type="button" onClick={closeModal} className="px-4 py-2 rounded-lg text-sm transition-colors" style={{ background: 'rgba(255,255,255,0.06)', color: 'rgba(148,163,184,0.8)' }}>
+                <button type="button" onClick={closeModal} className="px-4 py-2 rounded-lg text-sm transition-colors tc-cancel-btn">
                   Cancel
                 </button>
                 <button type="submit" disabled={saveMutation.isPending} className="px-5 py-2 rounded-lg text-sm font-medium text-white disabled:opacity-50 transition-all" style={{ background: 'linear-gradient(135deg,#6366F1,#3B82F6)' }}>

@@ -9,12 +9,8 @@ const api = axios.create({
 
 export const fetchCMS = async (page: string) => {
   const { data } = await api.get(`/cms/${page}`, {
-    params: { _ts: Date.now() },
-    headers: {
-      'Cache-Control': 'no-cache, no-store, must-revalidate',
-      Pragma: 'no-cache',
-      Expires: '0',
-    },
+    // ✓ Removed _ts timestamp that was forcing cache-busting
+    // ✓ Removed cache-disabling headers - let staleTime manage freshness
   });
   return data.data;
 };

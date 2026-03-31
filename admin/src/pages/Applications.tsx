@@ -70,7 +70,7 @@ export default function Applications() {
         </div>
       </div>
 
-      <div className="bg-bg-card border border-white/[0.06] rounded-xl overflow-hidden">
+      <div className="tc-table-wrap">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
@@ -97,10 +97,10 @@ export default function Applications() {
                   </tr>
                 ))
               ) : applications.map((app: any) => (
-                <tr key={app._id} className="border-b border-white/[0.04] hover:bg-white/[0.02]">
-                  <td className="px-4 py-3 font-medium text-white">{app.name}</td>
-                  <td className="px-4 py-3 text-gray-400 hidden md:table-cell">{app.email}</td>
-                  <td className="px-4 py-3 text-gray-400 hidden lg:table-cell">{app.job?.title || '—'}</td>
+                <tr key={app._id} className="border-b border-slate-100 dark:border-white/[0.04] hover:bg-white/[0.02]">
+                  <td className="px-4 py-3 font-medium dark:text-white text-slate-900">{app.name}</td>
+                  <td className="px-4 py-3 dark:text-slate-400 text-slate-500 hidden md:table-cell">{app.email}</td>
+                  <td className="px-4 py-3 dark:text-slate-400 text-slate-500 hidden lg:table-cell">{app.job?.title || '—'}</td>
                   <td className="px-4 py-3">
                     <Dropdown
                       value={app.status}
@@ -147,15 +147,15 @@ export default function Applications() {
           <button
             onClick={() => setPage((p) => Math.max(1, p - 1))}
             disabled={page === 1}
-            className="px-3 py-1.5 text-sm bg-bg-card border border-white/[0.06] rounded-lg disabled:opacity-30 hover:bg-white/[0.04] transition-colors"
+            className="px-3 py-1.5 text-sm analytics-card border-0 rounded-lg disabled:opacity-30 hover:bg-indigo-500/[0.06] transition-colors dark:text-slate-300 text-slate-600"
           >
             Previous
           </button>
-          <span className="text-sm text-gray-400">Page {page} of {totalPages}</span>
+          <span className="text-sm dark:text-slate-400 text-slate-500">Page {page} of {totalPages}</span>
           <button
             onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
             disabled={page === totalPages}
-            className="px-3 py-1.5 text-sm bg-bg-card border border-white/[0.06] rounded-lg disabled:opacity-30 hover:bg-white/[0.04] transition-colors"
+            className="px-3 py-1.5 text-sm analytics-card border-0 rounded-lg disabled:opacity-30 hover:bg-indigo-500/[0.06] transition-colors dark:text-slate-300 text-slate-600"
           >
             Next
           </button>
