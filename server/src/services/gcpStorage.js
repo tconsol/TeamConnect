@@ -34,7 +34,9 @@ try {
 
 const bucket = storage ? storage.bucket(config.gcp.bucketName) : null;
 
-const SENSITIVE_FOLDERS = ['resumes', 'portfolio-images'];
+// Only resumes and team-members need signed URLs (private content).
+// portfolio-images are public content — they get permanent storage.googleapis.com URLs.
+const SENSITIVE_FOLDERS = ['resumes', 'team-members'];
 
 const uploadFile = async (file, folder) => {
   if (!bucket) throw new Error(`GCP Storage not configured: ${gcpError || 'unknown error'}`);
@@ -70,10 +72,13 @@ const uploadFile = async (file, folder) => {
 };
 
 const extractFilename = (fileUrl) => {
-  if (fileUrl.startsWith('gs://')) {
-    return fileUrl.replace(`gs://${config.gcp.bucketName}/`, '');
+  // Remove query parameters (from signed URLs)
+  const urlWithoutQuery = fileUrl.split('?')[0];
+  
+  if (urlWithoutQuery.startsWith('gs://')) {
+    return urlWithoutQuery.replace(`gs://${config.gcp.bucketName}/`, '');
   }
-  return fileUrl.replace(
+  return urlWithoutQuery.replace(
     `https://storage.googleapis.com/${config.gcp.bucketName}/`,
     ''
   );

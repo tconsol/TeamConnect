@@ -17,7 +17,7 @@ export default function ProcessSection() {
   }));
 
   return (
-    <section className="relative py-32 overflow-hidden">
+    <section className="relative py-16 md:py-32 overflow-hidden">
       <div className="absolute inset-0 bg-bg-secondary" />
       <div className="absolute inset-0 dot-pattern opacity-40" />
 

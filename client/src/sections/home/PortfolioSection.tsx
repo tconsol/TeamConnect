@@ -16,12 +16,15 @@ export default function PortfolioSection() {
   const { data: portfolios } = useQuery({
     queryKey: ['portfolios', 'featured'],
     queryFn: () => fetchPortfolios({ featured: 'true' }),
+    staleTime: 45 * 60 * 1000,
+    refetchInterval: 50 * 60 * 1000,
+    refetchOnMount: true,
   });
 
   const projects = (portfolios || []).slice(0, 3);
 
   return (
-    <section className="relative py-32">
+    <section className="relative py-16 md:py-32">
       <div className="container-custom">
         <SectionHeading
           label="Portfolio"
@@ -41,7 +44,7 @@ export default function PortfolioSection() {
                 <img
                   src={project.thumbnail}
                   alt={project.title}
-                  className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                  className="absolute inset-0 w-full h-full object-contain object-center group-hover:scale-110 transition-transform duration-700"
                 />
               ) : (
                 <div

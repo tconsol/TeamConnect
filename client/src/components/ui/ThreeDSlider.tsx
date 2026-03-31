@@ -1,8 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { HiXMark } from 'react-icons/hi2';
+import { motion } from 'framer-motion';
 
-function DefaultCard({ item, isActive, onOpen }: { item: SliderItemData; isActive: boolean; onOpen: () => void }) {
+function DefaultCard({ item, isActive }: { item: SliderItemData; isActive: boolean }) {
   const [isHovered, setIsHovered] = useState(false);
   const imgSrc = item.image || item.imageUrl;
   const showBio = isHovered || isActive;
@@ -13,7 +12,6 @@ function DefaultCard({ item, isActive, onOpen }: { item: SliderItemData; isActiv
       style={{ border: `1px solid ${isActive ? 'rgba(139,92,246,0.45)' : 'rgba(255,255,255,0.07)'}` }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      onClick={isActive ? onOpen : undefined}
     >
       {/* Full-card image */}
       {imgSrc ? (
@@ -74,93 +72,7 @@ function DefaultCard({ item, isActive, onOpen }: { item: SliderItemData; isActiv
   );
 }
 
-function DetailModal({ item, onClose }: { item: SliderItemData | null; onClose: () => void }) {
-  if (!item) return null;
 
-  const imgSrc = item.image || item.imageUrl;
-
-  return (
-    <AnimatePresence>
-      {item && (
-        <motion.div
-          className="fixed inset-0 z-[9999] flex items-center justify-center p-6"
-          style={{ background: 'rgba(0, 0, 0, 0.15)', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)' }}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          onClick={onClose}
-        >
-          {/* Wrapper to position close button outside the overflow-hidden card */}
-          <div className="relative" onClick={(e) => e.stopPropagation()}>
-            {/* Close button — pinned to top-right corner of the card */}
-            <button
-              onClick={onClose}
-              className="absolute -top-4 -right-4 z-30 w-10 h-10 flex items-center justify-center rounded-full transition-all"
-              style={{ background: 'rgba(139,92,246,0.9)', boxShadow: '0 0 16px rgba(139,92,246,0.5)' }}
-            >
-              <HiXMark className="w-5 h-5 text-white" />
-            </button>
-
-            {/* Card */}
-            <motion.div
-              className="relative rounded-2xl overflow-hidden w-[420px] max-w-[92vw]"
-              style={{
-                height: '82vh',
-                maxHeight: '680px',
-                border: '1px solid rgba(139,92,246,0.35)',
-              }}
-              initial={{ scale: 0.88, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.88, opacity: 0 }}
-              transition={{ type: 'spring', stiffness: 300, damping: 28 }}
-            >
-              {/* Full background image */}
-              {imgSrc ? (
-                <img
-                  src={imgSrc}
-                  alt={item.title}
-                  className="absolute inset-0 w-full h-full object-cover object-center"
-                  onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
-                />
-              ) : (
-                <div
-                  className="absolute inset-0 flex items-center justify-center text-9xl font-extrabold"
-                  style={{ background: 'linear-gradient(135deg, rgba(139,92,246,0.3), rgba(59,130,246,0.2))', color: 'rgba(255,255,255,0.15)' }}
-                >
-                  {item.title[0]}
-                </div>
-              )}
-
-              {/* Gradient scrim — lighter at top, heavier at bottom */}
-              <div
-                className="absolute inset-0"
-                style={{ background: 'linear-gradient(to top, rgba(5,7,20,0.92) 38%, rgba(5,7,20,0.05) 100%)' }}
-              />
-
-              {/* Glossy content panel at bottom */}
-              <div
-                className="absolute bottom-0 left-0 right-0 z-10 px-6 pt-5 pb-7"
-                style={{
-                  background: 'rgba(163, 163, 173, 0.07)',
-                  backdropFilter: 'blur(5px)',
-                  WebkitBackdropFilter: 'blur(5px)',
-                  borderTop: '1px solid rgba(255,255,255,0.08)',
-                }}
-              >
-                <p className="text-xs text-indigo-400 uppercase tracking-widest font-semibold mb-1">{item.subtitle}</p>
-                <h2 className="text-2xl font-bold text-white mb-3 leading-tight">{item.title}</h2>
-                {item.description && (
-                  <p className="text-sm text-gray-300 leading-relaxed">{item.description}</p>
-                )}
-                
-              </div>
-            </motion.div>
-          </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
-  );
-}
 
 export interface SliderItemData {
   title: string;
@@ -202,7 +114,6 @@ export default function ThreeDSlider({
   renderCard,
 }: ThreeDSliderProps) {
   const [activeIndex, setActiveIndex] = useState(0);
-  const [selectedItem, setSelectedItem] = useState<SliderItemData | null>(null);
   const startX = useRef(0);
   const isDragging = useRef(false);
   const totalItems = items.length;
@@ -242,16 +153,18 @@ export default function ThreeDSlider({
     return () => window.removeEventListener('wheel', handleWheel);
   }, [speedWheel, totalItems]);
 
-  // Touch / drag navigation
-  const handleDragStart = (e: React.PointerEvent) => {
+  // Touch / drag navigation with proper touch event support
+  const handleDragStart = (e: React.PointerEvent | React.TouchEvent) => {
     isDragging.current = true;
-    startX.current = e.clientX;
+    const clientX = 'touches' in e ? e.touches[0]?.clientX : (e as React.PointerEvent).clientX;
+    startX.current = clientX || 0;
   };
 
-  const handleDragEnd = (e: React.PointerEvent) => {
+  const handleDragEnd = (e: React.PointerEvent | React.TouchEvent) => {
     if (!isDragging.current) return;
     isDragging.current = false;
-    const diff = (e.clientX - startX.current) * speedDrag;
+    const clientX = 'changedTouches' in e ? e.changedTouches[0]?.clientX : (e as React.PointerEvent).clientX;
+    const diff = ((clientX || 0) - startX.current) * speedDrag;
     if (Math.abs(diff) > 0.5) {
       const steps = Math.round(diff);
       setActiveIndex((i) => (i + steps + totalItems) % totalItems);
@@ -259,7 +172,7 @@ export default function ThreeDSlider({
   };
 
   const defaultCard = (item: SliderItemData, isActive: boolean) => (
-    <DefaultCard item={item} isActive={isActive} onOpen={() => setSelectedItem(item)} />
+    <DefaultCard item={item} isActive={isActive} />
   );
 
   return (
@@ -269,6 +182,8 @@ export default function ThreeDSlider({
       style={{ perspective: '1400px', height: '420px', ...containerStyle }}
       onPointerDown={handleDragStart}
       onPointerUp={handleDragEnd}
+      onTouchStart={handleDragStart}
+      onTouchEnd={handleDragEnd}
     >
       {items.map((item, index) => {
         const offset = getCircularOffset(index);
@@ -338,8 +253,7 @@ export default function ThreeDSlider({
         ))}
       </div>
 
-      {/* Detail Modal */}
-      <DetailModal item={selectedItem} onClose={() => setSelectedItem(null)} />
+
     </div>
   );
 }

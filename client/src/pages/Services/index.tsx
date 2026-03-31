@@ -63,7 +63,7 @@ export default function Services() {
       </section>
 
       {/* Services Grid */}
-      <section className="py-32">
+      <section className="py-16 md:py-32">
         <div className="container-custom">
           <div ref={servicesRef} className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {(services || []).map((service: any) => {

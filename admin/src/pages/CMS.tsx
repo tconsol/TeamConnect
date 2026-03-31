@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getCMSContent, updateCMSContent } from '@/services/api';
 import { useToast } from '@/components/ui/Toast';
 import { Dropdown, type DropdownOption } from '@/components/ui/Dropdown';
-import { HiOutlinePlus, HiOutlineTrash, HiOutlineChevronDown, HiOutlineChevronUp, HiOutlineArrowUpTray, HiOutlinePhoto } from 'react-icons/hi2';
+import { HiOutlinePlus, HiOutlineTrash, HiOutlineChevronDown, HiOutlineChevronUp, HiOutlineArrowUpTray, HiOutlinePhoto, HiArrowUp } from 'react-icons/hi2';
 
 const PAGES = ['home', 'about', 'services', 'solutions', 'portfolio', 'careers', 'contact'];
 
@@ -430,6 +430,16 @@ export default function CMS() {
 
   const renderer = PAGE_RENDERERS[selectedPage];
 
+  const scrollToTop = () => {
+    // Find the scrollable container (the main content area in AdminLayout)
+    const scrollContainer = document.querySelector('main > div:last-child');
+    if (scrollContainer) {
+      scrollContainer.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -501,6 +511,20 @@ export default function CMS() {
           </div>
         )}
       </div>
+
+      {/* Floating Go to Top Button */}
+      <button
+        onClick={scrollToTop}
+        className="fixed bottom-6 right-6 z-40 w-12 h-12 rounded-full flex items-center justify-center text-white shadow-lg hover:scale-110 transition-all duration-200"
+        style={{
+          background: 'linear-gradient(135deg, #a78bfa 0%, #7c3aed 100%)',
+          boxShadow: '0 8px 20px rgba(167, 139, 250, 0.4)'
+        }}
+        aria-label="Back to top"
+        title="Go to top"
+      >
+        <HiArrowUp className="w-5 h-5" />
+      </button>
     </div>
   );
 }

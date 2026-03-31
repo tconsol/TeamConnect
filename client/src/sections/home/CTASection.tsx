@@ -13,7 +13,7 @@ export default function CTASection() {
   const cta = cms?.content?.cta;
 
   return (
-    <section className="relative py-32 overflow-hidden">
+    <section className="relative py-16 md:py-32 overflow-hidden">
       <div className="absolute inset-0 bg-glow-violet opacity-30" />
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-accent-violet/[0.08] rounded-full blur-[150px]" />
       <div className="absolute inset-0 line-grid opacity-20" />

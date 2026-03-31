@@ -41,7 +41,7 @@ export default function ServicesSection() {
   const displayServices = services || [];
 
   return (
-    <section className="relative py-32 overflow-hidden">
+    <section className="relative py-16 md:py-32 overflow-hidden">
       <div className="absolute inset-0 bg-glow-violet opacity-20" />
 
       <div className="container-custom relative z-10">

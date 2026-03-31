@@ -12,8 +12,9 @@ export type CMSPage =
 export const cmsQueryOptions = (page: CMSPage) => ({
   queryKey: ['cms', page] as const,
   queryFn: () => fetchCMS(page),
-  refetchOnMount: 'always' as const,
+  refetchOnMount: true,
   refetchOnWindowFocus: true,
   refetchOnReconnect: true,
-  refetchInterval: 30_000,
+  refetchInterval: 50 * 60 * 1000, // 50 minutes — ensures signed URLs (60min validity) stay fresh
+  staleTime: 45 * 60 * 1000, // 45 minutes — consider data fresh for 45 min to reduce API calls
 });

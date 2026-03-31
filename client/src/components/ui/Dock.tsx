@@ -1,4 +1,4 @@
-import { useRef, type ReactNode } from 'react';
+import { useRef, useEffect, useState, type ReactNode } from 'react';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 
 interface DockItem {
@@ -94,6 +94,21 @@ export default function Dock({
 }: DockProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mouseX = useMotionValue(-1000);
+  const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' && window.innerWidth < 768);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Responsive sizes for mobile
+  const adjustedItemSize = isMobile ? Math.max(36, baseItemSize - 10) : baseItemSize;
+  const adjustedMag = isMobile ? Math.max(48, magnification - 14) : magnification;
+  const adjustedGap = isMobile ? 4 : gap;
 
   const handleMouseMove = (e: React.MouseEvent) => {
     const rect = containerRef.current?.getBoundingClientRect();
@@ -104,14 +119,14 @@ export default function Dock({
 
   return (
     <div
-      className={`fixed left-1/2 -translate-x-1/2 z-[100] ${
-        position === 'bottom' ? 'bottom-5' : 'top-5'
+      className={`fixed left-1/2 -translate-x-1/2 z-[100] px-2 ${
+        position === 'bottom' ? 'bottom-3 md:bottom-5' : 'top-3 md:top-5'
       } ${className}`}
     >
       <div
         ref={containerRef}
-        className="flex items-end px-3 py-2.5 rounded-2xl bg-black/70 backdrop-blur-xl border border-white/[0.12] shadow-xl"
-        style={{ gap }}
+        className="flex items-end px-2.5 sm:px-3 py-2 sm:py-2.5 rounded-xl sm:rounded-2xl bg-black/70 backdrop-blur-xl border border-white/[0.12] shadow-xl"
+        style={{ gap: adjustedGap }}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
       >
@@ -121,10 +136,10 @@ export default function Dock({
             {...item}
             itemIndex={i}
             mouseX={mouseX}
-            baseItemSize={baseItemSize}
-            magnification={magnification}
+            baseItemSize={adjustedItemSize}
+            magnification={adjustedMag}
             magnificationDistance={magnificationDistance}
-            gap={gap}
+            gap={adjustedGap}
           />
         ))}
       </div>

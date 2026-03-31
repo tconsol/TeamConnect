@@ -25,6 +25,9 @@ export default function Portfolio() {
   const { data: projects = [], isLoading } = useQuery({
     queryKey: ['portfolios'],
     queryFn: () => fetchPortfolios(),
+    staleTime: 45 * 60 * 1000,
+    refetchInterval: 50 * 60 * 1000,
+    refetchOnMount: true,
   });
 
   const categories = useMemo(() => {
@@ -93,11 +96,11 @@ export default function Portfolio() {
                 className="group glass-card rounded-2xl overflow-hidden"
               >
                 {project.thumbnail ? (
-                  <div className="aspect-video overflow-hidden">
+                  <div className="overflow-hidden bg-black/20 max-h-60">
                     <img
                       src={project.thumbnail}
                       alt={project.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                      className="w-full h-auto object-cover object-center group-hover:scale-105 transition-transform duration-700"
                     />
                   </div>
                 ) : (

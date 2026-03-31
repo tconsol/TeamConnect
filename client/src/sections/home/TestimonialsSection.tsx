@@ -128,7 +128,7 @@ export default function TestimonialsSection() {
   const row2 = [...testimonials].reverse();
 
   return (
-    <section className="relative py-32 overflow-hidden">
+    <section className="relative py-16 md:py-32 overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0 bg-bg-secondary" />
       <div className="absolute inset-0 dot-pattern opacity-30" />

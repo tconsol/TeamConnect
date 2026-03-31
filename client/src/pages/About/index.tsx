@@ -46,7 +46,7 @@ export default function About() {
       </section>
 
       {/* Story */}
-      <section className="py-32 relative overflow-hidden">
+      <section className="py-16 md:py-32 relative overflow-hidden">
         <div className="absolute inset-0 bg-bg-secondary" />
         <div className="absolute inset-0 line-grid opacity-20" />
         <div ref={storyRef} className="container-custom relative z-10">
@@ -73,7 +73,7 @@ export default function About() {
       </section>
 
       {/* Mission & Vision */}
-      <section className="py-32">
+      <section className="py-16 md:py-32">
         <div className="container-custom">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="glass-card rounded-2xl p-10">
@@ -99,7 +99,7 @@ export default function About() {
       </section>
 
       {/* Values */}
-      <section className="py-32 relative overflow-hidden">
+      <section className="py-16 md:py-32 relative overflow-hidden">
         <div className="absolute inset-0 bg-bg-secondary" />
         <div className="container-custom relative z-10">
           <SectionHeading label="Values" title="What Drives Us" subtitle="The core principles that guide everything we do." auroraFrom={2} />
@@ -119,7 +119,7 @@ export default function About() {
       <SkillGlobeSafe />
 
       {/* Team — 3D Slider */}
-      <section className="py-32 overflow-hidden">
+      <section className="py-16 md:py-32 overflow-hidden">
         <div className="container-custom mb-16">
           <SectionHeading
             label="Team"

@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom';
 import { HiArrowUp } from 'react-icons/hi2';
 import { useQuery } from '@tanstack/react-query';
-import { BeamCircle, type OrbitConfig } from '@/components/ui/BeamCircle';
 import { cmsQueryOptions } from '@/utils/cmsQueryOptions';
 import logo from '@/assets/tconsollogo.png';
 
@@ -115,32 +114,12 @@ const fallbackIcon = (
   </svg>
 );
 
-const ORBIT_COLORS = ['rgba(139,92,246,0.38)', 'rgba(56,189,248,0.38)', 'rgba(244,114,182,0.34)', 'rgba(96,165,250,0.36)', 'rgba(248,113,113,0.34)'];
-const ORBIT_RADII = [0.28, 0.44, 0.6, 0.76];
-const ORBIT_SPEEDS = [9, 15, 22, 29];
 
-function buildOrbits(links: Array<{ platform: string; href: string }>): OrbitConfig[] {
-  return links
-    .slice(0, 4)
-    .map((link, i) => {
-      const cfg = PLATFORM_CONFIG[link.platform];
-      return {
-        id: i + 1,
-        radiusFactor: ORBIT_RADII[i],
-        speed: ORBIT_SPEEDS[i],
-        href: link.href,
-        orbitColor: cfg?.orbitColor || ORBIT_COLORS[i % ORBIT_COLORS.length],
-        orbitThickness: 1,
-        icon: cfg?.icon || fallbackIcon,
-      };
-    });
-}
 
 export default function Footer() {
   const { data: homeCMS } = useQuery(cmsQueryOptions('home'));
   const { data: aboutCMS } = useQuery(cmsQueryOptions('about'));
   const socialLinks = (homeCMS?.content?.socialLinks as Array<{ platform: string; href: string }> | undefined);
-  const orbits = socialLinks?.length ? buildOrbits(socialLinks) : [];
   const teamMembers = (aboutCMS?.content?.team as Array<{ name: string; role: string; image?: string }> | undefined);
 
   const scrollToTop = () => {
@@ -170,14 +149,26 @@ export default function Footer() {
                 transform businesses. Let's create something extraordinary together.
               </p>
 
-              {/* BeamCircle social orbit */}
-              {orbits.length > 0 && (
-              <div className="mt-10 lg:mt-12 flex items-center justify-center w-full lg:pr-8">
-                <div className="relative flex items-center justify-center" style={{ width: 200, height: 200 }}>
-                  <div className="absolute inset-0 rounded-full blur-3xl" style={{ background: 'radial-gradient(circle, rgba(139,92,246,0.28) 0%, rgba(59,130,246,0.14) 45%, transparent 80%)' }} />
-                  <BeamCircle size={150} orbits={orbits} />
+              {/* Social media icons */}
+              {socialLinks && socialLinks.length > 0 && (
+                <div className="mt-8 flex items-center gap-4 flex-wrap">
+                  {socialLinks.map((link) => {
+                    const cfg = PLATFORM_CONFIG[link.platform];
+                    return (
+                      <a
+                        key={link.platform}
+                        href={link.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-10 h-10 rounded-lg flex items-center justify-center hover:bg-white/[0.08] transition-all duration-200 group"
+                        style={{ border: '1px solid rgba(255,255,255,0.1)' }}
+                        aria-label={link.platform}
+                      >
+                        {cfg?.icon || fallbackIcon}
+                      </a>
+                    );
+                  })}
                 </div>
-              </div>
               )}
 
 
