@@ -26,7 +26,7 @@ function DefaultCard({ item, isActive }: { item: SliderItemData; isActive: boole
           className="absolute inset-0 flex items-center justify-center text-7xl font-extrabold"
           style={{ background: 'linear-gradient(135deg, rgba(139,92,246,0.25), rgba(59,130,246,0.15))', color: 'rgba(255,255,255,0.12)' }}
         >
-          {item.title[0]}
+          {item.title && item.title.length > 0 ? item.title[0] : '?'}
         </div>
       )}
 
@@ -39,7 +39,7 @@ function DefaultCard({ item, isActive }: { item: SliderItemData; isActive: boole
           className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-extrabold text-white shadow-lg flex-shrink-0"
           style={{ background: 'linear-gradient(135deg, #8B5CF6, #3B82F6)' }}
         >
-          {item.title[0]}
+          {item.title && item.title.length > 0 ? item.title[0] : '?'}
         </div>
         <span className="text-xs font-mono text-white/30">{item.num}</span>
       </div>
@@ -116,7 +116,17 @@ export default function ThreeDSlider({
   const [activeIndex, setActiveIndex] = useState(0);
   const startX = useRef(0);
   const isDragging = useRef(false);
-  const totalItems = items.length;
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const totalItems = Math.max(1, items.length);
+
+  // Guard against empty items array
+  if (items.length === 0) {
+    return (
+      <div className="w-full h-96 flex items-center justify-center text-gray-400">
+        No items to display
+      </div>
+    );
+  }
 
   const getCircularOffset = (index: number): number => {
     let offset = index - activeIndex;
@@ -125,14 +135,14 @@ export default function ThreeDSlider({
     return offset;
   };
 
-  const goNext = () => setActiveIndex((i) => (i + 1) % totalItems);
-  const goPrev = () => setActiveIndex((i) => (i - 1 + totalItems) % totalItems);
+  const goNext = () => totalItems > 0 && setActiveIndex((i) => (i + 1) % totalItems);
+  const goPrev = () => totalItems > 0 && setActiveIndex((i) => (i - 1 + totalItems) % totalItems);
 
   // Mouse wheel navigation
   useEffect(() => {
     let wheelBuffer = 0;
     const handleWheel = (e: WheelEvent) => {
-      const container = document.getElementById('threed-slider-container');
+      const container = containerRef.current;
       if (!container) return;
       const rect = container.getBoundingClientRect();
       const isOver =
@@ -177,7 +187,7 @@ export default function ThreeDSlider({
 
   return (
     <div
-      id="threed-slider-container"
+      ref={containerRef}
       className="relative flex items-center justify-center select-none"
       style={{ perspective: '1400px', height: '420px', ...containerStyle }}
       onPointerDown={handleDragStart}

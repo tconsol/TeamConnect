@@ -7,7 +7,7 @@ const SkillGlobe = lazy(() =>
     return { default: () => (
       <section className="py-16 md:py-32 relative z-10">
         <div className="max-w-7xl mx-auto text-center">
-          <p className="text-text-muted">Loading skills visualization...</p>
+          <p className="text-text-muted">Unable to load skills visualization. Please try refreshing the page.</p>
         </div>
       </section>
     ) };

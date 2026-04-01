@@ -67,10 +67,10 @@ export function HamburgerMenuOverlay({
 
   // Close on ESC
   useEffect(() => {
-    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape' && isOpen) close(); };
+    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape' && isOpen) onClose?.(); };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [isOpen]);
+  }, [isOpen, onClose]);
 
   const handleItemClick = (item: OverlayMenuItem) => {
     item.onClick?.();
@@ -177,7 +177,7 @@ export function HamburgerMenuOverlay({
                           opacity: hovered === i || item.isActive ? 1 : 0.5,
                         }}
                       >
-                        0{i + 1}
+                        {String(i + 1).padStart(2, '0')}
                       </span>
 
                       {/* Label - no overflow-hidden so text never clips */}

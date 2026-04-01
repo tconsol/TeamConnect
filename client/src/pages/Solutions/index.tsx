@@ -118,7 +118,7 @@ export default function Solutions() {
 
               return (
                 <div
-                  key={solution.title}
+                  key={solution._id || solution.title}
                   className={`group relative rounded-2xl overflow-hidden transition-all duration-500 hover:-translate-y-1 ${
                     isLarge ? 'md:col-span-2 lg:col-span-2' : ''
                   }`}

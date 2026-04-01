@@ -34,11 +34,19 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
+// Request timing middleware
+app.use((req, res, next) => {
+  const [seconds, nanoseconds] = process.hrtime();
+  req.startAt = [seconds, nanoseconds];
+  next();
+});
+
 // Logging
 if (config.nodeEnv !== 'test') {
   morgan.token('response-time-ms', (req, res) => {
-    const diff = process.hrtime(req._startAt);
-    return diff ? `${(diff[0] * 1e3 + diff[1] * 1e-6).toFixed(0)}ms` : '-';
+    if (!req.startAt) return '-';
+    const [seconds, nanoseconds] = process.hrtime(req.startAt);
+    return `${(seconds * 1e3 + nanoseconds * 1e-6).toFixed(0)}ms`;
   });
   app.use(morgan(':method :url :status :response-time-ms', {
     stream: {

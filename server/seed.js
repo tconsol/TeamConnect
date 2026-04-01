@@ -426,8 +426,8 @@ async function seedDatabase() {
       await admin.save();
       console.log(`✅ Admin user created: ${ADMIN_EMAIL}`);
       if (isGeneratedPassword) {
-        console.log(`   Generated password: ${ADMIN_PASSWORD}`);
-        console.log('   ⚠️  Save this password now — it will not be shown again. Set ADMIN_PASSWORD env var for future seeding.');
+        console.error(`⚠️  SENSITIVE - Generated password: ${ADMIN_PASSWORD}`);
+        console.error('   ⚠️  Save this password now — it will not be shown again. Set ADMIN_PASSWORD env var for future seeding.');
       } else {
         console.log('   Password: (from ADMIN_PASSWORD env var)');
       }

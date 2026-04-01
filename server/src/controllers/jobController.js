@@ -29,24 +29,33 @@ exports.getById = async (req, res, next) => {
 
 exports.create = async (req, res, next) => {
   try {
+    const parseJsonField = (value, fieldName) => {
+      if (typeof value !== 'string') return value;
+      try {
+        return JSON.parse(value);
+      } catch (e) {
+        throw new AppError(`Invalid JSON for field: ${fieldName}`, 400);
+      }
+    };
+
     if (typeof req.body.requirements === 'string') {
-      req.body.requirements = JSON.parse(req.body.requirements);
+      req.body.requirements = parseJsonField(req.body.requirements, 'requirements');
     }
     if (typeof req.body.responsibilities === 'string') {
-      req.body.responsibilities = JSON.parse(req.body.responsibilities);
+      req.body.responsibilities = parseJsonField(req.body.responsibilities, 'responsibilities');
     }
     if (typeof req.body.benefits === 'string') {
-      req.body.benefits = JSON.parse(req.body.benefits);
+      req.body.benefits = parseJsonField(req.body.benefits, 'benefits');
     }
     if (typeof req.body.salaryRange === 'string') {
-      req.body.salaryRange = JSON.parse(req.body.salaryRange);
+      req.body.salaryRange = parseJsonField(req.body.salaryRange, 'salaryRange');
     }
     if (req.body.salaryRange) {
       req.body.salaryRange.currency = 'INR';
       req.body.salaryRange.period = 'annum';
     }
     if (typeof req.body.techStack === 'string') {
-      req.body.techStack = JSON.parse(req.body.techStack);
+      req.body.techStack = parseJsonField(req.body.techStack, 'techStack');
     }
 
     const job = await Job.create(req.body);

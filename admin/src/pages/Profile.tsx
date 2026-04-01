@@ -61,7 +61,7 @@ export default function Profile() {
             </div>
             <div>
               <p className="text-lg font-semibold tc-profile-value">{user?.name}</p>
-              <p className="text-sm tc-profile-subtitle">{user?.role?.charAt(0).toUpperCase()}{user?.role?.slice(1)}</p>
+              <p className="text-sm tc-profile-subtitle">{user?.role && user.role.length > 0 ? user.role.charAt(0).toUpperCase() + user.role.slice(1) : 'User'}</p>
             </div>
           </div>
 

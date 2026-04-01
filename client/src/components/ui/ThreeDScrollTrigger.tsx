@@ -32,7 +32,7 @@ export function ThreeDScrollTriggerRow({
   direction = 1,
   className = '',
 }: ThreeDScrollTriggerRowProps) {
-  const duration = Math.max(10, 50 / Math.abs(baseVelocity));
+  const duration = Math.max(10, 50 / Math.max(0.1, Math.abs(baseVelocity)));
 
   return (
     <div className="flex overflow-hidden">

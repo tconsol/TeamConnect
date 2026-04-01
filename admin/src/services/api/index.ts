@@ -66,7 +66,9 @@ export const changePassword = async (currentPassword: string, newPassword: strin
   const { data } = await api.post('/auth/change-password', { currentPassword, newPassword });
   if (data.data?.accessToken) {
     localStorage.setItem('accessToken', data.data.accessToken);
-    localStorage.setItem('refreshToken', data.data.refreshToken);
+    if (data.data.refreshToken) {
+      localStorage.setItem('refreshToken', data.data.refreshToken);
+    }
   }
   return data;
 };

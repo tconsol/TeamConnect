@@ -98,13 +98,10 @@ export default function Careers() {
                         <HiOutlineCurrencyRupee className="w-4 h-4 text-emerald-400" />
                         <span>
                           {job.salaryRange?.min
-                            ? `INR ${Number(job.salaryRange.min).toLocaleString('en-IN')}`
-                            : 'INR 0'}
-                          {' - '}
-                          {job.salaryRange?.max
-                            ? `INR ${Number(job.salaryRange.max).toLocaleString('en-IN')}`
-                            : 'Open'}
-                          {' / annum'}
+                            ? `INR ${Number(job.salaryRange.min).toLocaleString('en-IN')} - ${job.salaryRange?.max ? `INR ${Number(job.salaryRange.max).toLocaleString('en-IN')}` : 'Open'} / annum`
+                            : job.salaryRange?.max
+                            ? `Up to INR ${Number(job.salaryRange.max).toLocaleString('en-IN')} / annum`
+                            : null}
                         </span>
                       </div>
                     )}

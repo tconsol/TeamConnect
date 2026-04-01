@@ -56,7 +56,7 @@ export default function ImageReveal({
               width: imageWidth,
               height: imageHeight,
               left: mousePos.x + 24,
-              top: mousePos.y - Number(imageHeight) / 2,
+              top: mousePos.y - (typeof imageHeight === 'number' ? imageHeight / 2 : parseInt(String(imageHeight)) / 2 || 0),
             }}
             initial={{ opacity: 0, scale: 0.88, y: 10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}

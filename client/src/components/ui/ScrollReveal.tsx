@@ -2,7 +2,7 @@ import { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
 
 interface ScrollRevealProps {
-  children: React.ReactNode;
+  children: string;
   size?: 'sm' | 'md' | 'lg' | 'xl' | '2xl';
   align?: 'left' | 'center' | 'right';
   variant?: 'default' | 'muted' | 'accent' | 'primary';

@@ -22,8 +22,8 @@ export default function CTASection() {
         <h2 className="text-display font-bold text-text-heading mb-6 text-balance">
           {cta?.title ? (
             <>
-              {cta.title.split('?')[0]}
-              <AuroraTextEffect text="?" />
+              {cta.title.endsWith('?') ? cta.title.slice(0, -1) : cta.title}
+              {cta.title.endsWith('?') && <AuroraTextEffect text="?" />}
             </>
           ) : (
             <>

@@ -150,7 +150,7 @@ export default function TestimonialsSection() {
             containerClassName="max-w-xl mx-auto"
             staggerDelay={0.04}
           >
-            Don't take our word for it hear directly from the clients we've helped transform
+            Don't take our word for it. Hear directly from the clients we've helped transform
             their businesses with technology.
           </ScrollReveal>
         </div>

@@ -59,6 +59,7 @@ export default function AdminLayout() {
           background: 'var(--tc-bg-sidebar)',
           borderRight: '1px solid var(--tc-border-sidebar)',
         }}
+        onClick={(e) => e.stopPropagation()}
       >
         {/* Brand */}
         <div
