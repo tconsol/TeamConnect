@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getLeads, updateLeadStatus, deleteLead } from '@/services/api';
+import { getLeads, createLead, updateLeadStatus, deleteLead } from '@/services/api';
 import { useToast } from '@/components/ui/Toast';
 import { DeleteDrawer } from '@/components/ui/DeleteDrawer';
 import { Dropdown } from '@/components/ui/Dropdown';
-import { HiOutlineTrash, HiOutlineMagnifyingGlass, HiOutlineEye, HiOutlineXMark } from 'react-icons/hi2';
+import { HiOutlineTrash, HiOutlineMagnifyingGlass, HiOutlineEye, HiOutlineXMark, HiOutlinePlus } from 'react-icons/hi2';
 
 const STATUSES = ['new', 'contacted', 'qualified', 'proposal', 'negotiation', 'won', 'lost'];
 const STATUS_OPTIONS = STATUSES.map((s) => ({ value: s, label: s.charAt(0).toUpperCase() + s.slice(1) }));
@@ -29,6 +29,16 @@ export default function Leads() {
   const [viewingLead, setViewingLead] = useState<any | null>(null);
   const [deleteDrawerOpen, setDeleteDrawerOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<{ id: string; name: string } | null>(null);
+  const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    company: '',
+    service: '',
+    budget: '',
+    message: '',
+  });
 
   const { data, isLoading } = useQuery({
     queryKey: ['admin-leads', page.toString(), search, statusFilter],
@@ -42,6 +52,17 @@ export default function Leads() {
       queryClient.invalidateQueries({ queryKey: ['admin-leads'] });
     },
     onError: () => toast.error('Failed to update status'),
+  });
+
+  const createMutation = useMutation({
+    mutationFn: createLead,
+    onSuccess: () => {
+      toast.success('Lead created successfully');
+      queryClient.invalidateQueries({ queryKey: ['admin-leads'] });
+      setCreateModalOpen(false);
+      setFormData({ name: '', email: '', phone: '', company: '', service: '', budget: '', message: '' });
+    },
+    onError: () => toast.error('Failed to create lead'),
   });
 
   const removeMutation = useMutation({
@@ -60,7 +81,16 @@ export default function Leads() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Leads</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold">Leads</h1>
+        <button
+          onClick={() => setCreateModalOpen(true)}
+          className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-medium transition-colors"
+        >
+          <HiOutlinePlus className="w-4 h-4" />
+          Create Lead
+        </button>
+      </div>
 
       {/* Filters */}
       <div className="flex flex-wrap gap-3">
@@ -286,6 +316,136 @@ export default function Leads() {
         }}
         isDeleting={removeMutation.isPending}
       />
+
+      {/* Create Lead Modal */}
+      {createModalOpen && createPortal(
+        <div className="fixed top-0 left-0 z-50 flex items-center justify-center" style={{ width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(6px)' }}>
+          <div className="w-full max-w-lg rounded-2xl px-4 tc-modal-box">
+            {/* Header */}
+            <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: '1px solid rgba(99,102,241,0.15)' }}>
+              <div>
+                <h2 className="text-base font-semibold text-white">Create New Lead</h2>
+                <p className="text-xs tc-modal-sub" style={{ marginTop: 2 }}>Add a new lead to the system</p>
+              </div>
+              <button 
+                onClick={() => setCreateModalOpen(false)} 
+                className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-white transition-colors" 
+                style={{ background: 'var(--tc-modal-field-bg)', color: 'var(--tc-text-secondary)' }}
+              >
+                <HiOutlineXMark className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Body */}
+            <div style={{ maxHeight: 'calc(90vh - 200px)', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 16, padding: '20px 24px 20px' }}>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="tc-label">Name *</label>
+                  <input
+                    type="text"
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    placeholder="Lead name"
+                    className="tc-input"
+                  />
+                </div>
+                <div>
+                  <label className="tc-label">Email *</label>
+                  <input
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    placeholder="Email address"
+                    className="tc-input"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="tc-label">Phone</label>
+                  <input
+                    type="tel"
+                    value={formData.phone}
+                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                    placeholder="Phone number"
+                    className="tc-input"
+                  />
+                </div>
+                <div>
+                  <label className="tc-label">Company</label>
+                  <input
+                    type="text"
+                    value={formData.company}
+                    onChange={(e) => setFormData({ ...formData, company: e.target.value })}
+                    placeholder="Company name"
+                    className="tc-input"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="tc-label">Service</label>
+                  <input
+                    type="text"
+                    value={formData.service}
+                    onChange={(e) => setFormData({ ...formData, service: e.target.value })}
+                    placeholder="e.g. Web Development"
+                    className="tc-input"
+                  />
+                </div>
+                <div>
+                  <label className="tc-label">Budget</label>
+                  <input
+                    type="text"
+                    value={formData.budget}
+                    onChange={(e) => setFormData({ ...formData, budget: e.target.value })}
+                    placeholder="e.g. $5,000 - $10,000"
+                    className="tc-input"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="tc-label">Message *</label>
+                <textarea
+                  value={formData.message}
+                  onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                  placeholder="Lead message or inquiry"
+                  rows={4}
+                  className="tc-input"
+                />
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="flex items-center justify-end gap-3 px-6 py-4" style={{ borderTop: '1px solid rgba(99,102,241,0.12)' }}>
+              <button 
+                type="button" 
+                onClick={() => setCreateModalOpen(false)} 
+                className="px-4 py-2 rounded-lg text-sm transition-colors tc-cancel-btn"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  if (!formData.name || !formData.email || !formData.message) {
+                    toast.error('Please fill in required fields');
+                    return;
+                  }
+                  createMutation.mutate(formData);
+                }}
+                disabled={createMutation.isPending}
+                className="px-4 py-2 rounded-lg text-sm font-medium bg-indigo-600 hover:bg-indigo-700 text-white transition-colors disabled:opacity-50"
+              >
+                {createMutation.isPending ? 'Creating...' : 'Create Lead'}
+              </button>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
     </div>
   );
 }

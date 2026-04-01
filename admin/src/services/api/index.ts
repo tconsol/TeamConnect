@@ -207,6 +207,11 @@ export const getLeads = async (params?: Record<string, string>) => {
   return data;
 };
 
+export const createLead = async (payload: any) => {
+  const { data } = await api.post('/leads', payload);
+  return data.data;
+};
+
 export const updateLeadStatus = async (id: string, status: string, notes?: string) => {
   const { data } = await api.patch(`/leads/${id}/status`, { status, notes });
   return data.data;

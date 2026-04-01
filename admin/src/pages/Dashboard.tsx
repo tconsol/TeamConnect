@@ -110,7 +110,7 @@ export default function Dashboard() {
           <div key={stat.label} className="analytics-card p-5 relative overflow-hidden">
             <div className="absolute top-0 right-0 w-20 h-20 rounded-full -translate-y-1/2 translate-x-1/2" style={{ background: stat.bg, filter: 'blur(20px)' }} />
             <div className="flex items-center justify-between mb-3 relative">
-              <span className="text-xs font-medium uppercase tracking-wider" style={{ color: 'rgba(148,163,184,0.5)' }}>
+              <span className="text-xs font-medium uppercase tracking-wider" style={{ color: 'var(--tc-text-secondary)' }}>
                 {stat.label}
               </span>
               <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: stat.bg }}>
