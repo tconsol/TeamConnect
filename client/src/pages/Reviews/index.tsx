@@ -4,18 +4,9 @@ import { useMutation } from '@tanstack/react-query';
 import { submitReview } from '@/utils/api';
 import { useGsapFadeIn } from '@/hooks/useAnimations';
 import Button from '@/components/ui/Button';
-import { Dropdown } from '@/components/ui/Dropdown';
 import { AuroraTextEffect } from '@/components/ui/AuroraTextEffect';
 import { HiOutlineStar, HiOutlineCheckCircle } from 'react-icons/hi2';
 
-const GRADIENT_OPTIONS = [
-  { value: 'from-violet-500 to-purple-600', label: 'Violet' },
-  { value: 'from-blue-500 to-cyan-600', label: 'Blue' },
-  { value: 'from-emerald-500 to-teal-600', label: 'Emerald' },
-  { value: 'from-amber-500 to-orange-500', label: 'Amber' },
-  { value: 'from-rose-500 to-pink-600', label: 'Rose' },
-  { value: 'from-indigo-500 to-violet-600', label: 'Indigo' },
-];
 
 export default function Reviews() {
   const ref = useGsapFadeIn();
@@ -24,8 +15,8 @@ export default function Reviews() {
     quote: '',
     author: '',
     role: '',
+    company: '',
     avatar: '',
-    color: 'from-violet-500 to-purple-600',
   });
   const [imageFile, setImageFile] = useState<File | null>(null);
 
@@ -35,8 +26,8 @@ export default function Reviews() {
       form.append('quote', formData.quote);
       form.append('author', formData.author);
       form.append('role', formData.role);
+      form.append('company', formData.company);
       form.append('avatar', formData.avatar || formData.author?.charAt(0).toUpperCase() || '?');
-      form.append('color', formData.color);
       if (imageFile) form.append('image', imageFile);
       return submitReview(form);
     },
@@ -45,8 +36,8 @@ export default function Reviews() {
         quote: '',
         author: '',
         role: '',
+        company: '',
         avatar: '',
-        color: 'from-violet-500 to-purple-600',
       });
       setImageFile(null);
     },
@@ -145,21 +136,34 @@ export default function Reviews() {
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-text-heading mb-2">
-                        Your Role / Company *
+                        Your Role *
                       </label>
                       <input
                         type="text"
                         name="role"
                         value={formData.role}
                         onChange={handleChange}
-                        placeholder="CEO, Tech Startup"
+                        placeholder="e.g. CEO, Founder, Director"
                         className="w-full px-4 py-3 rounded-xl bg-white/[0.05] border border-white/[0.08] text-white placeholder:text-text-muted focus:outline-none focus:border-accent-indigo/50 transition-colors"
                       />
                     </div>
                   </div>
 
-                  {/* Avatar and Color */}
+                  {/* Company and Avatar */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-sm font-medium text-text-heading mb-2">
+                        Company / Business Name
+                      </label>
+                      <input
+                        type="text"
+                        name="company"
+                        value={formData.company}
+                        onChange={handleChange}
+                        placeholder="e.g. Clinfora LLP, Tech Startup"
+                        className="w-full px-4 py-3 rounded-xl bg-white/[0.05] border border-white/[0.08] text-white placeholder:text-text-muted focus:outline-none focus:border-accent-indigo/50 transition-colors"
+                      />
+                    </div>
                     <div>
                       <label className="block text-sm font-medium text-text-heading mb-2">
                         Avatar (Single Character)
@@ -177,33 +181,6 @@ export default function Reviews() {
                         maxLength={1}
                         className="w-full px-4 py-3 rounded-xl bg-white/[0.05] border border-white/[0.08] text-white placeholder:text-text-muted focus:outline-none focus:border-accent-indigo/50 transition-colors uppercase text-center text-lg font-semibold"
                       />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-text-heading mb-2">
-                        Avatar Color
-                      </label>
-                      <Dropdown
-                        value={formData.color}
-                        onChange={(value) => setFormData((prev) => ({ ...prev, color: value }))}
-                        options={GRADIENT_OPTIONS}
-                        placeholder="Select color"
-                        name="color"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Color Preview */}
-                  <div>
-                    <label className="block text-sm font-medium text-text-heading mb-2">
-                      Avatar Preview
-                    </label>
-                    <div className="flex items-center gap-4">
-                      <div
-                        className={`w-12 h-12 rounded-full bg-gradient-to-br ${formData.color} flex items-center justify-center text-white font-bold text-lg`}
-                      >
-                        {formData.avatar || formData.author?.charAt(0).toUpperCase() || '?'}
-                      </div>
-                      <div className={`h-10 rounded-lg bg-gradient-to-r ${formData.color} flex-1`} />
                     </div>
                   </div>
 

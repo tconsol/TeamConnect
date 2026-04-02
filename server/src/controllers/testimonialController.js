@@ -41,6 +41,8 @@ exports.create = async (req, res, next) => {
     }
 
     req.body.avatar = req.body.avatar || req.body.author?.charAt(0).toUpperCase() || '?';
+    // Auto-generate color — never take from client input
+    delete req.body.color;
     // Set isActive: true for admin submissions, false for client submissions (needs approval)
     req.body.isActive = req.user && req.user.role === 'admin' ? true : false;
 
@@ -87,6 +89,8 @@ exports.update = async (req, res, next) => {
     }
 
     req.body.avatar = req.body.avatar || req.body.author?.charAt(0).toUpperCase() || testimonial.avatar;
+    // Never allow color to be changed via update
+    delete req.body.color;
 
     const oldImagePath = testimonial.image;
     Object.assign(testimonial, req.body);

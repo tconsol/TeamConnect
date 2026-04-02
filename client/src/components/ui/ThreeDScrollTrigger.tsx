@@ -18,7 +18,7 @@ export function ThreeDScrollTriggerContainer({
 }: ThreeDScrollTriggerContainerProps) {
   return (
     <div
-      className={`relative overflow-hidden py-4 ${className}`}
+      className={`relative overflow-hidden py-4 testimonial-scroller ${className}`}
       style={{ maskImage: 'linear-gradient(to right, transparent, black 10%, black 90%, transparent)' }}
     >
       {children}
@@ -37,11 +37,12 @@ export function ThreeDScrollTriggerRow({
   return (
     <div className="flex overflow-hidden">
       <div
-        className={`flex shrink-0 ${className}`}
+        className={`flex shrink-0 ${className} scroll-row`}
         style={{
           animation: `ticker-scroll ${duration}s linear infinite`,
           animationDirection: direction < 0 ? 'reverse' : 'normal',
           willChange: 'transform',
+          animationPlayState: 'running',
         }}
       >
         {/* Duplicate children for seamless infinite loop */}

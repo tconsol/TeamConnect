@@ -1,4 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
+import { useState } from 'react';
+import { createPortal } from 'react-dom';
 import {
   ThreeDScrollTriggerContainer,
   ThreeDScrollTriggerRow,
@@ -12,7 +14,8 @@ const STATIC_TESTIMONIALS = [
     quote:
       'TCON Solutions delivered a platform that transformed how we deliver healthcare. The quality and attention to detail exceeded all expectations.',
     author: 'Dr. Sarah Mitchell',
-    role: 'CEO, MedCare Inc.',
+    role: 'CEO',
+    company: 'MedCare Inc.',
     avatar: 'S',
     color: 'from-violet-500 to-purple-600',
   },
@@ -20,7 +23,8 @@ const STATIC_TESTIMONIALS = [
     quote:
       'The dashboard has become the nerve center of our operations. Their engineering team is world-class — responsive, skilled, and truly invested.',
     author: 'Michael Chen',
-    role: 'CTO, Global Finance Corp',
+    role: 'CTO',
+    company: 'Global Finance Corp',
     avatar: 'M',
     color: 'from-blue-500 to-cyan-600',
   },
@@ -28,7 +32,8 @@ const STATIC_TESTIMONIALS = [
     quote:
       'Our online sales tripled within the first quarter of launch. The platform is blazing fast and our customers absolutely love it.',
     author: 'Jessica Park',
-    role: 'VP Digital, Retail Dynamics',
+    role: 'VP Digital',
+    company: 'Retail Dynamics',
     avatar: 'J',
     color: 'from-emerald-500 to-teal-600',
   },
@@ -36,7 +41,8 @@ const STATIC_TESTIMONIALS = [
     quote:
       'Lightswind-quality components, enterprise-grade architecture. We built our entire SaaS product in record time thanks to their expertise.',
     author: 'Priya Sharma',
-    role: 'Founder, NextGenSaaS',
+    role: 'Founder',
+    company: 'NextGenSaaS',
     avatar: 'P',
     color: 'from-amber-500 to-orange-500',
   },
@@ -44,7 +50,8 @@ const STATIC_TESTIMONIALS = [
     quote:
       'From concept to launch in 6 weeks. Their agile methodology and communication were impeccable every step of the way.',
     author: "Liam O'Brien",
-    role: 'CTO, TransGlobal Logistics',
+    role: 'CTO',
+    company: 'TransGlobal Logistics',
     avatar: 'L',
     color: 'from-rose-500 to-pink-600',
   },
@@ -52,7 +59,8 @@ const STATIC_TESTIMONIALS = [
     quote:
       'Exceptional technical depth paired with beautiful design. Every component they built felt premium and production-ready.',
     author: 'Zoe Williams',
-    role: 'Head of Product, Studio Aurora',
+    role: 'Head of Product',
+    company: 'Studio Aurora',
     avatar: 'Z',
     color: 'from-indigo-500 to-violet-600',
   },
@@ -62,42 +70,123 @@ interface Testimonial {
   quote: string;
   author: string;
   role: string;
+  company: string;
   avatar: string;
   color: string;
 }
 
 function TestimonialCard({ testimonial }: { testimonial: Testimonial }) {
+  const [isHovered, setIsHovered] = useState(false);
+
   return (
     <div
-      className="flex-shrink-0 w-80 p-6 rounded-2xl border border-white/[0.08] relative overflow-hidden group transition-all duration-300 hover:border-accent-violet/25"
-      style={{
-        background:
-          'linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%)',
-      }}
+      className="relative flex-shrink-0 w-80"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Glow on hover */}
-      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-        style={{ background: 'radial-gradient(circle at top left, rgba(139,92,246,0.07) 0%, transparent 70%)' }} 
-      />
+      {/* Card */}
+      <div
+        className="testimonial-card h-64 p-6 rounded-2xl border border-white/[0.08] relative overflow-hidden group transition-all duration-300 hover:border-accent-violet/25"
+        style={{
+          background:
+            'linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%)',
+        }}
+      >
+        {/* Glow on hover */}
+        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl"
+          style={{ background: 'radial-gradient(circle at top left, rgba(139,92,246,0.07) 0%, transparent 70%)' }} 
+        />
 
-      {/* Quote mark */}
-      <div className="mb-4 text-4xl font-serif leading-none text-accent-violet/40 select-none">"</div>
+        {/* Quote mark */}
+        <div className="mb-4 text-4xl font-serif leading-none text-accent-violet/40 select-none">"</div>
 
-      <p className="text-sm text-text-body leading-relaxed mb-6 relative z-10">
-        {testimonial.quote}
-      </p>
+        {/* Truncated quote */}
+        <p className="text-sm text-text-body leading-relaxed mb-6 relative z-10 line-clamp-3 h-16">
+          {testimonial.quote}
+        </p>
 
-      <div className="flex items-center gap-3 relative z-10">
-        <div
-          className={`w-9 h-9 rounded-full bg-gradient-to-br ${testimonial.color} flex items-center justify-center text-sm font-bold text-white flex-shrink-0`}
-        >
-          {testimonial.avatar}
-        </div>
-        <div>
-          <p className="text-sm font-semibold text-text-heading">{testimonial.author}</p>
-          <p className="text-xs text-text-muted">{testimonial.role}</p>
+        {/* Author info */}
+        <div className="flex items-center gap-3 relative z-10 mt-auto">
+          <div
+            className={`w-9 h-9 rounded-full bg-gradient-to-br ${testimonial.color} flex items-center justify-center text-sm font-bold text-white flex-shrink-0`}
+          >
+            {testimonial.avatar}
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-text-heading">{testimonial.author}</p>
+            <p className="text-xs text-text-muted">
+              {testimonial.role}{testimonial.company ? ` · ${testimonial.company}` : ''}
+            </p>
+          </div>
         </div>
       </div>
+
+      {/* Popup via Portal */}
+      {isHovered && createPortal(
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 9999,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: 'rgba(3, 0, 20, 0.75)',
+            backdropFilter: 'blur(6px)',
+            pointerEvents: 'none',
+          }}
+        >
+          <div
+            style={{
+              pointerEvents: 'none',
+              width: '420px',
+              maxWidth: '90vw',
+              background: 'linear-gradient(135deg, rgba(139,92,246,0.15) 0%, rgba(10,8,30,0.98) 50%, rgba(99,102,241,0.1) 100%)',
+              border: '1px solid rgba(139,92,246,0.3)',
+              borderRadius: '20px',
+              padding: '36px',
+              boxShadow: '0 30px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(139,92,246,0.1), inset 0 1px 0 rgba(255,255,255,0.05)',
+            }}
+          >
+            {/* Top accent line */}
+            <div style={{ height: '2px', background: 'linear-gradient(90deg, rgba(139,92,246,0.8), rgba(99,102,241,0.6), transparent)', borderRadius: '2px', marginBottom: '24px' }} />
+
+            {/* Large quote mark */}
+            <div style={{ fontSize: '56px', lineHeight: '1', color: 'rgba(139,92,246,0.5)', fontFamily: 'Georgia, serif', marginBottom: '16px', userSelect: 'none' }}>"</div>
+
+            {/* Full quote */}
+            <p style={{ fontSize: '15px', lineHeight: '1.8', color: 'rgba(255,255,255,0.85)', marginBottom: '28px', fontWeight: 400 }}>
+              {testimonial.quote}
+            </p>
+
+            {/* Divider */}
+            <div style={{ height: '1px', background: 'linear-gradient(90deg, transparent, rgba(139,92,246,0.4), transparent)', marginBottom: '20px' }} />
+
+            {/* Author row */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+              <div style={{
+                width: '44px', height: '44px', borderRadius: '50%',
+                background: 'linear-gradient(135deg, var(--tw-gradient-stops))',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: '15px', fontWeight: 700, color: '#fff', flexShrink: 0,
+                boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+              }}
+                className={`bg-gradient-to-br ${testimonial.color}`}
+              >
+                {testimonial.avatar}
+              </div>
+              <div>
+                <p style={{ fontSize: '14px', fontWeight: 600, color: '#ffffff', marginBottom: '2px' }}>{testimonial.author}</p>
+                <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.6)', marginBottom: '1px' }}>{testimonial.role}</p>
+                {testimonial.company && (
+                  <p style={{ fontSize: '12px', color: 'rgba(139,92,246,0.8)', fontWeight: 500 }}>{testimonial.company}</p>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
     </div>
   );
 }
@@ -114,6 +203,7 @@ export default function TestimonialsSection() {
       quote: t.quote,
       author: t.author,
       role: t.role,
+      company: t.company || '',
       avatar: t.avatar,
       color: t.color,
     })) || STATIC_TESTIMONIALS;

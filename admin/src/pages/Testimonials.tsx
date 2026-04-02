@@ -11,7 +11,6 @@ import {
 } from '@/services/api';
 import { useToast } from '@/components/ui/Toast';
 import { DeleteDrawer } from '@/components/ui/DeleteDrawer';
-import { Dropdown } from '@/components/ui/Dropdown';
 import {
   HiOutlineTrash,
   HiOutlineMagnifyingGlass,
@@ -22,14 +21,6 @@ import {
   HiOutlineEyeSlash,
 } from 'react-icons/hi2';
 
-const GRADIENT_OPTIONS = [
-  { value: 'from-violet-500 to-purple-600', label: 'Violet' },
-  { value: 'from-blue-500 to-cyan-600', label: 'Blue' },
-  { value: 'from-emerald-500 to-teal-600', label: 'Emerald' },
-  { value: 'from-amber-500 to-orange-500', label: 'Amber' },
-  { value: 'from-rose-500 to-pink-600', label: 'Rose' },
-  { value: 'from-indigo-500 to-violet-600', label: 'Indigo' },
-];
 
 export default function Testimonials() {
   const queryClient = useQueryClient();
@@ -44,8 +35,8 @@ export default function Testimonials() {
     quote: '',
     author: '',
     role: '',
+    company: '',
     avatar: '',
-    color: 'from-violet-500 to-purple-600',
   });
   const [imageFile, setImageFile] = useState<File | null>(null);
 
@@ -60,8 +51,8 @@ export default function Testimonials() {
       form.append('quote', formData.quote);
       form.append('author', formData.author);
       form.append('role', formData.role);
+      form.append('company', formData.company);
       form.append('avatar', formData.avatar || formData.author?.charAt(0).toUpperCase() || '?');
-      form.append('color', formData.color);
       if (imageFile) form.append('image', imageFile);
       return createTestimonial(form);
     },
@@ -80,8 +71,8 @@ export default function Testimonials() {
       form.append('quote', formData.quote);
       form.append('author', formData.author);
       form.append('role', formData.role);
+      form.append('company', formData.company);
       form.append('avatar', formData.avatar || formData.author?.charAt(0).toUpperCase() || '?');
-      form.append('color', formData.color);
       if (imageFile) form.append('image', imageFile);
       return updateTestimonial(editingId!, form);
     },
@@ -128,8 +119,8 @@ export default function Testimonials() {
       quote: '',
       author: '',
       role: '',
+      company: '',
       avatar: '',
-      color: 'from-violet-500 to-purple-600',
     });
     setImageFile(null);
   };
@@ -141,8 +132,8 @@ export default function Testimonials() {
         quote: testimonial.quote,
         author: testimonial.author,
         role: testimonial.role,
+        company: testimonial.company || '',
         avatar: testimonial.avatar,
-        color: testimonial.color,
       });
     } else {
       resetForm();
@@ -184,7 +175,7 @@ export default function Testimonials() {
               <tr style={{ background: 'rgba(99,102,241,0.08)', borderBottom: '1px solid rgba(99,102,241,0.2)' }}>
                 <th className="text-left px-4 py-3 text-gray-300 font-semibold">Author</th>
                 <th className="text-left px-4 py-3 text-gray-300 font-semibold hidden md:table-cell">Quote</th>
-                <th className="text-left px-4 py-3 text-gray-300 font-semibold hidden lg:table-cell">Role</th>
+                <th className="text-left px-4 py-3 text-gray-300 font-semibold hidden lg:table-cell">Role / Company</th>
                 <th className="text-left px-4 py-3 text-gray-300 font-semibold">Status</th>
                 <th className="text-right px-4 py-3 text-gray-300 font-semibold">Actions</th>
               </tr>
@@ -207,7 +198,8 @@ export default function Testimonials() {
                     {testimonial.quote}
                   </td>
                   <td className="px-4 py-3 dark:text-slate-400 text-slate-500 hidden lg:table-cell text-xs">
-                    {testimonial.role}
+                    <span>{testimonial.role}</span>
+                    {testimonial.company && <span className="block text-slate-500 dark:text-slate-500">{testimonial.company}</span>}
                   </td>
                   <td className="px-4 py-3">
                     <button
@@ -315,14 +307,12 @@ export default function Testimonials() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs text-gray-400 mb-2 uppercase tracking-wide">Avatar</label>
-                    <p className="dark:text-white text-slate-900">{viewingTestimonial.avatar}</p>
+                    <label className="block text-xs text-gray-400 mb-2 uppercase tracking-wide">Company</label>
+                    <p className="dark:text-white text-slate-900">{viewingTestimonial.company || '—'}</p>
                   </div>
                   <div>
-                    <label className="block text-xs text-gray-400 mb-2 uppercase tracking-wide">Gradient</label>
-                    <div
-                      className={`w-full h-8 rounded bg-gradient-to-r ${viewingTestimonial.color}`}
-                    />
+                    <label className="block text-xs text-gray-400 mb-2 uppercase tracking-wide">Avatar</label>
+                    <p className="dark:text-white text-slate-900">{viewingTestimonial.avatar}</p>
                   </div>
                 </div>
 
@@ -448,6 +438,17 @@ export default function Testimonials() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
+                    <label className="block text-xs font-medium mb-1.5" style={{ color: 'rgba(148,163,184,0.7)' }}>Company / Business Name</label>
+                    <input
+                      type="text"
+                      value={formData.company}
+                      onChange={(e) => setFormData({ ...formData, company: e.target.value })}
+                      placeholder="e.g. Clinfora LLP"
+                      className="w-full px-3 py-2.5 rounded-lg text-sm text-white focus:outline-none"
+                      style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
+                    />
+                  </div>
+                  <div>
                     <label className="block text-xs font-medium mb-1.5" style={{ color: 'rgba(148,163,184,0.7)' }}>Avatar (Single Char)</label>
                     <input
                       type="text"
@@ -459,22 +460,10 @@ export default function Testimonials() {
                       style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
                     />
                   </div>
-                  <div>
-                    <label className="block text-xs font-medium mb-1.5" style={{ color: 'rgba(148,163,184,0.7)' }}>Gradient Color</label>
-                    <Dropdown
-                      value={formData.color}
-                      onChange={(v) => setFormData({ ...formData, color: v })}
-                      options={GRADIENT_OPTIONS}
-                      placeholder="Select gradient"
-                    />
-                  </div>
                 </div>
 
-                <div>
-                  <label className="block text-xs font-medium mb-1.5" style={{ color: 'rgba(148,163,184,0.7)' }}>Gradient Preview</label>
-                  <div
-                    className={`w-full h-10 rounded-lg bg-gradient-to-r ${formData.color}`}
-                  />
+                <div className="px-3 py-2 rounded-lg text-xs" style={{ background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.15)', color: 'rgba(148,163,184,0.7)' }}>
+                  ✦ Avatar gradient color is auto-generated randomly
                 </div>
 
                 <div>

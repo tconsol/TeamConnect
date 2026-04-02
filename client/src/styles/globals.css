@@ -354,3 +354,28 @@ body.menu-open { overflow: hidden; }
   0%,100% { transform: translate(0,     0);    }
   50%     { transform: translate(-15px,-25px); }
 }
+
+/* Testimonials - Pause scroll on hover */
+.testimonial-scroller:hover .scroll-row {
+  animation-play-state: paused !important;
+}
+
+/* Testimonial card zoom effect */
+.testimonial-card {
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), 
+              filter 0.3s ease;
+}
+
+.testimonial-card:hover {
+  transform: scale(1.05);
+  filter: drop-shadow(0 20px 40px rgba(139, 92, 246, 0.2));
+}
+
+/* Testimonial popup styles */
+.testimonial-popup {
+  pointer-events: none;
+}
+
+.group:hover .testimonial-popup {
+  pointer-events: auto;
+}
