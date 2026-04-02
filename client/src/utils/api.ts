@@ -67,4 +67,16 @@ export const submitContact = async (payload: Record<string, string>) => {
   return data;
 };
 
+export const fetchTestimonials = async () => {
+  const { data } = await api.get('/testimonials');
+  return data.data;
+};
+
+export const submitReview = async (payload: FormData) => {
+  const { data } = await api.post('/testimonials', payload, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+  return data;
+};
+
 export default api;

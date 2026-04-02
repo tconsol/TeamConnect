@@ -18,6 +18,7 @@ import {
   HiOutlineChevronRight,
   HiOutlineBars3,
   HiOutlineXMark,
+  HiOutlineQuestionMarkCircle,
 } from 'react-icons/hi2';
 
 const navItems = [
@@ -30,6 +31,7 @@ const navItems = [
   { path: '/applications', label: 'Applications', icon: HiOutlineBriefcase },
   { path: '/users', label: 'Users', icon: HiOutlineUsers },
   { path: '/leads', label: 'Leads', icon: HiOutlineEnvelope },
+  { path: '/testimonials', label: 'Testimonials', icon: HiOutlineQuestionMarkCircle },
 ];
 
 export default function AdminLayout() {

@@ -13,6 +13,7 @@ const Careers = lazy(() => import('@/pages/Careers'));
 const Applications = lazy(() => import('@/pages/Applications'));
 const Users = lazy(() => import('@/pages/Users'));
 const Leads = lazy(() => import('@/pages/Leads'));
+const Testimonials = lazy(() => import('@/pages/Testimonials'));
 const Profile = lazy(() => import('@/pages/Profile'));
 
 function PageLoader() {
@@ -58,6 +59,7 @@ export const router = createBrowserRouter([
       { path: 'applications', element: <SuspenseWrap><Applications /></SuspenseWrap> },
       { path: 'users', element: <SuspenseWrap><Users /></SuspenseWrap> },
       { path: 'leads', element: <SuspenseWrap><Leads /></SuspenseWrap> },
+      { path: 'testimonials', element: <SuspenseWrap><Testimonials /></SuspenseWrap> },
       { path: 'profile', element: <SuspenseWrap><Profile /></SuspenseWrap> },
     ],
   },

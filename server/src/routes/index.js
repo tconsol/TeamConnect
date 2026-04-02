@@ -8,6 +8,7 @@ router.use('/portfolio', require('./portfolio'));
 router.use('/jobs', require('./jobs'));
 router.use('/applications', require('./applications'));
 router.use('/leads', require('./leads'));
+router.use('/testimonials', require('./testimonials'));
 router.use('/dashboard', require('./dashboard'));
 router.use('/users', require('./users'));
 

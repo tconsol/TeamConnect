@@ -244,4 +244,38 @@ export const deleteUser = async (id: string) => {
   return data.data;
 };
 
+// Testimonials
+export const getTestimonials = async () => {
+  const { data } = await api.get('/testimonials/admin/all');
+  return data.data;
+};
+
+export const createTestimonial = async (formData: FormData) => {
+  const { data } = await api.post('/testimonials', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+  return data.data;
+};
+
+export const updateTestimonial = async (id: string, formData: FormData) => {
+  const { data } = await api.patch(`/testimonials/${id}`, formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+  return data.data;
+};
+
+export const deleteTestimonial = async (id: string) => {
+  await api.delete(`/testimonials/${id}`);
+};
+
+export const toggleTestimonialActive = async (id: string, isActive: boolean) => {
+  const { data } = await api.patch(`/testimonials/${id}/toggle`, { isActive });
+  return data.data;
+};
+
+export const reorderTestimonials = async (items: Array<{ id: string; order: number }>) => {
+  const { data } = await api.post('/testimonials/admin/reorder', { items });
+  return data.data;
+};
+
 export default api;

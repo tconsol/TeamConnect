@@ -3,7 +3,7 @@ import {
   ThreeDScrollTriggerContainer,
   ThreeDScrollTriggerRow,
 } from '@/components/ui/ThreeDScrollTrigger';
-import { fetchPortfolios } from '@/utils/api';
+import { fetchTestimonials } from '@/utils/api';
 import { AuroraTextEffect } from '@/components/ui/AuroraTextEffect';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
 
@@ -103,26 +103,20 @@ function TestimonialCard({ testimonial }: { testimonial: Testimonial }) {
 }
 
 export default function TestimonialsSection() {
-  const { data: portfolioData } = useQuery({
-    queryKey: ['portfolio'],
-    queryFn: () => fetchPortfolios(),
+  const { data: testimonialData, isLoading } = useQuery({
+    queryKey: ['testimonials'],
+    queryFn: () => fetchTestimonials(),
   });
 
-  // Build testimonials from portfolio items that have testimonials, then fill with statics
-  const dynamicTestimonials: Testimonial[] = (portfolioData || [])
-    .filter((p: any) => p.testimonial?.quote)
-    .map((p: any, i: number) => ({
-      quote: p.testimonial.quote,
-      author: p.testimonial.author,
-      role: p.testimonial.role,
-      avatar: p.testimonial.author?.[0] || 'T',
-      color: STATIC_TESTIMONIALS[i % STATIC_TESTIMONIALS.length].color,
-    }));
-
-  const testimonials =
-    dynamicTestimonials.length >= 4
-      ? dynamicTestimonials
-      : [...dynamicTestimonials, ...STATIC_TESTIMONIALS].slice(0, 8);
+  const testimonials: Testimonial[] = (testimonialData || [])
+    .filter((t: any) => t.isActive)
+    .map((t: any) => ({
+      quote: t.quote,
+      author: t.author,
+      role: t.role,
+      avatar: t.avatar,
+      color: t.color,
+    })) || STATIC_TESTIMONIALS;
 
   const row1 = testimonials;
   const row2 = [...testimonials].reverse();

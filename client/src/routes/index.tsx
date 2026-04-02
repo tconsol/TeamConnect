@@ -12,6 +12,7 @@ const PortfolioDetails = lazy(() => import('@/pages/PortfolioDetails'));
 const Careers = lazy(() => import('@/pages/Careers'));
 const CareerDetails = lazy(() => import('@/pages/CareerDetails'));
 const Contact = lazy(() => import('@/pages/Contact'));
+const Reviews = lazy(() => import('@/pages/Reviews'));
 const NotFound = lazy(() => import('@/pages/NotFound'));
 
 const Loader = ({ children }: { children: React.ReactNode }) => (
@@ -32,6 +33,7 @@ export const router = createBrowserRouter([
       { path: 'careers', element: <Loader><Careers /></Loader> },
       { path: 'careers/:id', element: <Loader><CareerDetails /></Loader> },
       { path: 'contact', element: <Loader><Contact /></Loader> },
+      { path: 'reviews', element: <Loader><Reviews /></Loader> },
       { path: '*', element: <Loader><NotFound /></Loader> },
     ],
   },
