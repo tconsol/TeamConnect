@@ -1,9 +1,10 @@
 import { Helmet } from 'react-helmet-async';
-import { useParams, Link } from 'react-router-dom';
+import { useLocation, useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { fetchPortfolioBySlug } from '@/utils/api';
 import { PageSkeleton } from '@/components/ui/Skeleton';
 import { HiArrowLeft, HiArrowTopRightOnSquare } from 'react-icons/hi2';
+import { getCanonicalUrl, breadcrumbJsonLd } from '@/utils/seo';
 
 // Converts a value (string or array) to a clean string array
 // Handles legacy data with emojis, newlines, and commas
@@ -22,6 +23,7 @@ const toArray = (val: unknown): string[] => {
 };
 
 export default function PortfolioDetails() {
+  const location = useLocation();
   const { slug } = useParams<{ slug: string }>();
 
   const { data: project, isLoading, error } = useQuery({
@@ -33,19 +35,32 @@ export default function PortfolioDetails() {
     refetchOnMount: true,
   });
 
+  const canonicalUrl = getCanonicalUrl(location.pathname);
+  const breadcrumbs = [
+    { name: 'Home', url: 'https://tconsolutions.com' },
+    { name: 'Portfolio', url: 'https://tconsolutions.com/portfolio' },
+    { name: project?.title || 'Project', url: canonicalUrl },
+  ];
+
   if (isLoading) return <PageSkeleton />;
 
   if (error || !project) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-3xl font-bold text-text-heading mb-4">Project Not Found</h2>
-          <p className="text-text-body mb-8">The project you're looking for doesn't exist or has been removed.</p>
-          <Link to="/portfolio" className="inline-flex items-center gap-2 text-accent-indigo hover:text-accent-blue transition-colors">
-            <HiArrowLeft className="w-4 h-4" /> Back to Portfolio
-          </Link>
+      <>
+        <Helmet>
+          <title>Project Not Found — TCON Solutions</title>
+          <meta name="robots" content="noindex, nofollow" />
+        </Helmet>
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center">
+            <h2 className="text-3xl font-bold text-text-heading mb-4">Project Not Found</h2>
+            <p className="text-text-body mb-8">The project you're looking for doesn't exist or has been removed.</p>
+            <Link to="/portfolio" className="inline-flex items-center gap-2 text-accent-indigo hover:text-accent-blue transition-colors">
+              <HiArrowLeft className="w-4 h-4" /> Back to Portfolio
+            </Link>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
@@ -54,6 +69,24 @@ export default function PortfolioDetails() {
       <Helmet>
         <title>{project.title} — TCON Solutions</title>
         <meta name="description" content={project.shortDescription} />
+        <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+        <link rel="canonical" href={canonicalUrl} />
+        
+        {/* Open Graph */}
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content={project.title} />
+        <meta property="og:description" content={project.shortDescription} />
+        <meta property="og:url" content={canonicalUrl} />
+        <meta property="og:image" content={project.thumbnail || 'https://tconsolutions.com/og-portfolio.png'} />
+        
+        {/* Twitter */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={project.title} />
+        <meta name="twitter:description" content={project.shortDescription} />
+        <meta name="twitter:image" content={project.thumbnail || 'https://tconsolutions.com/og-portfolio.png'} />
+        
+        {/* Structured Data */}
+        <script type="application/ld+json">{JSON.stringify(breadcrumbJsonLd(breadcrumbs))}</script>
       </Helmet>
 
       {/* Hero: title + meta */}

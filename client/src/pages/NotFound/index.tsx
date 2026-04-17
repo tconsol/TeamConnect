@@ -7,6 +7,8 @@ export default function NotFound() {
     <>
       <Helmet>
         <title>404 — Page Not Found | TCON Solutions</title>
+        <meta name="description" content="The page you're looking for doesn't exist or has been moved." />
+        <meta name="robots" content="noindex, nofollow" />
       </Helmet>
       <section className="min-h-screen flex items-center justify-center relative">
         <div className="absolute inset-0 bg-glow-indigo opacity-20" />

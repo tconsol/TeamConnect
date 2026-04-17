@@ -1,4 +1,5 @@
 import { Helmet } from 'react-helmet-async';
+import { useLocation } from 'react-router-dom';
 import { useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { cmsQueryOptions } from '@/utils/cmsQueryOptions';
@@ -7,6 +8,7 @@ import { useGsapFadeIn } from '@/hooks/useAnimations';
 import Button from '@/components/ui/Button';
 import { Dropdown } from '@/components/ui/Dropdown';
 import { AuroraTextEffect } from '@/components/ui/AuroraTextEffect';
+import { getCanonicalUrl, breadcrumbJsonLd } from '@/utils/seo';
 import {
   HiOutlineEnvelope,
   HiOutlinePhone,
@@ -14,8 +16,16 @@ import {
 } from 'react-icons/hi2';
 
 export default function Contact() {
+  const location = useLocation();
+  const canonicalUrl = getCanonicalUrl(location.pathname);
+  
   const { data: cms } = useQuery(cmsQueryOptions('contact'));
   const content = cms?.content as Record<string, string> | undefined;
+
+  const breadcrumbs = [
+    { name: 'Home', url: 'https://tconsolutions.com' },
+    { name: 'Contact', url: canonicalUrl },
+  ];
 
   const contactInfo = [
     { icon: HiOutlineEnvelope, label: 'Email', value: content?.email || 'info@tconsolutions.com' },
@@ -48,7 +58,24 @@ export default function Contact() {
     <>
       <Helmet>
         <title>Contact — TCON Solutions</title>
-        <meta name="description" content="Get in touch with TCON Solutions. Let's discuss your next digital project." />
+        <meta name="description" content="Get in touch with TCON Solutions. Let's discuss your next digital project or business needs." />
+        <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+        <link rel="canonical" href={canonicalUrl} />
+        
+        {/* Open Graph */}
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="Contact — TCON Solutions" />
+        <meta property="og:description" content="Get in touch with our team. Let's discuss your next project." />
+        <meta property="og:url" content={canonicalUrl} />
+        <meta property="og:image" content="https://tconsolutions.com/og-contact.png" />
+        
+        {/* Twitter */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Contact — TCON Solutions" />
+        <meta name="twitter:description" content="Reach out to our team for your next project." />
+        
+        {/* Structured Data */}
+        <script type="application/ld+json">{JSON.stringify(breadcrumbJsonLd(breadcrumbs))}</script>
       </Helmet>
 
       {/* Hero */}

@@ -1,4 +1,5 @@
 import { Helmet } from 'react-helmet-async';
+import { useLocation } from 'react-router-dom';
 import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -8,6 +9,7 @@ import { PageSkeleton } from '@/components/ui/Skeleton';
 import SectionHeading from '@/components/ui/SectionHeading';
 import { AuroraTextEffect } from '@/components/ui/AuroraTextEffect';
 import ImageReveal from '@/components/ui/ImageReveal';
+import { getCanonicalUrl, breadcrumbJsonLd } from '@/utils/seo';
 
 const gradientMap = [
   'from-violet-500/20 to-indigo-600/20',
@@ -19,8 +21,16 @@ const gradientMap = [
 ];
 
 export default function Portfolio() {
+  const location = useLocation();
+  const canonicalUrl = getCanonicalUrl(location.pathname);
+  
   const [activeCategory, setActiveCategory] = useState('All');
   const ref = useGsapFadeIn({ stagger: 0.1 });
+
+  const breadcrumbs = [
+    { name: 'Home', url: 'https://tconsolutions.com' },
+    { name: 'Portfolio', url: canonicalUrl },
+  ];
 
   const { data: projects = [], isLoading } = useQuery({
     queryKey: ['portfolios'],
@@ -45,7 +55,24 @@ export default function Portfolio() {
     <>
       <Helmet>
         <title>Portfolio — TCON Solutions</title>
-        <meta name="description" content="Explore our portfolio of premium digital products and successful client projects." />
+        <meta name="description" content="Explore our portfolio of premium digital products and successful client projects across web, mobile, cloud, and AI solutions." />
+        <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+        <link rel="canonical" href={canonicalUrl} />
+        
+        {/* Open Graph */}
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="Portfolio — TCON Solutions" />
+        <meta property="og:description" content="Explore our portfolio of successful digital projects and client work." />
+        <meta property="og:url" content={canonicalUrl} />
+        <meta property="og:image" content="https://tconsolutions.com/og-portfolio.png" />
+        
+        {/* Twitter */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Portfolio — TCON Solutions" />
+        <meta name="twitter:description" content="Check out our portfolio of premium digital products." />
+        
+        {/* Structured Data */}
+        <script type="application/ld+json">{JSON.stringify(breadcrumbJsonLd(breadcrumbs))}</script>
       </Helmet>
 
       {/* Hero */}

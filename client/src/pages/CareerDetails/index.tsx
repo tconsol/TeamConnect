@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useLocation, useParams, Link, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { fetchJobById, submitApplication } from '@/utils/api';
 import { PageSkeleton } from '@/components/ui/Skeleton';
 import Button from '@/components/ui/Button';
 import { motion } from 'framer-motion';
+import { getCanonicalUrl, breadcrumbJsonLd } from '@/utils/seo';
 import {
   HiArrowLeft,
   HiOutlineMapPin,
@@ -16,6 +17,7 @@ import {
 } from 'react-icons/hi2';
 
 export default function CareerDetails() {
+  const location = useLocation();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [applying, setApplying] = useState(false);
@@ -26,6 +28,13 @@ export default function CareerDetails() {
     queryFn: () => fetchJobById(id!),
     enabled: !!id,
   });
+
+  const canonicalUrl = getCanonicalUrl(location.pathname);
+  const breadcrumbs = [
+    { name: 'Home', url: 'https://tconsolutions.com' },
+    { name: 'Careers', url: 'https://tconsolutions.com/careers' },
+    { name: job?.title || 'Job Opening', url: canonicalUrl },
+  ];
 
   const handleApply = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -47,15 +56,21 @@ export default function CareerDetails() {
 
   if (error || !job) {
     return (
-      <div className="min-h-screen flex items-center justify-center pt-20">
-        <div className="text-center">
-          <h2 className="text-3xl font-bold text-text-heading mb-4">Position Not Found</h2>
-          <p className="text-text-body mb-8">This job listing may have been removed or the link is invalid.</p>
-          <Link to="/careers" className="text-accent-violet hover:text-accent-blue transition-colors">
-            ← Back to Careers
-          </Link>
+      <>
+        <Helmet>
+          <title>Position Not Found — TCON Solutions</title>
+          <meta name="robots" content="noindex, nofollow" />
+        </Helmet>
+        <div className="min-h-screen flex items-center justify-center pt-20">
+          <div className="text-center">
+            <h2 className="text-3xl font-bold text-text-heading mb-4">Position Not Found</h2>
+            <p className="text-text-body mb-8">This job listing may have been removed or the link is invalid.</p>
+            <Link to="/careers" className="text-accent-violet hover:text-accent-blue transition-colors">
+              ← Back to Careers
+            </Link>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
@@ -90,7 +105,24 @@ export default function CareerDetails() {
     <>
       <Helmet>
         <title>{job.title} — TCON Solutions Careers</title>
-        <meta name="description" content={`Apply for ${job.title} at TCON Solutions. ${job.department} role.`} />
+        <meta name="description" content={`Apply for ${job.title} at TCON Solutions. ${job.department} role. Join our innovative team.`} />
+        <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+        <link rel="canonical" href={canonicalUrl} />
+        
+        {/* Open Graph */}
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content={`${job.title} — TCON Solutions Careers`} />
+        <meta property="og:description" content={`Join TCON Solutions as a ${job.title}. Help us build amazing digital products.`} />
+        <meta property="og:url" content={canonicalUrl} />
+        <meta property="og:image" content="https://tconsolutions.com/og-careers.png" />
+        
+        {/* Twitter */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={`${job.title} — TCON Solutions Careers`} />
+        <meta name="twitter:description" content={`Join our team as a ${job.title} at TCON Solutions.`} />
+        
+        {/* Structured Data */}
+        <script type="application/ld+json">{JSON.stringify(breadcrumbJsonLd(breadcrumbs))}</script>
       </Helmet>
 
       {/* Hero */}

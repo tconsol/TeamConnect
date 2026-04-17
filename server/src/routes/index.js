@@ -11,5 +11,6 @@ router.use('/leads', require('./leads'));
 router.use('/testimonials', require('./testimonials'));
 router.use('/dashboard', require('./dashboard'));
 router.use('/users', require('./users'));
+router.use('/sitemap', require('./sitemap'));
 
 module.exports = router;

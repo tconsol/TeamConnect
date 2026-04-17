@@ -12,7 +12,7 @@ export type CMSPage =
 export const cmsQueryOptions = (page: CMSPage) => ({
   queryKey: ['cms', page] as const,
   queryFn: () => fetchCMS(page),
-  refetchOnMount: false,        // Don't refetch on every mount
+  refetchOnMount: true,         // Refetch on mount to get latest content from admin updates
   refetchOnWindowFocus: false,  // Don't refetch on window focus
   refetchOnReconnect: false,    // Don't refetch on reconnect
   

@@ -1,10 +1,12 @@
 import { Helmet } from 'react-helmet-async';
+import { useLocation } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { fetchJobs } from '@/utils/api';
 import { cmsQueryOptions } from '@/utils/cmsQueryOptions';
 import { useGsapFadeIn } from '@/hooks/useAnimations';
 import { PageSkeleton } from '@/components/ui/Skeleton';
+import { getCanonicalUrl, breadcrumbJsonLd } from '@/utils/seo';
 import {
   HiOutlineMapPin,
   HiOutlineBriefcase,
@@ -17,7 +19,15 @@ import { AuroraTextEffect } from '@/components/ui/AuroraTextEffect';
 const perkEmojis = ['🌍', '📚', '🏥', '🎯', '💰', '🏖️', '🚀', '🎮'];
 
 export default function Careers() {
+  const location = useLocation();
+  const canonicalUrl = getCanonicalUrl(location.pathname);
+  
   const ref = useGsapFadeIn({ stagger: 0.1 });
+
+  const breadcrumbs = [
+    { name: 'Home', url: 'https://tconsolutions.com' },
+    { name: 'Careers', url: canonicalUrl },
+  ];
 
   const { data: jobs = [], isLoading } = useQuery({
     queryKey: ['jobs'],
@@ -34,10 +44,24 @@ export default function Careers() {
     <>
       <Helmet>
         <title>Careers — TCON Solutions</title>
-        <meta
-          name="description"
-          content="Join our team of innovators. Explore open positions at TCON Solutions."
-        />
+        <meta name="description" content="Join our team of innovators at TCON Solutions. Explore open positions and become part of our journey building extraordinary digital experiences." />
+        <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+        <link rel="canonical" href={canonicalUrl} />
+        
+        {/* Open Graph */}
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="Careers — TCON Solutions" />
+        <meta property="og:description" content="Join our innovative team and help build amazing digital products." />
+        <meta property="og:url" content={canonicalUrl} />
+        <meta property="og:image" content="https://tconsolutions.com/og-careers.png" />
+        
+        {/* Twitter */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Careers — TCON Solutions" />
+        <meta name="twitter:description" content="Explore career opportunities at TCON Solutions." />
+        
+        {/* Structured Data */}
+        <script type="application/ld+json">{JSON.stringify(breadcrumbJsonLd(breadcrumbs))}</script>
       </Helmet>
 
       <section className="relative pt-40 pb-20 overflow-hidden">

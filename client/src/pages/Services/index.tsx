@@ -1,4 +1,5 @@
 import { Helmet } from 'react-helmet-async';
+import { useLocation } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { useGsapFadeIn } from '@/hooks/useAnimations';
 import { fetchServices } from '@/utils/api';
@@ -7,6 +8,7 @@ import SectionHeading from '@/components/ui/SectionHeading';
 import { AuroraTextEffect } from '@/components/ui/AuroraTextEffect';
 import CTASection from '@/sections/home/CTASection';
 import ScrollStack from '@/components/ui/ScrollStack';
+import { getCanonicalUrl, breadcrumbJsonLd } from '@/utils/seo';
 import {
   HiOutlineCodeBracket,
   HiOutlineDevicePhoneMobile,
@@ -26,6 +28,9 @@ const iconMap: Record<string, any> = {
 };
 
 export default function Services() {
+  const location = useLocation();
+  const canonicalUrl = getCanonicalUrl(location.pathname);
+  
   const servicesRef = useGsapFadeIn({ stagger: 0.08 });
   const processRef = useGsapFadeIn({ stagger: 0.1 });
 
@@ -39,11 +44,33 @@ export default function Services() {
   const cmsContent = cms?.content;
   const processSteps = cmsContent?.process || [];
 
+  const breadcrumbs = [
+    { name: 'Home', url: 'https://tconsolutions.com' },
+    { name: 'Services', url: canonicalUrl },
+  ];
+
   return (
     <>
       <Helmet>
         <title>Services — TCON Solutions</title>
-        <meta name="description" content="End-to-end digital solutions: web development, mobile apps, cloud, AI, and more." />
+        <meta name="description" content="End-to-end digital solutions including web development, mobile apps, cloud infrastructure, AI solutions, design, and backend engineering." />
+        <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+        <link rel="canonical" href={canonicalUrl} />
+        
+        {/* Open Graph */}
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="Services — TCON Solutions" />
+        <meta property="og:description" content="Premium digital solutions: web, mobile, cloud, AI, design, and engineering." />
+        <meta property="og:url" content={canonicalUrl} />
+        <meta property="og:image" content="https://tconsolutions.com/og-services.png" />
+        
+        {/* Twitter */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Services — TCON Solutions" />
+        <meta name="twitter:description" content="Premium digital solutions for your business needs." />
+        
+        {/* Structured Data */}
+        <script type="application/ld+json">{JSON.stringify(breadcrumbJsonLd(breadcrumbs))}</script>
       </Helmet>
 
       {/* Hero */}

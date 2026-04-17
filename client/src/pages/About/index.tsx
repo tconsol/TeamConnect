@@ -1,4 +1,5 @@
 import { Helmet } from 'react-helmet-async';
+import { useLocation } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { useGsapFadeIn } from '@/hooks/useAnimations';
 import { cmsQueryOptions } from '@/utils/cmsQueryOptions';
@@ -7,10 +8,14 @@ import { AuroraTextEffect } from '@/components/ui/AuroraTextEffect';
 import CTASection from '@/sections/home/CTASection';
 import ThreeDSlider, { type SliderItemData } from '@/components/ui/ThreeDSlider';
 import SkillGlobeSafe from '@/components/ui/SkillGlobeSafe';
+import { getCanonicalUrl, breadcrumbJsonLd } from '@/utils/seo';
 
 const valueIcons = ['💡', '✨', '🤝', '🚀'];
 
 export default function About() {
+  const location = useLocation();
+  const canonicalUrl = getCanonicalUrl(location.pathname);
+  
   const valuesRef = useGsapFadeIn({ stagger: 0.1 });
   const storyRef = useGsapFadeIn();
 
@@ -20,11 +25,33 @@ export default function About() {
   const values = content?.values || [];
   const team = content?.team || [];
 
+  const breadcrumbs = [
+    { name: 'Home', url: 'https://tconsolutions.com' },
+    { name: 'About', url: canonicalUrl },
+  ];
+
   return (
     <>
       <Helmet>
         <title>About Us — TCON Solutions</title>
-        <meta name="description" content="Learn about TCON Solutions — a team of innovators building the future of software." />
+        <meta name="description" content="Learn about TCON Solutions — a team of innovators building the future of software development. Our mission, values, and approach to creating exceptional digital products." />
+        <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+        <link rel="canonical" href={canonicalUrl} />
+        
+        {/* Open Graph */}
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="About Us — TCON Solutions" />
+        <meta property="og:description" content="Learn about our team, mission, and approach to premium software development." />
+        <meta property="og:url" content={canonicalUrl} />
+        <meta property="og:image" content="https://tconsolutions.com/og-about.png" />
+        
+        {/* Twitter */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="About Us — TCON Solutions" />
+        <meta name="twitter:description" content="Learn about our team and approach to premium software development." />
+        
+        {/* Structured Data */}
+        <script type="application/ld+json">{JSON.stringify(breadcrumbJsonLd(breadcrumbs))}</script>
       </Helmet>
 
       <div className="overflow-x-clip">

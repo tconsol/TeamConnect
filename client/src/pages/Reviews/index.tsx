@@ -160,7 +160,7 @@ export default function Reviews() {
                         name="company"
                         value={formData.company}
                         onChange={handleChange}
-                        placeholder="e.g. Clinfora LLP, Tech Startup"
+                        placeholder="e.g. Tcon Solutions Pvt Ltd"
                         className="w-full px-4 py-3 rounded-xl bg-white/[0.05] border border-white/[0.08] text-white placeholder:text-text-muted focus:outline-none focus:border-accent-indigo/50 transition-colors"
                       />
                     </div>

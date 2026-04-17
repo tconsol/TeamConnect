@@ -1,5 +1,5 @@
 import { Helmet } from 'react-helmet-async';
-import { useRef, useEffect } from 'react';
+import { useLocation, useRef, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -9,6 +9,7 @@ import { cmsQueryOptions } from '@/utils/cmsQueryOptions';
 import SectionHeading from '@/components/ui/SectionHeading';
 import { AuroraTextEffect } from '@/components/ui/AuroraTextEffect';
 import CTASection from '@/sections/home/CTASection';
+import { getCanonicalUrl, breadcrumbJsonLd } from '@/utils/seo';
 import {
   HiOutlineShieldCheck,
   HiOutlineArrowTrendingUp,
@@ -39,8 +40,16 @@ const accentColors = [
 ];
 
 export default function Solutions() {
+  const location = useLocation();
+  const canonicalUrl = getCanonicalUrl(location.pathname);
+  
   const cardsRef = useRef<HTMLDivElement>(null);
   const heroRef = useGsapFadeIn();
+
+  const breadcrumbs = [
+    { name: 'Home', url: 'https://tconsolutions.com' },
+    { name: 'Solutions', url: canonicalUrl },
+  ];
 
   const { data: cms } = useQuery(cmsQueryOptions('solutions'));
 
@@ -78,7 +87,24 @@ export default function Solutions() {
     <>
       <Helmet>
         <title>Solutions — TCON Solutions</title>
-        <meta name="description" content="Industry-specific solutions for healthcare, fintech, e-commerce, education, and more." />
+        <meta name="description" content="Industry-specific solutions for healthcare, fintech, e-commerce, education, and more. Customized digital solutions for your business." />
+        <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+        <link rel="canonical" href={canonicalUrl} />
+        
+        {/* Open Graph */}
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="Solutions — TCON Solutions" />
+        <meta property="og:description" content="Industry-specific digital solutions tailored to your business needs." />
+        <meta property="og:url" content={canonicalUrl} />
+        <meta property="og:image" content="https://tconsolutions.com/og-solutions.png" />
+        
+        {/* Twitter */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Solutions — TCON Solutions" />
+        <meta name="twitter:description" content="Customized digital solutions for your industry." />
+        
+        {/* Structured Data */}
+        <script type="application/ld+json">{JSON.stringify(breadcrumbJsonLd(breadcrumbs))}</script>
       </Helmet>
 
       {/* Hero */}
