@@ -58,7 +58,7 @@ export default function CareerDetails() {
     return (
       <>
         <Helmet>
-          <title>Position Not Found — TCON Solutions</title>
+          <title>Position Not Found TCON Solutions</title>
           <meta name="robots" content="noindex, nofollow" />
         </Helmet>
         <div className="min-h-screen flex items-center justify-center pt-20">
@@ -104,21 +104,21 @@ export default function CareerDetails() {
   return (
     <>
       <Helmet>
-        <title>{job.title} — TCON Solutions Careers</title>
+        <title>{job.title} TCON Solutions Careers</title>
         <meta name="description" content={`Apply for ${job.title} at TCON Solutions. ${job.department} role. Join our innovative team.`} />
         <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
         <link rel="canonical" href={canonicalUrl} />
         
         {/* Open Graph */}
         <meta property="og:type" content="website" />
-        <meta property="og:title" content={`${job.title} — TCON Solutions Careers`} />
+        <meta property="og:title" content={`${job.title} TCON Solutions Careers`} />
         <meta property="og:description" content={`Join TCON Solutions as a ${job.title}. Help us build amazing digital products.`} />
         <meta property="og:url" content={canonicalUrl} />
         <meta property="og:image" content="https://tconsolutions.com/og-careers.png" />
         
         {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={`${job.title} — TCON Solutions Careers`} />
+        <meta name="twitter:title" content={`${job.title} TCON Solutions Careers`} />
         <meta name="twitter:description" content={`Join our team as a ${job.title} at TCON Solutions.`} />
         
         {/* Structured Data */}

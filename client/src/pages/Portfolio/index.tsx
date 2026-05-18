@@ -54,21 +54,21 @@ export default function Portfolio() {
   return (
     <>
       <Helmet>
-        <title>Portfolio — TCON Solutions</title>
+        <title>Portfolio TCON Solutions</title>
         <meta name="description" content="Explore our portfolio of premium digital products and successful client projects across web, mobile, cloud, and AI solutions." />
         <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
         <link rel="canonical" href={canonicalUrl} />
         
         {/* Open Graph */}
         <meta property="og:type" content="website" />
-        <meta property="og:title" content="Portfolio — TCON Solutions" />
+        <meta property="og:title" content="Portfolio TCON Solutions" />
         <meta property="og:description" content="Explore our portfolio of successful digital projects and client work." />
         <meta property="og:url" content={canonicalUrl} />
         <meta property="og:image" content="https://tconsolutions.com/og-portfolio.png" />
         
         {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Portfolio — TCON Solutions" />
+        <meta name="twitter:title" content="Portfolio TCON Solutions" />
         <meta name="twitter:description" content="Check out our portfolio of premium digital products." />
         
         {/* Structured Data */}

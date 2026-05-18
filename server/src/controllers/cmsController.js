@@ -125,7 +125,7 @@ exports.updateContent = async (req, res, next) => {
     const { page } = req.params;
     let updatedContent = req.body.content;
 
-    // Process team member images for about page — handle deletions and replacements
+    // Process team member images for about page handle deletions and replacements
     if (page === 'about' && updatedContent?.team) {
       // Get current team from DB to compare
       const existing = await CMS.findOne({ page });
@@ -139,7 +139,7 @@ exports.updateContent = async (req, res, next) => {
           (m) => m.image === oldMember.image
         );
         if (!stillExists) {
-          // Member removed or image replaced — delete old file from bucket
+          // Member removed or image replaced delete old file from bucket
           await deleteFile(oldMember.image).catch((err) =>
             console.warn(`⚠ Could not delete old team image: ${err.message}`)
           );

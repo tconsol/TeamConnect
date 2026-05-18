@@ -36,7 +36,7 @@ try {
 
 const sendEmail = async ({ to, subject, html }) => {
   if (!transporter) {
-    logger.warn('Email not sent — transporter not configured');
+    logger.warn('Email not sent transporter not configured');
     return;
   }
 

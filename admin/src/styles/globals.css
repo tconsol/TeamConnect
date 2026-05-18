@@ -233,7 +233,7 @@ input::placeholder, textarea::placeholder { color: var(--tc-placeholder) !import
 .dark .cms-section-btn:hover { background: rgba(255,255,255,0.05); }
 .cms-item { border-color: rgba(99,102,241,0.12); background: rgba(99,102,241,0.02); }
 .dark .cms-item { border-color: rgba(255,255,255,0.06); background: rgba(255,255,255,0.02); }
-/* Pencil edit icon — green hover */
+/* Pencil edit icon green hover */
 .edit-btn { color: #9ca3af; transition: color 0.15s, background 0.15s; }
 .edit-btn:hover { color: #22c55e !important; background: rgba(34,197,94,0.1) !important; }
 

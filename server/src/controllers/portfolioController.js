@@ -65,7 +65,7 @@ exports.create = async (req, res, next) => {
       isFeatured:       req.body.isFeatured === 'true',
       isActive:         req.body.isActive !== 'false',
       order:            Number(req.body.order) || 0,
-      // Array fields — all sent as JSON strings from admin
+      // Array fields all sent as JSON strings from admin
       technologies:     parseJsonField(req.body.technologies) || [],
       challenges:       parseJsonField(req.body.challenges) || [],
       solution:         parseJsonField(req.body.solution) || [],
@@ -108,13 +108,13 @@ exports.update = async (req, res, next) => {
     if (req.body.order !== undefined)            portfolio.order            = Number(req.body.order) || 0;
     if (req.body.testimonial !== undefined)      portfolio.testimonial      = parseJsonField(req.body.testimonial);
 
-    // Array fields — use .set() so Mongoose correctly tracks the change
+    // Array fields use .set() so Mongoose correctly tracks the change
     if (req.body.technologies !== undefined) portfolio.set('technologies', parseJsonField(req.body.technologies) || []);
     if (req.body.challenges    !== undefined) portfolio.set('challenges',   parseJsonField(req.body.challenges)   || []);
     if (req.body.solution      !== undefined) portfolio.set('solution',     parseJsonField(req.body.solution)     || []);
     if (req.body.results       !== undefined) portfolio.set('results',      parseJsonField(req.body.results)      || []);
 
-    // Thumbnail — delete old file from GCS when replaced
+    // Thumbnail delete old file from GCS when replaced
     if (req.file) {
       if (portfolio.thumbnail) await deleteFile(portfolio.thumbnail);
       portfolio.thumbnail = await uploadFile(req.file, 'portfolio-images');

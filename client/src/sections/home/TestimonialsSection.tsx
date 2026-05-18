@@ -21,7 +21,7 @@ const STATIC_TESTIMONIALS = [
   },
   {
     quote:
-      'The dashboard has become the nerve center of our operations. Their engineering team is world-class — responsive, skilled, and truly invested.',
+      'The dashboard has become the nerve center of our operations. Their engineering team is world-class responsive, skilled, and truly invested.',
     author: 'Michael Chen',
     role: 'CTO',
     company: 'Global Finance Corp',
@@ -239,7 +239,7 @@ export default function TestimonialsSection() {
           </ScrollReveal>
         </div>
 
-        {/* Row 1 — scrolling right */}
+        {/* Row 1 scrolling right */}
         <ThreeDScrollTriggerContainer className="mb-6">
           <ThreeDScrollTriggerRow baseVelocity={3} direction={1} className="gap-5 py-2">
             {row1.map((t, i) => (
@@ -248,7 +248,7 @@ export default function TestimonialsSection() {
           </ThreeDScrollTriggerRow>
         </ThreeDScrollTriggerContainer>
 
-        {/* Row 2 — scrolling left */}
+        {/* Row 2 scrolling left */}
         <ThreeDScrollTriggerContainer>
           <ThreeDScrollTriggerRow baseVelocity={2.5} direction={-1} className="gap-5 py-2">
             {row2.map((t, i) => (

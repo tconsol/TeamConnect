@@ -51,13 +51,13 @@ const seedCMSContent = {
   },
   about: {
     title: 'About TCON Solutions',
-    story: 'Founded with a vision to bridge the gap between innovative technology and real-world business needs, TCON Solutions has grown from a small team of passionate developers into a full-service digital agency. We believe that great software is more than just code — it\'s about understanding people, solving real problems, and creating experiences that resonate.',
+    story: 'Founded with a vision to bridge the gap between innovative technology and real-world business needs, TCON Solutions has grown from a small team of passionate developers into a full-service digital agency. We believe that great software is more than just code it\'s about understanding people, solving real problems, and creating experiences that resonate.',
     mission: 'To empower businesses with cutting-edge technology solutions that drive measurable results, foster innovation, and create lasting digital impact.',
     vision: 'To be the most trusted technology partner for businesses worldwide, known for excellence in execution and relentless pursuit of innovation.',
     values: [
       { title: 'Innovation', description: 'We push boundaries and embrace emerging technologies to deliver solutions that set our clients apart.' },
       { title: 'Excellence', description: 'Every line of code, every pixel, and every interaction is crafted to the highest standards of quality.' },
-      { title: 'Integrity', description: 'We build trust through transparency, honesty, and delivering on our promises — every single time.' },
+      { title: 'Integrity', description: 'We build trust through transparency, honesty, and delivering on our promises every single time.' },
       { title: 'Collaboration', description: 'We work as an extension of your team, fostering open communication and shared ownership of success.' },
     ],
     team: [
@@ -408,7 +408,7 @@ async function seedDatabase() {
     const existingAdmin = await User.findOne({ email: ADMIN_EMAIL });
     if (existingAdmin) {
       if (!isGeneratedPassword) {
-        // ADMIN_PASSWORD env var provided — update the password
+        // ADMIN_PASSWORD env var provided update the password
         existingAdmin.password = ADMIN_PASSWORD;
         await existingAdmin.save();
         console.log(`✅ Admin password updated for: ${ADMIN_EMAIL}`);
@@ -427,7 +427,7 @@ async function seedDatabase() {
       console.log(`✅ Admin user created: ${ADMIN_EMAIL}`);
       if (isGeneratedPassword) {
         console.error(`⚠️  SENSITIVE - Generated password: ${ADMIN_PASSWORD}`);
-        console.error('   ⚠️  Save this password now — it will not be shown again. Set ADMIN_PASSWORD env var for future seeding.');
+        console.error('   ⚠️  Save this password now it will not be shown again. Set ADMIN_PASSWORD env var for future seeding.');
       } else {
         console.log('   Password: (from ADMIN_PASSWORD env var)');
       }

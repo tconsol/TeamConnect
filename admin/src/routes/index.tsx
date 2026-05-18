@@ -68,6 +68,6 @@ export const router = createBrowserRouter([
     element: <Navigate to="/" replace />,
   },
 ], {
-  // @ts-expect-error — v7_startTransition exists at runtime but types lag behind
+  // @ts-expect-error v7_startTransition exists at runtime but types lag behind
   future: { v7_startTransition: true },
 });

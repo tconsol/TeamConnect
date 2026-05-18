@@ -12,15 +12,10 @@ export type CMSPage =
 export const cmsQueryOptions = (page: CMSPage) => ({
   queryKey: ['cms', page] as const,
   queryFn: () => fetchCMS(page),
-  refetchOnMount: true,         // Refetch on mount to get latest content from admin updates
-  refetchOnWindowFocus: false,  // Don't refetch on window focus
-  refetchOnReconnect: false,    // Don't refetch on reconnect
-  
-  // GCP signed URLs expire in 60 minutes
-  // Refresh 15 minutes BEFORE expiry to ensure fresh URLs
-  staleTime: 30 * 60 * 1000,    // 30 minutes — mark as stale halfway to expiry
-  refetchInterval: 50 * 60 * 1000, // 50 minutes — refetch well before 60-min expiry
-  
-  // If a broken image is detected, refetch immediately
-  refetchOnError: true,
+  refetchOnMount: false,        // Don't refetch if data is still fresh — prevents extra API calls on every page visit
+  refetchOnWindowFocus: false,
+  refetchOnReconnect: false,
+  staleTime: 30 * 60 * 1000,   // 30 min — content doesn't change that often
+  gcTime: 60 * 60 * 1000,      // Keep in cache for 1 hour
+  refetchInterval: 50 * 60 * 1000, // Background refresh before GCP signed URL expiry
 });

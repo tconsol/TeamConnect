@@ -9,10 +9,10 @@ import CustomCursor from '@/components/ui/CustomCursor';
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 0,
-      gcTime: 5 * 60 * 1000,
+      staleTime: 5 * 60 * 1000,   // 5 min avoids redundant refetches on revisit
+      gcTime: 10 * 60 * 1000,
       retry: 1,
-      refetchOnWindowFocus: true,
+      refetchOnWindowFocus: false, // no background refetch on tab focus
     },
   },
 });

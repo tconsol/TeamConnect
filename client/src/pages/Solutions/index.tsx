@@ -1,5 +1,6 @@
 import { Helmet } from 'react-helmet-async';
-import { useLocation, useRef, useEffect } from 'react';
+import { useRef, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -86,21 +87,21 @@ export default function Solutions() {
   return (
     <>
       <Helmet>
-        <title>Solutions — TCON Solutions</title>
+        <title>Solutions TCON Solutions</title>
         <meta name="description" content="Industry-specific solutions for healthcare, fintech, e-commerce, education, and more. Customized digital solutions for your business." />
         <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
         <link rel="canonical" href={canonicalUrl} />
         
         {/* Open Graph */}
         <meta property="og:type" content="website" />
-        <meta property="og:title" content="Solutions — TCON Solutions" />
+        <meta property="og:title" content="Solutions TCON Solutions" />
         <meta property="og:description" content="Industry-specific digital solutions tailored to your business needs." />
         <meta property="og:url" content={canonicalUrl} />
         <meta property="og:image" content="https://tconsolutions.com/og-solutions.png" />
         
         {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Solutions — TCON Solutions" />
+        <meta name="twitter:title" content="Solutions TCON Solutions" />
         <meta name="twitter:description" content="Customized digital solutions for your industry." />
         
         {/* Structured Data */}
@@ -125,7 +126,7 @@ export default function Solutions() {
         </div>
       </section>
 
-      {/* Solutions — Bento-style staggered grid */}
+      {/* Solutions Bento-style staggered grid */}
       <section className="py-28 relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_50%,rgba(139,92,246,0.08),transparent_50%),radial-gradient(circle_at_80%_50%,rgba(59,130,246,0.06),transparent_50%)]" />
         <div className="container-custom relative z-10">
@@ -204,7 +205,7 @@ export default function Solutions() {
         </div>
       </section>
 
-      {/* Why Choose Us — Modern stat cards */}
+      {/* Why Choose Us Modern stat cards */}
       <section className="py-28 relative overflow-hidden">
         <div className="absolute inset-0 bg-bg-secondary" />
         <div className="absolute inset-0 line-grid opacity-20" />

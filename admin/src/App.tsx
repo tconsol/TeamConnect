@@ -8,7 +8,7 @@ import { ToastProvider } from '@/components/ui/Toast';
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 1000 * 60 * 20,      // 20 min — well under 60-min signed URL expiry
+      staleTime: 1000 * 60 * 20,      // 20 min well under 60-min signed URL expiry
       gcTime:    1000 * 60 * 50,       // keep cached data for 50 min max
       retry: 1,
       refetchOnWindowFocus: false,

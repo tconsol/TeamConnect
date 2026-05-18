@@ -6,7 +6,7 @@ export default function NotFound() {
   return (
     <>
       <Helmet>
-        <title>404 — Page Not Found | TCON Solutions</title>
+        <title>404 Page Not Found | TCON Solutions</title>
         <meta name="description" content="The page you're looking for doesn't exist or has been moved." />
         <meta name="robots" content="noindex, nofollow" />
       </Helmet>

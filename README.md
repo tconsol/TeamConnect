@@ -1,6 +1,6 @@
-# TCON Solutions — Full-Stack SaaS Website System
+# TCON Solutions Full-Stack SaaS Website System
 
-A production-ready, cinematic, multi-page SaaS website system for **TCON Solutions** — built with React, Node.js, Express, and MongoDB.
+A production-ready, cinematic, multi-page SaaS website system for **TCON Solutions** built with React, Node.js, Express, and MongoDB.
 
 ## Architecture
 

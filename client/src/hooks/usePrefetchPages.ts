@@ -7,47 +7,45 @@ export const usePrefetchPages = () => {
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    const prefetchAllData = async () => {
-      try {
-        // Prefetch all CMS pages
-        const cmsPages = ['home', 'about', 'services', 'solutions', 'portfolio', 'careers', 'contact'] as const;
-        
-        await Promise.all([
-          // Prefetch CMS data for all pages
-          ...cmsPages.map(page => 
-            queryClient.prefetchQuery({
-              queryKey: cmsQueryOptions(page as any).queryKey,
-              queryFn: cmsQueryOptions(page as any).queryFn,
-            })
-          ),
-          // Prefetch services
-          queryClient.prefetchQuery({
-            queryKey: ['services'],
-            queryFn: fetchServices,
-          }),
-          // Prefetch skills
-          queryClient.prefetchQuery({
-            queryKey: ['skills'],
-            queryFn: fetchSkills,
-          }),
-          // Prefetch portfolios
-          queryClient.prefetchQuery({
-            queryKey: ['portfolios'],
-            queryFn: () => fetchPortfolios(),
-          }),
-          // Prefetch jobs
-          queryClient.prefetchQuery({
-            queryKey: ['jobs'],
-            queryFn: fetchJobs,
-          }),
-        ]);
-
-        console.log('✅ All pages data prefetched successfully');
-      } catch (error) {
-        console.error('❌ Error prefetching pages data:', error);
+    // Delay all prefetching until the browser is idle AND the page has fully painted.
+    // This ensures prefetch requests never compete with FCP/LCP network fetches.
+    const schedule = (cb: () => void) => {
+      if ('requestIdleCallback' in window) {
+        (window as any).requestIdleCallback(cb, { timeout: 5000 });
+      } else {
+        setTimeout(cb, 3000);
       }
     };
 
-    prefetchAllData();
+    schedule(async () => {
+      // Only prefetch pages the user hasn't visited yet (skip if already cached)
+      const cmsPages = ['home', 'about', 'services', 'solutions', 'portfolio', 'careers', 'contact'] as const;
+
+      // Fire sequentially in small batches to avoid network congestion
+      for (const page of cmsPages) {
+        const opts = cmsQueryOptions(page as any);
+        const cached = queryClient.getQueryData(opts.queryKey);
+        if (!cached) {
+          queryClient.prefetchQuery({ queryKey: opts.queryKey, queryFn: opts.queryFn });
+          // Small gap between each to avoid burst
+          await new Promise(r => setTimeout(r, 150));
+        }
+      }
+
+      // Prefetch list data only if not already in cache
+      const listQueries = [
+        { queryKey: ['services'], queryFn: fetchServices },
+        { queryKey: ['skills'],   queryFn: fetchSkills   },
+        { queryKey: ['portfolios'], queryFn: () => fetchPortfolios() },
+        { queryKey: ['jobs'],     queryFn: fetchJobs     },
+      ];
+
+      for (const q of listQueries) {
+        if (!queryClient.getQueryData(q.queryKey)) {
+          queryClient.prefetchQuery(q);
+          await new Promise(r => setTimeout(r, 200));
+        }
+      }
+    });
   }, [queryClient]);
 };

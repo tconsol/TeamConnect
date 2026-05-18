@@ -52,21 +52,21 @@ export default function Services() {
   return (
     <>
       <Helmet>
-        <title>Services — TCON Solutions</title>
+        <title>Services TCON Solutions</title>
         <meta name="description" content="End-to-end digital solutions including web development, mobile apps, cloud infrastructure, AI solutions, design, and backend engineering." />
         <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
         <link rel="canonical" href={canonicalUrl} />
         
         {/* Open Graph */}
         <meta property="og:type" content="website" />
-        <meta property="og:title" content="Services — TCON Solutions" />
+        <meta property="og:title" content="Services TCON Solutions" />
         <meta property="og:description" content="Premium digital solutions: web, mobile, cloud, AI, design, and engineering." />
         <meta property="og:url" content={canonicalUrl} />
         <meta property="og:image" content="https://tconsolutions.com/og-services.png" />
         
         {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Services — TCON Solutions" />
+        <meta name="twitter:title" content="Services TCON Solutions" />
         <meta name="twitter:description" content="Premium digital solutions for your business needs." />
         
         {/* Structured Data */}
@@ -134,7 +134,7 @@ export default function Services() {
         </div>
       </section>
 
-      {/* Process — ScrollStack */}
+      {/* Process ScrollStack */}
       {processSteps.length > 0 && (
         <section className="relative">
           <div className="absolute inset-0 bg-bg-secondary" style={{ zIndex: -1 }} />

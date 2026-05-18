@@ -124,7 +124,7 @@ export default function Dashboard() {
 
       {/* Charts row 1 */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Bar Chart — Overview */}
+        {/* Bar Chart Overview */}
         <div className="analytics-card p-6 lg:col-span-2">
           <h2 className="text-base font-semibold dark:text-white text-slate-900 mb-1">Content Overview</h2>
           <p className="text-xs mb-5" style={{ color: 'rgba(148,163,184,0.5)' }}>Total items by category</p>
@@ -143,7 +143,7 @@ export default function Dashboard() {
           </ResponsiveContainer>
         </div>
 
-        {/* Pie Chart — Leads by Status */}
+        {/* Pie Chart Leads by Status */}
         <div className="analytics-card p-6">
           <h2 className="text-base font-semibold dark:text-white text-slate-900 mb-1">Leads by Status</h2>
           <p className="text-xs mb-2" style={{ color: 'rgba(148,163,184,0.5)' }}>Distribution breakdown</p>
@@ -173,13 +173,13 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Charts row 2 — Area Chart trend */}
+      {/* Charts row 2 Area Chart trend */}
       <div className="analytics-card p-6">
         <div className="flex items-center justify-between mb-1">
           <h2 className="text-base font-semibold dark:text-white text-slate-900">Growth Trend</h2>
           <span className="text-xs px-2 py-1 rounded-full dark:bg-amber-500/10 bg-amber-100 dark:text-amber-300 text-amber-700" style={{ fontSize: '10px', fontWeight: 500 }}>Sample Data</span>
         </div>
-        <p className="text-xs mb-5" style={{ color: 'rgba(148,163,184,0.5)' }}>Mock data — historical API integration coming</p>
+        <p className="text-xs mb-5" style={{ color: 'rgba(148,163,184,0.5)' }}>Mock data historical API integration coming</p>
         <ResponsiveContainer width="100%" height={200}>
           <AreaChart data={trendData}>
             <defs>

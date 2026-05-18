@@ -44,7 +44,10 @@ export default function Portfolio() {
       queryClient.invalidateQueries({ queryKey: ['admin-portfolios'] });
       closeModal();
     },
-    onError: () => toast.error('Failed to save project'),
+    onError: (error: any) => {
+      const msg = error?.response?.data?.message || error?.message || 'Failed to save project';
+      toast.error(msg);
+    },
   });
 
   const deleteMutation = useMutation({

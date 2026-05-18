@@ -37,7 +37,7 @@ exports.createUser = async (req, res, next) => {
       });
     }
 
-    // Create user — password hashing handled by pre-save hook in User model
+    // Create user password hashing handled by pre-save hook in User model
     const user = new User({
       name,
       email,

@@ -32,7 +32,7 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
       return;
     }
 
-    // Signed URL expired — trigger refresh
+    // Signed URL expired trigger refresh
     if (cmsPage) {
       console.warn(`Image failed to load (expired URL?), refetching CMS data for ${cmsPage}...`);
       queryClient.invalidateQueries({ queryKey: ['cms', cmsPage] });

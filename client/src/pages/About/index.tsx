@@ -33,21 +33,21 @@ export default function About() {
   return (
     <>
       <Helmet>
-        <title>About Us — TCON Solutions</title>
-        <meta name="description" content="Learn about TCON Solutions — a team of innovators building the future of software development. Our mission, values, and approach to creating exceptional digital products." />
+        <title>About Us TCON Solutions</title>
+        <meta name="description" content="Learn about TCON Solutions a team of innovators building the future of software development. Our mission, values, and approach to creating exceptional digital products." />
         <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
         <link rel="canonical" href={canonicalUrl} />
         
         {/* Open Graph */}
         <meta property="og:type" content="website" />
-        <meta property="og:title" content="About Us — TCON Solutions" />
+        <meta property="og:title" content="About Us TCON Solutions" />
         <meta property="og:description" content="Learn about our team, mission, and approach to premium software development." />
         <meta property="og:url" content={canonicalUrl} />
         <meta property="og:image" content="https://tconsolutions.com/og-about.png" />
         
         {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="About Us — TCON Solutions" />
+        <meta name="twitter:title" content="About Us TCON Solutions" />
         <meta name="twitter:description" content="Learn about our team and approach to premium software development." />
         
         {/* Structured Data */}
@@ -145,7 +145,7 @@ export default function About() {
       {/* Technologies */}
       <SkillGlobeSafe />
 
-      {/* Team — 3D Slider */}
+      {/* Team 3D Slider */}
       <section className="py-16 md:py-32 overflow-hidden">
         <div className="container-custom mb-16">
           <SectionHeading

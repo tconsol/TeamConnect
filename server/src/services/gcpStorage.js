@@ -9,12 +9,12 @@ let storage;
 let gcpError = null;
 try {
   if (!config.gcp.privateKey || !config.gcp.clientEmail) {
-    throw new Error('GCP credentials not set — check GCP_PRIVATE_KEY and GCP_CLIENT_EMAIL in .env');
+    throw new Error('GCP credentials not set check GCP_PRIVATE_KEY and GCP_CLIENT_EMAIL in .env');
   }
   // Validate key format
   const key = config.gcp.privateKey;
   if (!key.includes('-----BEGIN') || !key.includes('-----END')) {
-    throw new Error('GCP_PRIVATE_KEY is malformed — must be a valid PEM private key');
+    throw new Error('GCP_PRIVATE_KEY is malformed must be a valid PEM private key');
   }
   storage = new Storage({
     projectId: config.gcp.projectId,
@@ -29,14 +29,27 @@ try {
   });
 } catch (err) {
   gcpError = err.message;
-  logger.warn(`GCP Storage not configured — file uploads will fail: ${err.message}`);
+  logger.warn(`GCP Storage not configured file uploads will fail: ${err.message}`);
 }
 
 const bucket = storage ? storage.bucket(config.gcp.bucketName) : null;
 
+// Verify bucket exists and service account has access at startup
+if (bucket) {
+  bucket.exists().then(([exists]) => {
+    if (!exists) {
+      logger.error(`GCP bucket "${config.gcp.bucketName}" does not exist — file uploads will fail`);
+    } else {
+      logger.info(`GCP Storage ready — bucket "${config.gcp.bucketName}" accessible`);
+    }
+  }).catch((err) => {
+    logger.error(`GCP bucket check failed: ${err.message} — file uploads will fail`);
+  });
+}
+
 // Only resumes and team-members need signed URLs (private content).
-// portfolio-images are public content — they get permanent storage.googleapis.com URLs.
-const SENSITIVE_FOLDERS = ['resumes', 'team-members'];
+// portfolio-images are public content they get permanent storage.googleapis.com URLs.
+const SENSITIVE_FOLDERS = ['resumes', 'team-members', 'portfolio-images'];
 
 const uploadFile = async (file, folder) => {
   if (!bucket) throw new Error(`GCP Storage not configured: ${gcpError || 'unknown error'}`);
@@ -56,18 +69,35 @@ const uploadFile = async (file, folder) => {
       Readable.from(file.buffer).pipe(writeStream);
     });
   } catch (err) {
+    logger.error('GCP upload failed', {
+      folder,
+      filename,
+      code: err.code,
+      status: err.status,
+      message: err.message,
+    });
+
     if (err.message?.includes('DECODER') || err.message?.includes('unsupported')) {
-      throw new Error('GCP authentication failed — check GCP_PRIVATE_KEY in .env (key may be invalid or rotated)');
+      throw new Error('GCP upload failed: private key is malformed — check GCP_PRIVATE_KEY in .env');
     }
-    throw err;
+    if (err.message?.includes('invalid_grant') || err.message?.includes('UNAUTHENTICATED') || err.message?.includes('invalid_client')) {
+      throw new Error('GCP upload failed: service account credentials rejected — verify GCP_CLIENT_EMAIL and GCP_PRIVATE_KEY');
+    }
+    if (err.code === 403 || err.message?.includes('PERMISSION_DENIED') || err.message?.includes('does not have storage.objects')) {
+      throw new Error(`GCP upload failed: permission denied — grant "Storage Object Creator" role to ${config.gcp.clientEmail} on bucket "${config.gcp.bucketName}"`);
+    }
+    if (err.code === 404 || err.message?.includes('No such bucket') || err.message?.includes('bucket does not exist')) {
+      throw new Error(`GCP upload failed: bucket "${config.gcp.bucketName}" not found — check GCP_BUCKET_NAME in .env`);
+    }
+    throw new Error(`GCP upload failed: ${err.message}`);
   }
 
   if (SENSITIVE_FOLDERS.includes(folder)) {
-    // Return the GCS path — callers must use getSignedUrl for access
+    // Return the GCS path callers must use getSignedUrl for access
     return `gs://${config.gcp.bucketName}/${filename}`;
   }
 
-  // Uniform bucket-level access is enabled — objects inherit bucket IAM; no per-object ACL needed
+  // Uniform bucket-level access is enabled objects inherit bucket IAM; no per-object ACL needed
   return `https://storage.googleapis.com/${config.gcp.bucketName}/${filename}`;
 };
 

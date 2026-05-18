@@ -49,7 +49,7 @@ function CardContent({ event, index }: { event: TimelineEvent; index: number }) 
   );
 }
 
-/* ── Mobile / Tablet card — line on left ── */
+/* ── Mobile / Tablet card line on left ── */
 function TimelineCardMobile({ event, index }: { event: TimelineEvent; index: number }) {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, margin: '-10% 0px' });
@@ -84,7 +84,7 @@ function TimelineCardMobile({ event, index }: { event: TimelineEvent; index: num
   );
 }
 
-/* ── Desktop card — alternating left / right ── */
+/* ── Desktop card alternating left / right ── */
 function TimelineCardDesktop({ event, index }: { event: TimelineEvent; index: number }) {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, margin: '-10% 0px' });
@@ -156,7 +156,7 @@ export default function ScrollTimeline({ events, title, subtitle }: ScrollTimeli
         </div>
       )}
 
-      {/* ── Mobile / Tablet layout — line on left ── */}
+      {/* ── Mobile / Tablet layout line on left ── */}
       <div className="relative lg:hidden">
         <div className="absolute left-[22px] md:left-[30px] top-8 bottom-8 w-px" style={{ background: 'rgba(139,92,246,0.12)' }} />
         <div className="absolute left-[22px] md:left-[30px] top-8 w-px overflow-hidden" style={{ height: 'calc(100% - 64px)' }}>
@@ -169,7 +169,7 @@ export default function ScrollTimeline({ events, title, subtitle }: ScrollTimeli
         </div>
       </div>
 
-      {/* ── Desktop layout — line centered, cards alternate ── */}
+      {/* ── Desktop layout line centered, cards alternate ── */}
       <div className="relative hidden lg:block">
         <div className="absolute left-1/2 -translate-x-1/2 top-8 bottom-8 w-px" style={{ background: 'rgba(139,92,246,0.12)' }} />
         <div className="absolute left-1/2 -translate-x-1/2 top-8 w-px overflow-hidden" style={{ height: 'calc(100% - 64px)' }}>

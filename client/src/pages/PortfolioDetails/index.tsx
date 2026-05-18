@@ -15,7 +15,7 @@ const toArray = (val: unknown): string[] => {
   }
   const str = String(val).trim();
   if (!str) return [];
-  // Split by newline first (highest priority for legacy data) — trim trailing commas
+  // Split by newline first (highest priority for legacy data) trim trailing commas
   const lines = str.split(/[\r\n]+/).map((s) => s.replace(/,\s*$/, '').trim()).filter(Boolean);
   if (lines.length > 1) return lines;
   // Fall back to comma split
@@ -48,7 +48,7 @@ export default function PortfolioDetails() {
     return (
       <>
         <Helmet>
-          <title>Project Not Found — TCON Solutions</title>
+          <title>Project Not Found TCON Solutions</title>
           <meta name="robots" content="noindex, nofollow" />
         </Helmet>
         <div className="min-h-screen flex items-center justify-center">
@@ -67,7 +67,7 @@ export default function PortfolioDetails() {
   return (
     <>
       <Helmet>
-        <title>{project.title} — TCON Solutions</title>
+        <title>{project.title} TCON Solutions</title>
         <meta name="description" content={project.shortDescription} />
         <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
         <link rel="canonical" href={canonicalUrl} />
@@ -153,7 +153,7 @@ export default function PortfolioDetails() {
       <section className="pb-16">
         <div className="container-custom">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-            {/* Image — takes 2 cols */}
+            {/* Image takes 2 cols */}
             <div className="lg:col-span-2">
               {project.thumbnail ? (
                 <div className="rounded-2xl overflow-hidden w-full shadow-2xl shadow-black/40 max-h-96">
@@ -170,7 +170,7 @@ export default function PortfolioDetails() {
               )}
             </div>
 
-            {/* Sticky sidebar — 1 col */}
+            {/* Sticky sidebar 1 col */}
             <div className="sticky top-28 self-start space-y-5">
               {/* Tech stack */}
               {project.technologies?.length > 0 && (

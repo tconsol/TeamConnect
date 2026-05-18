@@ -59,7 +59,7 @@ export default function Reviews() {
   return (
     <>
       <Helmet>
-        <title>Submit Your Testimonial — TCON Solutions</title>
+        <title>Submit Your Testimonial TCON Solutions</title>
         <meta name="description" content="Share your experience with TCON Solutions. We'd love to hear from you!" />
       </Helmet>
 

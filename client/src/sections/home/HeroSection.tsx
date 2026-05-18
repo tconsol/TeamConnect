@@ -30,23 +30,30 @@ export default function HeroSection() {
 
   useEffect(() => {
     const mm = gsap.context(() => {
-      const tl = gsap.timeline({ delay: 0.15 });
+      const tl = gsap.timeline({ delay: 0.05 });
+      // hero-title stays visible (opacity:1 from CSS) only translate for subtle polish
       tl.fromTo(
-        '.hero-kicker, .hero-title, .hero-subtitle, .hero-ctas, .hero-pillars',
-        { y: 40, opacity: 0 },
-        { y: 0, opacity: 1, stagger: 0.12, duration: 0.75, ease: 'power3.out' }
+        '.hero-kicker',
+        { y: 30, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.6, ease: 'power3.out' }
+      );
+      tl.fromTo(
+        '.hero-subtitle, .hero-ctas, .hero-pillars',
+        { y: 30, opacity: 0 },
+        { y: 0, opacity: 1, stagger: 0.1, duration: 0.65, ease: 'power3.out' },
+        '-=0.3'
       );
       tl.fromTo(
         '.hero-glass-frame',
-        { scale: 0.95, opacity: 0 },
-        { scale: 1, opacity: 1, duration: 0.8, ease: 'power3.out' },
-        '-=0.45'
+        { scale: 0.97, opacity: 0 },
+        { scale: 1, opacity: 1, duration: 0.7, ease: 'power3.out' },
+        '-=0.4'
       );
       tl.fromTo(
         statsRef.current,
-        { y: 18, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.6, ease: 'power3.out' },
-        '-=0.4'
+        { y: 16, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.55, ease: 'power3.out' },
+        '-=0.35'
       );
     }, heroRef);
 
@@ -65,15 +72,15 @@ export default function HeroSection() {
       <div className="absolute inset-0 bg-mesh" />
       <div className="absolute inset-0 line-grid opacity-[0.16]" />
       <div
-        className="absolute -top-24 -left-16 w-[520px] h-[520px] rounded-full blur-[120px]"
+        className="hero-orb absolute -top-24 -left-16 w-[520px] h-[520px] rounded-full blur-[120px]"
         style={{ background: 'radial-gradient(circle, rgba(34,197,94,0.24) 0%, rgba(34,197,94,0) 70%)', animation: 'float-orb-a 16s ease-in-out infinite' }}
       />
       <div
-        className="absolute top-[18%] right-[-10%] w-[560px] h-[560px] rounded-full blur-[130px]"
+        className="hero-orb absolute top-[18%] right-[-10%] w-[560px] h-[560px] rounded-full blur-[130px]"
         style={{ background: 'radial-gradient(circle, rgba(59,130,246,0.24) 0%, rgba(59,130,246,0) 72%)', animation: 'float-orb-b 18s ease-in-out infinite' }}
       />
       <div
-        className="absolute bottom-[-16%] left-[38%] w-[460px] h-[460px] rounded-full blur-[120px]"
+        className="hero-orb absolute bottom-[-16%] left-[38%] w-[460px] h-[460px] rounded-full blur-[120px]"
         style={{ background: 'radial-gradient(circle, rgba(251,146,60,0.20) 0%, rgba(251,146,60,0) 75%)', animation: 'float-orb-c 14s ease-in-out infinite' }}
       />
 
@@ -88,7 +95,7 @@ export default function HeroSection() {
             <span className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-200">Open For New Projects</span>
           </div>
 
-          <h1 className="hero-title text-5xl sm:text-6xl lg:text-7xl xl:text-[5rem] leading-[0.98] tracking-tight font-black text-text-heading max-w-5xl mx-auto">
+          <h1 className="hero-title text-5xl sm:text-6xl lg:text-7xl xl:text-[5rem] leading-[0.98] tracking-tight font-black text-text-heading max-w-5xl mx-auto" style={{ opacity: 1 }}>
             {lead}{' '}
             <AuroraTextEffect text={accent || 'That Scale'} />
           </h1>
